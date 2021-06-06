@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "78303425606",
+    "project_id": "fb-ieadi-app",
+    "storage_bucket": "fb-ieadi-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78303425606:android:9e9e354126e061df564647",
+        "android_client_info": {
+          "package_name": "com.example.flutteIeadiApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78303425606-6uel1estqjrf8295loujheojnrerq7s3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQ5Vse1SdkcohwAVqhFzbGYZr0pZ4j860"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78303425606-6uel1estqjrf8295loujheojnrerq7s3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "78303425606-bdctekcc1m85firj49f0npv7326memjb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterIeadiApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
