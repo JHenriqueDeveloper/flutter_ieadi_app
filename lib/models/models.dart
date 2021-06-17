@@ -1,2 +1,1 @@
-export 'failure/failure_model.dart';
-export 'users/users_model.dart';
+export 'user/user_model.dart';

@@ -1,72 +1,79 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
-
-import 'package:flutter_ieadi_app/config/config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_ieadi_app/models/models.dart';
-import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
+class AuthRepository extends ChangeNotifier {
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-class AuthRepository extends BaseAuthRepository {
-  final FirebaseFirestore _firebaseFirestore;
-  final auth.FirebaseAuth _firebaseAuth;
+  UserModel user;
 
-  AuthRepository({
-    FirebaseFirestore firebaseFirestore,
-    auth.FirebaseAuth firebaseAuth,
-  })  : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance,
-        _firebaseAuth = firebaseAuth ?? auth.FirebaseAuth.instance;
+  AuthRepository() {
+    _loadCurrentUser();
+  }
 
-  @override
-  Stream<auth.User> get user => _firebaseAuth.userChanges();
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  set setLoading(bool status) {
+    _isLoading = status;
+    notifyListeners();
+  }
 
-  @override
-  Future<auth.User> signUpWithEmailAndPassword({
-    @required String username,
-    @required String email,
-    @required String password,
-  }) async {
-    try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final user = credential.user;
-      _firebaseFirestore.collection(Paths.users).doc(user.uid).set({
-        'username': username,
-        'email': email,
-        //'followers': 0,
-        //'following': 0,
-      });
-      return user;
-    } on auth.FirebaseAuthException catch (err) {
-      throw Failure(code: err.code, message: err.message);
-    } on PlatformException catch (err) {
-      throw Failure(code: err.code, message: err.message);
+  void _loadCurrentUser({firebaseUser}) async {
+    var currentUser = firebaseUser ?? auth.currentUser;
+    if (currentUser.uid != null) {
+      this.user = await UserModel.getUser(currentUser.uid);
+      //print(this.user.username);
+      notifyListeners();
     }
   }
 
-  @override
-  Future<auth.User> logInWithEmailAndPassword({
-    @required String email,
-    @required String password,
+  Future<void> signIn({
+    UserModel user,
+    Function onFail,
+    Function onSuccess,
   }) async {
+    setLoading = true;
+
     try {
-      final credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+      var result = await auth.signInWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
       );
-      return credential.user;
-    } on auth.FirebaseAuthException catch (err) {
-      throw Failure(code: err.code, message: err.message);
-    } on PlatformException catch (err) {
-      throw Failure(code: err.code, message: err.message);
+
+      //Adiciona um tempo ao carregamento
+      // await Future.delayed(Duration(seconds: 4));
+
+      if (result.user != null) {
+        _loadCurrentUser(firebaseUser: result.user);
+        onSuccess(result.user.uid);
+      }
+    } catch (e) {
+      onFail(e.message);
     }
+    setLoading = false;
   }
 
-  @override
-  Future<void> logOut() async {
-    await _firebaseAuth.signOut();
+  Future<void> signUp({
+    UserModel user,
+    Function onFail,
+    Function onSuccess,
+  }) async {
+    setLoading = true;
+    try {
+      var result = await auth.createUserWithEmailAndPassword(
+        email: user.email,
+        password: user.password,
+      );
+      if (result.user != null) {
+        user.id = result.user.uid;
+        this.user = user;
+        await user.saveUser();
+
+        onSuccess(result.user.uid);
+      }
+    } catch (e) {
+      onFail(e.message);
+    }
+    setLoading = false;
   }
 }

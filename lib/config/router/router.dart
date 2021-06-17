@@ -1,104 +1,52 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_ieadi_app/screens/screens.dart';
 
 class CustomRouter {
-  static Route onGenerateRoute(RouteSettings settings) {
-    print('Route: ${settings.name}');
-    switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(
-          settings: const RouteSettings(
-            name: '/',
-          ),
-          builder: (_) => const Scaffold(),
-        );
-      case SplashScreen.routeName:
-        return SplashScreen.route();
-      case IntroScreen.routeName:
-        return IntroScreen.route();
-      case IntroScreen.routeName:
-        return IntroScreen.route();
-      case SignupScreen.routeName:
-        return SignupScreen.route();
-      case LoginScreen.routeName:
-        return LoginScreen.route();
-      case HomeScreen.routeName:
-        return HomeScreen.route();
-      default:
-        return _errorRoute();
-    }
-  }
+  PageController _pageController;
+  int atualPage = 0;
 
-  static Route _errorRoute() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: '/error'),
-      builder: (_) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
-        ),
-        body: const Center(
-          child: Text('Something went wrong!'),
-        ),
-      ),
-    );
+  CustomRouter(this._pageController);
+
+  static MaterialPageRoute getPageRoute(String routeName) {
+          switch (routeName) {
+            case '/splash':
+              return MaterialPageRoute(
+                builder: (_) => SplashScreen(),
+              );
+            case '/login':
+              return MaterialPageRoute(
+                builder: (_) => LoginScreen(),
+              );
+            case '/signup':
+              return MaterialPageRoute(
+                builder: (_) => SignupScreen(),
+              );
+            case '/base':
+              return MaterialPageRoute(
+                builder: (_) => BaseScreen(),
+              );
+            case '/intro':
+            default:
+              return MaterialPageRoute(
+                builder: (_) => IntroScreen(),
+              );
+          }
+        }
+
+  void setPage(int page) => atualPage != page
+  ? {
+    atualPage = page,
+    _pageController.jumpToPage(page),
+    /*
+    _pageController.animateToPage(
+      page, 
+      duration: Duration(milliseconds: 300), 
+      curve: Curves.slowMiddle,
+    )
+    */
   }
+  : null;
+
+
 }
-
-/*
-
-import 'package:flutter/material.dart';
-import 'package:flutter_instagram/screens/screens.dart';
-
-class CustomRouter {
-  static Route onGenerateRoute(RouteSettings settings) {
-    print('Route: ${settings.name}');
-    switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(
-          settings: const RouteSettings(name: '/'),
-          builder: (_) => const Scaffold(),
-        );
-      case SplashScreen.routeName:
-        return SplashScreen.route();
-      case LoginScreen.routeName:
-        return LoginScreen.route();
-      case SignupScreen.routeName:
-        return SignupScreen.route();
-      case NavScreen.routeName:
-        return NavScreen.route();
-      default:
-        return _errorRoute();
-    }
-  }
-
-  static Route onGenerateNestedRoute(RouteSettings settings) {
-    print('Nested Route: ${settings.name}');
-    switch (settings.name) {
-      case ProfileScreen.routeName:
-        return ProfileScreen.route(args: settings.arguments);
-      case EditProfileScreen.routeName:
-        return EditProfileScreen.route(args: settings.arguments);
-      case CommentsScreen.routeName:
-        return CommentsScreen.route(args: settings.arguments);
-      default:
-        return _errorRoute();
-    }
-  }
-
-  static Route _errorRoute() {
-    return MaterialPageRoute(
-      settings: const RouteSettings(name: '/error'),
-      builder: (_) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
-        ),
-        body: const Center(
-          child: Text('Something went wrong!'),
-        ),
-      ),
-    );
-  }
-}
-
-
-*/

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Style {
+class LightStyle {
 
   static const Map<String, Color> paleta = {
     'Primaria': Color(0xFF4478EE),
@@ -27,6 +27,7 @@ class Style {
         primaryColorDark: paleta['Primaria'],
         backgroundColor: paleta['Background'],
         scaffoldBackgroundColor: paleta['Background'],
+        errorColor: paleta['Erro'],
         appBarTheme: AppBarTheme(
           brightness: Brightness.dark,
           backgroundColor: paleta['Background'],
@@ -36,7 +37,7 @@ class Style {
           ),
         ),
         buttonTheme: ButtonThemeData(
-
+          //disabledColor: paleta['CinzaClaro'],
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: paleta['Primaria'],
@@ -44,6 +45,8 @@ class Style {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             primary: paleta['Primaria'],
+            onPrimary: paleta['Branco'],
+            onSurface: paleta['Shadow'],
             textStyle: GoogleFonts.roboto(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -91,6 +94,24 @@ class Style {
             fontWeight: FontWeight.bold,
             height: 1.5,
             color: paleta['Branco'],
+          ),
+          headline6: GoogleFonts.roboto(
+            fontSize: 30,
+            height: 1.5,
+            color: paleta['Background'],
+          ),
+          overline: GoogleFonts.roboto( //texto button vermelho
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0,
+            color: paleta['Erro'],
+          ),
+          
+          bodyText1: GoogleFonts.roboto(
+            fontSize: 16,
+            height: 1.5,
+            letterSpacing: 0,
+            color: paleta['Cinza'],
           ),
           bodyText2: GoogleFonts.roboto(
             fontSize: 16,
