@@ -4,6 +4,8 @@ class UserModel {
   //Conta
   String id;
   String username;
+  String matricula;
+  String cpf;
   String email;
   String password;
   String confirmPassword; //para confirmar no cadastro
@@ -11,18 +13,26 @@ class UserModel {
   UserModel({
     this.id,
     this.username,
+    this.matricula,
+    this.cpf,
     this.email,
     this.password,
   });
 
   get getId => id;
   get getUsername => username;
+  get getMatricula => matricula;
+  get getCpf => cpf;
   get getEmail => email;
   get getPassword => password;
   get getConfirmPassword => confirmPassword;
 
+  get getUserEmpty => empty;
+
   set setId(String id) => this.id = id;
   set setUsername(String username) => this.username = username;
+  set setMatricula(String matricula) => this.matricula = matricula;
+  set setCpf(String cpf) => this.cpf = cpf;
   set setEmail(String email) => this.email = email;
   set setPassword(String password) => this.password = password;
   set setConfirmPassword(String confirmPassword) =>
@@ -33,12 +43,16 @@ class UserModel {
 
   Map<String, dynamic> toDocument() => {
         'username': username,
+        'matricula': matricula,
+        'cpf': cpf,
         'email': email,
       };
 
   static UserModel empty = UserModel(
     id: '',
     username: '',
+    matricula: '',
+    cpf: '',
     email: '',
   );
 
@@ -48,6 +62,8 @@ class UserModel {
     return UserModel(
       id: doc.id,
       username: data['username'] ?? '',
+      matricula: data['matricula'] ?? '',
+      cpf: data['cpf'] ?? '',
       email: data['email'] ?? '',
     );
   }
@@ -56,9 +72,7 @@ class UserModel {
 
   static Future<UserModel> getUser(String userId) async {
     final doc = await FirebaseFirestore.instance.doc('users/$userId').get();
-    return doc.exists 
-    ? UserModel.fromDocument(doc) 
-    : UserModel.empty;
+    return doc.exists ? UserModel.fromDocument(doc) : UserModel.empty;
   }
 }
 

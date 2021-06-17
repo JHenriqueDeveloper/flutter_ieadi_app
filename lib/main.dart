@@ -20,6 +20,7 @@ class IeadiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AuthRepository(),
+      lazy: false, //instancia imediatamente o AuthRepository
       child: MaterialApp(
         title: 'Flutter IEADI app',
         debugShowCheckedModeBanner: false,

@@ -18,6 +18,8 @@ class AuthRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get isLoggedId => user != null; //verifica se está logado no app
+
   void _loadCurrentUser({firebaseUser}) async {
     var currentUser = firebaseUser ?? auth.currentUser;
     if (currentUser.uid != null) {
@@ -75,5 +77,12 @@ class AuthRepository extends ChangeNotifier {
       onFail(e.message);
     }
     setLoading = false;
+  }
+
+  void signOut(BuildContext context) {
+    auth.signOut();
+    user = null;
+    notifyListeners();
+    Navigator.of(context).pushNamed('/intro');
   }
 }
