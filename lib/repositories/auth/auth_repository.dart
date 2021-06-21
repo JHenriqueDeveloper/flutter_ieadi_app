@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ieadi_app/models/models.dart';
 
 class AuthRepository extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   UserModel user;
 
@@ -84,5 +86,28 @@ class AuthRepository extends ChangeNotifier {
     user = null;
     notifyListeners();
     Navigator.of(context).pushNamed('/intro');
+  }
+
+  Future<void> update({
+    @required UserModel user,
+    Function onFail,
+    Function onSuccess,
+  }) async {
+    setLoading = true;
+    try {
+      this.user = user;
+
+      print(user.username);
+
+      await _firebaseFirestore
+          .collection('/users')
+          .doc(user.id)
+          .update(user.toDocument());
+
+      onSuccess(user.id);
+    } catch (e) {
+      onFail(e.message);
+    }
+    setLoading = false;
   }
 }

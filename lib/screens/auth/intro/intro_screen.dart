@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:flutter_ieadi_app/config/config.dart';
 
 
 class IntroScreen extends StatelessWidget{

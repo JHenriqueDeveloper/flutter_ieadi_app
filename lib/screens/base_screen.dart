@@ -11,16 +11,10 @@ class BaseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider(
       create: (_) => CustomRouter(pageController),
-          child: PageView(
+      child: PageView(
         controller: pageController,
         physics: NeverScrollableScrollPhysics(),
         children: [
-          //login
-          //SplashScreen(), //0
-          //IntroScreen(), //0
-          //LoginScreen(), //1
-          //SignupScreen(), //2
-          //home
           NavScreen(), //0
           ServicosScreen(), //1
           PessoaisScreen(), //2

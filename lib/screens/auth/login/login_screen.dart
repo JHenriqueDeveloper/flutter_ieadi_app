@@ -67,11 +67,7 @@ class LoginScreen extends StatelessWidget {
                     enabled: !authRepository.isLoading,
                     textAlign: TextAlign.left,
                     style: Theme.of(context).textTheme.bodyText2,
-                    decoration: InputDecoration(
-                      labelText: 'E-mail',
-                      //hintText: 'E-mail',
-                    ),
-                    //onChanged: (value) => {},
+                    decoration: InputDecoration(labelText: 'E-mail'),
                     validator: (email) => Validator.emailValidator(email),
                   ),
 
@@ -86,12 +82,8 @@ class LoginScreen extends StatelessWidget {
                     maxLines: 1,
                     enabled: !authRepository.isLoading,
                     textAlign: TextAlign.left,
-                    decoration: InputDecoration(
-                      labelText: 'Senha',
-                      //hintText: 'Senha',
-                    ),
+                    decoration: InputDecoration(labelText: 'Senha'),
                     style: Theme.of(context).textTheme.bodyText2,
-                    //onChanged: (value) => {},
                     validator: (password) =>
                         Validator.passwordValidator(password),
                   ),

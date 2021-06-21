@@ -64,6 +64,7 @@ class SignupScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: Theme.of(context).textTheme.bodyText2,
                     decoration: InputDecoration(labelText: 'Nome Completo'),
+                    enabled: !authRepository.isLoading,
                     validator: (userName) => Validator.nameValidator(userName),
                     onSaved: (username) => user.setUsername = username,
                   ),
@@ -76,6 +77,7 @@ class SignupScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     style: Theme.of(context).textTheme.bodyText2,
                     decoration: InputDecoration(labelText: 'E-mail'),
+                    enabled: !authRepository.isLoading,
                     validator: (email) => Validator.emailValidator(email),
                     onSaved: (email) => user.setEmail = email,
                   ),
@@ -89,6 +91,7 @@ class SignupScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     decoration: InputDecoration(labelText: 'Senha'),
                     style: Theme.of(context).textTheme.bodyText2,
+                    enabled: !authRepository.isLoading,
                     validator: (password) =>
                         Validator.passwordValidator(password),
                     onSaved: (password) => user.setPassword = password,
@@ -104,6 +107,7 @@ class SignupScreen extends StatelessWidget {
                     textAlign: TextAlign.left,
                     decoration: InputDecoration(labelText: 'Confirme a Senha'),
                     style: Theme.of(context).textTheme.bodyText2,
+                    enabled: !authRepository.isLoading,
                     validator: (confirmPassword) =>
                         Validator.confirmPasswordValidator(
                       password: passwordController.text,

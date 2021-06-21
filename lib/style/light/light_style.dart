@@ -16,7 +16,7 @@ class LightStyle {
     'CinzaClaro': Color(0x60D5D7DA),
     'CinzaMedio': Color(0x30D5D7DA),
     'Erro': Color(0xFFEE4444),
-    'Sucesso': Color(0xFF44EEA7),
+    'Sucesso': Color(0xFF0FC97B),
     'Alert': Color(0xFFEEBE44),
   };
 
@@ -27,6 +27,8 @@ class LightStyle {
         primaryColorDark: paleta['Primaria'],
         backgroundColor: paleta['Background'],
         scaffoldBackgroundColor: paleta['Background'],
+        canvasColor: paleta['Branco'],
+        shadowColor: paleta['shadow'],
         errorColor: paleta['Erro'],
         appBarTheme: AppBarTheme(
           brightness: Brightness.dark,
@@ -100,13 +102,24 @@ class LightStyle {
             height: 1.5,
             color: paleta['Background'],
           ),
+          subtitle1: TextStyle(
+            color: paleta['Branco'],
+            fontSize: 20.0,
+            fontWeight: FontWeight.w600,
+          ),
+          subtitle2: TextStyle(
+            color: paleta['Branco'],
+            fontSize: 16.0,
+            letterSpacing: 0,
+            height: 1.5,
+            fontWeight: FontWeight.w600,
+          ),
           overline: GoogleFonts.roboto( //texto button vermelho
             fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 0,
             color: paleta['Erro'],
           ),
-          
           bodyText1: GoogleFonts.roboto(
             fontSize: 16,
             height: 1.5,
