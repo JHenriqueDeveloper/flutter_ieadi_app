@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ieadi_app/screens/home/endereco/forms/endereco_form_screen.dart';
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -6,6 +7,11 @@ import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class EnderecoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
+    void _handlerForm(String form) => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => EnderecoFormScreen(form)),
+      );
+
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
         var user = auth.user;
@@ -19,45 +25,45 @@ class EnderecoScreen extends StatelessWidget {
             ListHeadMenu(),
             ListItemMenu(
               title: 'CEP',
-              text: user.cep ?? '',
+              text: user.cep != '' ? user.cep : 'Não informado',
               badge: user.cep == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('CEP'),
             ),
             ListItemMenu(
               title: 'Estado',
-              text: user.uf ?? 'Não informado',
+              text: user.uf != '' ? user.uf : 'Não informado',
               badge: user.uf == '' ? true : false,
-              onTap: () => {},
+              onTap: () =>  _handlerForm('UF'),
             ),
             ListItemMenu(
               title: 'Cidade',
-              text: user.cidade ?? 'Não informado',
+              text: user.cidade != '' ? user.cidade : 'Não informado',
               badge: user.cidade == '' ? true : false,
-              onTap: () => {},
+              onTap: () =>  _handlerForm('Cidade'),
             ),
             ListItemMenu(
               title: 'Bairro',
-              text: user.bairro ?? 'Não informado',
+              text: user.bairro != '' ? user.bairro : 'Não informado',
               badge: user.bairro == '' ? true : false,
-              onTap: () => {},
+              onTap: () =>  _handlerForm('Bairro'),
             ),
             ListItemMenu(
               title: 'Logradouro',
-              text: user.logradouro ?? 'Não informado',
+              text: user.logradouro != '' ? user.logradouro : 'Não informado',
               badge: user.logradouro == '' ? true : false,
-              onTap: () => {},
+              onTap: () =>  _handlerForm('Logradouro'),
             ),
             ListItemMenu(
               title: 'Complemento',
-              text: user.complemento ?? 'Não informado',
-              badge: user.complemento == '' ? true : false,
-              onTap: () => {},
+              text: user.complemento != '' ? user.complemento : 'Não informado',
+              badge: false,
+              onTap: () =>  _handlerForm('Complemento'),
             ),
             ListItemMenu(
               title: 'Número',
-              text: user.numero ?? 'Não informado',
+              text: user.numero != '' ? user.numero : 'Não informado',
               badge: user.numero == '' ? true : false,
-              onTap: () => {},
+              onTap: () =>  _handlerForm('Numero'),
             ),
           ],
         );

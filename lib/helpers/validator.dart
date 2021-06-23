@@ -16,7 +16,7 @@ class Validator {
       return 'A senha informada é muito curta. Utilize no mínimo 6 caracteres.';
     } else if (password.length > 15) {
       return 'A senha informada é muito longa. Utilize no máximo 15 caracteres.';
-    } 
+    }
     return null;
   }
 
@@ -53,6 +53,49 @@ class Validator {
     } else if (name.length > 50) {
       return 'O nome está muito longo, por favor use abreviação se possível.';
     }
+    return null;
+  }
+
+  static String cpfValidator(String cpf) {
+    if (cpf.isEmpty) {
+      return 'Preencha o campo para salvar.';
+    } else if (cpf.length < 11 || cpf.length > 14) {
+      return 'Informe um CPF válido.';
+    }
+    return null;
+  }
+
+  static String rgValidator(String rg) {
+    if (rg.isEmpty) {
+      return 'Preencha o campo para salvar.';
+    }
+    return null;
+  }
+
+  static String tituloValidator(String titulo) {
+    if (titulo.isEmpty) {
+      return 'Preencha o campo para salvar.';
+    } else if (titulo.length < 12) {
+      return 'Informe um Título de Eleitor válido.';
+    }
+    return null;
+  }
+
+  static String zonaValidator(String zona) {
+    if (zona.isEmpty) {
+      return 'Preencha o campo para salvar.';
+    }
+    return null;
+  }
+
+  static String descricaoValidator(String descricao) {
+    if (descricao.isEmpty) {
+      return 'Preencha o campo para salvar.';
+    } 
+    /*else if (descricao.length > 500) {
+      return 'O texto está muito longo, por favor mantenha abaixo de 500 caracteres.';
+    }
+    */
     return null;
   }
 }

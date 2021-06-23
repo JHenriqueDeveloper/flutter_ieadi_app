@@ -36,10 +36,13 @@ class ContaScreen extends StatelessWidget {
               onTap: () => {},
             ),
 
+            
+            /*
             Container(
               color: Colors.grey[400],
               height: 40,
             ),
+            
            Container(
               width: MediaQuery.of(context).size.width,
               height: 46,
@@ -67,6 +70,7 @@ class ContaScreen extends StatelessWidget {
                 onPressed: () => {},
               ),
             ),
+            */
           ],
         );
       },

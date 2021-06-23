@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ieadi_app/config/config.dart';
-import 'package:flutter_ieadi_app/models/user/user_model.dart';
 import 'package:flutter_ieadi_app/screens/home/home_screens.dart';
-import 'package:flutter_ieadi_app/style/style.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
@@ -16,39 +13,10 @@ class PessoaisScreen extends StatefulWidget {
 }
 
 class _PessoaisScreenState extends State<PessoaisScreen> {
-  /*
-  DateTime _selectedDate;
-
-  void _selectDate(BuildContext context, String label) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: _selectedDate,
-        firstDate: DateTime(1950),
-        lastDate: DateTime(2050),
-        fieldLabelText: label,
-        fieldHintText: 'dd/MM/yyyy',
-        builder: (BuildContext context, Widget child) {
-          return Theme(
-            data: ThemeData.dark(),
-            child: child,
-          );
-        });
-    if (picked != null && picked != _selectedDate)
-      _selectedDate = picked;
-  }
-  */
-
-  final snackBar = SnackBar(
-    content: Text('Solicitação Recebida!'),
-    backgroundColor: LightStyle.paleta['Primaria'],
-  );
-
   void _handlerForm(String form) => Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => PessoaisFormScreen(form)),
-  );
-
-  //context.read<CustomRouter>().setPage(form);
+        context,
+        MaterialPageRoute(builder: (_) => PessoaisFormScreen(form)),
+      );
 
   Widget build(BuildContext context) {
     return Consumer<AuthRepository>(
@@ -73,118 +41,112 @@ class _PessoaisScreenState extends State<PessoaisScreen> {
             ),
             ListItemMenu(
               title: 'Gênero',
-              text: user.genero ?? 'Não informado',
+              text: user.genero != '' ? user.genero : 'Não informado',
               badge: user.genero == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Genero'),
             ),
             ListItemMenu(
               title: 'CPF',
-              text: user.cpf ?? 'Não informado',
+              text: user.cpf == '' ? 'Não informado' : user.cpf,
               badge: user.cpf == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('CPF'),
             ),
             ListItemMenu(
               title: 'RG',
-              text: user.rg ?? 'Não informado',
+              text: user.rg != '' ? user.rg : 'Não informado',
               badge: user.rg == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('RG'),
             ),
             ListItemMenu(
               title: 'Naturalidade',
-              text: user.naturalidade ?? 'Não informado',
+              text:
+                  user.naturalidade != '' ? user.naturalidade : 'Não informado',
               badge: user.naturalidade == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Naturalidade'),
+            ),
+            ListItemMenu(
+              title: 'Data de Nascimento',
+              text: user.dataNascimento != '' 
+              ? user.dataNascimento : 'Não informado',
+              badge: user.dataNascimento == '' ? true : false,
+              onTap: () => _handlerForm('Nascimento'),
             ),
             ListItemMenu(
               title: 'Nome do Pai',
-              text: user.nomePai ?? 'Não informado',
+              text: user.nomePai != '' ? user.nomePai : 'Não informado',
               badge: user.nomePai == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Pai'),
             ),
             ListItemMenu(
               title: 'Nome da Mãe',
-              text: user.nomeMae ?? 'Não informado',
+              text: user.nomeMae != '' ? user.nomeMae : 'Não informado',
               badge: user.nomeMae == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Mae'),
             ),
             ListItemMenu(
               title: 'Estado Civil',
-              text: user.estadoCivil ?? 'Não informado',
+              text: user.estadoCivil != '' ? user.estadoCivil : 'Não informado',
               badge: user.estadoCivil == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Civil'),
             ),
             ListItemMenu(
               title: 'Tipo Sanguineo',
-              text: user.tipoSanguineo ?? 'Não informado',
+              text: user.tipoSanguineo != ''
+                  ? user.tipoSanguineo
+                  : 'Não informado',
               badge: user.tipoSanguineo == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Sangue'),
             ),
             ListItemMenu(
               title: 'Título de Eleitor',
-              text: user.tituloEleitor ?? 'Não informado',
-              badge: user.tituloEleitor == '' ? true : false,
-              onTap: () => {},
+              text: user.tituloEleitor != ''
+                  ? user.tituloEleitor
+                  : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Titulo'),
             ),
             ListItemMenu(
               title: 'Zona Eleitoral',
-              text: user.zonaEleitor ?? 'Não informado',
-              badge: user.zonaEleitor == '' ? true : false,
-              onTap: () => {},
+              text: user.zonaEleitor != '' ? user.zonaEleitor : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Zona'),
             ),
             ListItemMenu(
               title: 'Seção Eleitoral',
-              text: user.secaoEleitor ?? 'Não informado',
-              badge: user.secaoEleitor == '' ? true : false,
-              onTap: () => {},
+              text:
+                  user.secaoEleitor != '' ? user.secaoEleitor : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Secao'),
             ),
             ListItemMenu(
               title: 'Especial',
               text: user.isPortadorNecessidade ? 'Sim' : 'Não',
               badge: false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Especial'),
             ),
+            user.isPortadorNecessidade
+                ? ListItemMenu(
+                    title: 'Tipo de \nNecessidade \nEspecial',
+                    text: user.tipoNecessidade != ''
+                        ? user.tipoNecessidade
+                        : 'Não Informado',
+                    badge: user.tipoNecessidade != '' ? false : true,
+                    onTap: () => _handlerForm('Tipo Necessidade'),
+                  )
+                : Container(),
+            user.isPortadorNecessidade
+                ? ListItemMenu(
+                    title: 'Descrição da \nNecessidade \nEspecial',
+                    text: user.descricaoNecessidade != ''
+                        ? user.descricaoNecessidade
+                        : 'Não Informado',
+                    badge: user.descricaoNecessidade != '' ? false : true,
+                    onTap: () => _handlerForm('Descricao Necessidade'),
+                  )
+                : Container(),
           ],
         );
       },
     );
   }
 }
-
-/*
-
-class _PessoaisScreenState extends State<PessoaisScreen> {
-  final snackBar = SnackBar(
-    content: Text('Solicitação Recebida!'),
-    backgroundColor: paleta['Primaria'],
-  );
-
-  DateTime _selectedDate = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  _selectDate(BuildContext context, String label) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2050),
-      fieldLabelText: label,
-      fieldHintText: 'dd/MM/yyyy',
-
-      builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child,
-        );
-      }
-
-    );
-    if (picked != null && picked != _selectedDate)
-      setState(() {
-        _selectedDate = picked;
-      });
-  }
-  */

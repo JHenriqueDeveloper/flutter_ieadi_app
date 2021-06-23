@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/helpers/image_helper.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
 import 'package:flutter_ieadi_app/helpers/util.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 
 class NavScreen extends StatefulWidget {
@@ -15,30 +19,148 @@ class NavScreen extends StatefulWidget {
 
 class _NavScreenState extends State<NavScreen> {
   final PageController pageController = PageController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  _snackBar({
+    BuildContext context,
+    String msg,
+    bool isSuccess = true,
+  }) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(msg),
+        backgroundColor: isSuccess
+            ? LightStyle.paleta['Sucesso']
+            : Theme.of(context).errorColor,
+      ));
+
+  File profileImage;
+  void _selectImage(BuildContext context, auth) async {
+    final pickedFile = await ImageHelper.pickImageFromGallery(
+      context: context,
+      cropStyle: CropStyle.circle,
+      title: 'Profile Image',
+    );
+    if (pickedFile != null) {
+      //context.read<EditProfileCubit>().profileImageChanged(pickedFile);
+
+      auth.updateProfileImage(
+        user: auth.user,
+        image: pickedFile,
+        onFail: (e) {
+          print(e);
+          _snackBar(
+            context: context,
+            msg: 'Falha ao atualizar a foto de perfil: $e',
+            isSuccess: false,
+          );
+        },
+        onSuccess: (uid) =>
+            _snackBar(context: context, msg: 'Foto atualizada!'),
+      );
+    }
+  }
 
   bool _showUserCard = false;
+  void _handlerShowUserCard(bool isMemberCard) => isMemberCard
+      ? setState(() => _showUserCard = !_showUserCard)
+      : ScaffoldMessenger.of(context).showSnackBar(snackBar(
+          text:
+              'Apenas membros batizados possuem cartão de membro. \nSe você é batizado, preencha seu perfil e solicite seu cartão.',
+          paleta: 'Primaria',
+        ));
 
-  void _handlerShowUserCard() => setState(() => _showUserCard = !_showUserCard);
+  void _handlerShowAlerts(bool isAlerts) => isAlerts
+      ? ScaffoldMessenger.of(context).showSnackBar(snackBar(
+          text:
+              'Precisa implementar o sistema de avisos.',
+          paleta: 'Primaria',
+        ))
+      : ScaffoldMessenger.of(context).showSnackBar(snackBar(
+          text:
+              'Você não possui avisos.',
+          paleta: 'Primaria',
+        ));
 
   SnackBar snackBar({
     String text,
     String paleta,
-  }) => SnackBar(
+  }) =>
+      SnackBar(
         content: Text(text),
         backgroundColor: LightStyle.paleta[paleta],
       );
 
   void _handlerShowVerificado(bool isVerified) => isVerified
-      ? ScaffoldMessenger.of(context).showSnackBar(
-        snackBar(
+      ? ScaffoldMessenger.of(context).showSnackBar(snackBar(
           text: 'Parabéns, você foi verificado!',
           paleta: 'Sucesso',
         ))
-      : ScaffoldMessenger.of(context).showSnackBar(
-        snackBar(
+      : ScaffoldMessenger.of(context).showSnackBar(snackBar(
           text: 'Verifique sua conta para ter acesso completo ao aplicativo.',
           paleta: 'Erro',
         ));
+
+  bool _handlerCheckPendenciaPessoalUser(user) => user?.username == ''
+      ? true
+      : user?.genero == ''
+          ? true
+          : user?.cpf == ''
+              ? true
+              : user?.rg == ''
+                  ? true
+                  : user?.naturalidade == ''
+                      ? true
+                      : user?.nomePai == ''
+                          ? true
+                          : user?.nomeMae == ''
+                              ? true
+                              : user?.estadoCivil == ''
+                                  ? true
+                                  : user?.dataNascimento == ''
+                                      ? true
+                                      : user?.tipoSanguineo == ''
+                                          ? true
+                                          : user?.isPortadorNecessidade != null
+                                              ? user?.tipoNecessidade == ''
+                                                  ? true
+                                                  : user?.descricaoNecessidade ==
+                                                          ''
+                                                      ? true
+                                                      : false
+                                              : false;
+
+  bool _handlerCheckPendenciaEnderecoUser(user) => user?.cep == ''
+      ? true
+      : user?.uf == ''
+          ? true
+          : user?.cidade == ''
+              ? true
+              : user?.bairro == ''
+                  ? true
+                  : user?.logradouro == ''
+                      ? true
+                      : user?.complemento == ''
+                          ? true
+                          : user?.numero == ''
+                              ? true
+                              : false;
+
+  bool _handlerCheckPendenciaCristaoUser(user) => user?.congregacao == ''
+      ? true
+      : user?.tipoMembro == ''
+          ? true
+          : user?.situacaoMembro == ''
+              ? true
+              : false;
+
+  bool _handlerCheckPendenciaCurriculoUser(user) =>
+      user?.isProcurandoOportunidades == true
+          ? user?.profissao == ''
+              ? true
+              : user?.pretensaoSalarial == ''
+                  ? true
+                  : false
+          : false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,403 +172,256 @@ class _NavScreenState extends State<NavScreen> {
             ? auth.signOut(context)
             : Navigator.of(context).pushNamed('/intro');
 
-    return Consumer<AuthRepository>(
-      builder: (_, auth, __) {
-        var user = auth.user;
-        String userName = firstName(auth.user?.username);
-        String fullname = auth.user?.username ?? '';
-        String matricula = auth.user.matricula != ''
-            ? auth.user.matricula
-            : '0000 0000 0000 0000';
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Consumer<AuthRepository>(
+        builder: (_, auth, __) {
+          var user = auth.user;
+          String userName =
+              user?.username != '' ? firstName(user?.username) : '';
 
-        bool isLoggedIn = auth.isLoggedId;
-        bool isMemberCard = auth.user?.isMemberCard ?? false;
-        bool isAdmin = auth.user?.isAdmin ?? false;
+          String fullname = auth.user?.username ?? '';
+          String matricula = user?.matricula != null
+              ? auth.user.matricula != ''
+                  ? auth.user.matricula
+                  : '0000 0000 0000 0000'
+              : '0000 0000 0000 0000';
 
-        return Scaffold(
-          extendBody: true,
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            toolbarHeight: 90,
-            centerTitle: false,
-            title: Text(
-              'Olá, ${userName ?? 'visitante'}!',
-              textAlign: TextAlign.left,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.headline5,
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(
-                  FeatherIcons.award,
-                  color: LightStyle.paleta[
-                    user.isVerified ?
-                    'Sucesso'
-                    : 'Shadow'
-                  ],
+          bool isLoggedIn = auth.isLoggedId;
+          bool isMemberCard = auth.user?.isMemberCard ?? false;
+          bool isAdmin = auth.user?.isAdmin ?? false;
+
+          bool isPessoalPendencia = _handlerCheckPendenciaPessoalUser(user);
+          bool isEnderecoPendencia = _handlerCheckPendenciaEnderecoUser(user);
+          bool isCristaoPendencia = _handlerCheckPendenciaCristaoUser(user);
+          bool isCurriculoPendencia = _handlerCheckPendenciaCurriculoUser(user);
+
+          return Scaffold(
+            key: _scaffoldKey,
+            extendBody: true,
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              toolbarHeight: 90,
+              centerTitle: false,
+              title: Text(
+                'Olá, ${userName ?? 'visitante'}!',
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headline5,
+              ),
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    FeatherIcons.award,
+                    color: LightStyle.paleta[
+                        user?.isVerified == true ? 'Sucesso' : 'Shadow'],
+                  ),
+                  onPressed: () => _handlerShowVerificado(user.isVerified),
                 ),
-                onPressed: () => _handlerShowVerificado(user.isVerified),
-              ),
-              isMemberCard
-                  ? IconButton(
-                      icon: Icon(FeatherIcons.creditCard),
-                      onPressed: () => _handlerShowUserCard(),
-                    )
-                  : Container(),
-              IconButton(
-                icon: Icon(FeatherIcons.bell),
-                onPressed: () => {},
-              ),
-              isAdmin
-                  ? IconButton(
-                      icon: Icon(FeatherIcons.sliders),
-                      onPressed: () => {} //_handlerScreen(DashboardScreen()),
-                      )
-                  : Container(),
-            ],
-          ),
-          body: DraggableScrollableSheet(
-            initialChildSize: 1.0,
-            builder: (_, ScrollController scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).canvasColor,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
-                    )),
-                //padding: const EdgeInsets.symmetric(vertical: 32),
-                child: ListView(
-                  children: [
-                    _showUserCard
-                        ? AnimatedContainer(
-                            height: _showUserCard ? 268 : 0,
-                            duration: Duration(milliseconds: 200),
-                            //color: LightStyle.paleta['Background'],
+                IconButton(
+                  icon: Icon(
+                    FeatherIcons.creditCard,
+                    color:
+                        LightStyle.paleta[isMemberCard ? 'Primaria' : 'Shadow'],
+                  ),
+                  onPressed: () => _handlerShowUserCard(isMemberCard),
+                ),
+                //TODO: DESENVOLVER O BUTTON AVISOS
+                IconButton(
+                  icon: Icon(
+                    FeatherIcons.bell,
+                    color: LightStyle.paleta['Shadow'],
+                  ),
+                  onPressed: () => _handlerShowAlerts(false),
+                ),
+                isAdmin
+                    ? IconButton(
+                        icon: Icon(FeatherIcons.sliders),
+                        onPressed: () => {} //_handlerScreen(DashboardScreen()),
+                        )
+                    : Container(),
+              ],
+            ),
+            body: DraggableScrollableSheet(
+              initialChildSize: 1.0,
+              builder: (_, ScrollController scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40),
+                      )),
+                  //padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: ListView(
+                    children: [
+                      _showUserCard
+                          ? AnimatedContainer(
+                              height: _showUserCard ? 268 : 0,
+                              duration: Duration(milliseconds: 200),
+                              //color: LightStyle.paleta['Background'],
 
-                            decoration: BoxDecoration(
-                              color: LightStyle.paleta['Background'],
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(40),
-                                bottomRight: Radius.circular(40),
+                              decoration: BoxDecoration(
+                                color: LightStyle.paleta['Background'],
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(40),
+                                  bottomRight: Radius.circular(40),
+                                ),
                               ),
-                            ),
 
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 32,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 32,
+                                ),
+                                child: UserCard(
+                                  tipoCard: TiposCard.MEMBRO,
+                                  username: fullname,
+                                  matricula: matricula ?? '',
+                                ), //UserCard(),
                               ),
-                              child: UserCard(
-                                tipoCard: TiposCard.MEMBRO,
-                                username: fullname,
-                                matricula: matricula,
-                              ), //UserCard(),
-                            ),
-                          )
-                        : Container(),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 300,
-                      margin: const EdgeInsets.symmetric(vertical: 32),
-                      child: CircleAvatar(
+                            )
+                          : Container(),
+                      ProfileImage(
                         radius: 120,
-                        backgroundColor: LightStyle.paleta['Primaria'],
-                        //backgroundImage: AssetImage('user.jpeg'),
-                        /*_image != null
-                                  ? Image.file(_image)
-                                  : AssetImage('user.jpeg'), */
-                        child: Container(
-                          height: 300,
-                          width: 240,
-                          alignment: Alignment.bottomRight,
-                          child: MaterialButton(
-                            onPressed: () => {}, //getImage,
-                            color: LightStyle.paleta['Primaria'],
-                            child: Icon(
-                              FeatherIcons.camera,
-                              color: LightStyle.paleta['Branco'],
+                        profileImageUrl: user?.profileImageUrl != null
+                            ? user?.profileImageUrl != ''
+                                ? user?.profileImageUrl
+                                : ''
+                            : '',
+                        profileImage: profileImage,
+                        onTap: () => _selectImage(context, auth),
+                      ),
+                      Text(
+                        user?.tipoMembro != null
+                            ? user?.tipoMembro != ''
+                                ? user?.tipoMembro
+                                : 'Visitante'
+                            : 'Visitante',
+                        style: Theme.of(context).textTheme.headline6,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        user?.congregacao != null
+                            ? user?.congregacao != ''
+                                ? user?.congregacao
+                                : 'Congregação não informada'
+                            : 'Congregação não informada',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 48),
+                      ListItemMenu(
+                        title: 'Serviços',
+                        icon: FeatherIcons.server,
+                        badge: false,
+                        page: 1,
+                      ),
+                      ListItemMenu(
+                        title: 'Informações Pessoais',
+                        icon: FeatherIcons.user,
+                        badge: isPessoalPendencia,
+                        page: 2,
+                      ),
+                      ListItemMenu(
+                        title: 'Endereço',
+                        icon: FeatherIcons.mapPin,
+                        badge: isEnderecoPendencia,
+                        page: 3,
+                      ),
+                      ListItemMenu(
+                        title: 'Contatos',
+                        icon: FeatherIcons.phone,
+                        badge: false,
+                        page: 4,
+                      ),
+                      ListItemMenu(
+                        title: 'Perfil Cristão',
+                        icon: FeatherIcons.book,
+                        badge: isCristaoPendencia,
+                        page: 5,
+                      ),
+                      ListItemMenu(
+                        title: 'Currículo',
+                        icon: FeatherIcons.fileText,
+                        badge: isCurriculoPendencia,
+                        page: 6,
+                      ),
+                      /*
+                      TODO Fazer atualização de conta
+                      ListItemMenu(
+                        title: 'Conta',
+                        icon: FeatherIcons.key,
+                        badge: false,
+                        page: 7,
+                      ),
+                      */
+                      user?.isVerified != null
+                          ? user?.isVerified == true
+                              ? Container()
+                              : Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 32,
+                                    horizontal: 16,
+                                  ),
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 46,
+                                    child: ElevatedButton(
+                                      onPressed: () =>
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar(
+                                        text: 'Solicitação enviada.',
+                                        paleta: 'Sucesso',
+                                      )),
+                                      child: Text('Verificar minha conta'),
+                                    ),
+                                  ),
+                                )
+                          : Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 32,
+                                horizontal: 16,
+                              ),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: 46,
+                                child: ElevatedButton(
+                                  onPressed: () => ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar(
+                                    text: 'Solicitação enviada.',
+                                    paleta: 'Sucesso',
+                                  )),
+                                  child: Text('Verificar minha conta'),
+                                ),
+                              ),
                             ),
-                            padding: EdgeInsets.all(16),
-                            shape: CircleBorder(),
+                      Container(
+                        color: Colors.grey[400],
+                        height: 40,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 46,
+                        child: TextButton(
+                          child: Text(
+                            isLoggedIn ? 'Sair' : 'Fazer Login',
+                            style: Theme.of(context).textTheme.overline,
+                          ),
+                          onPressed: () => _handlerExit(
+                            isLoggedIn,
+                            auth,
                           ),
                         ),
                       ),
-                    ),
-                    Text(
-                      user.tipoMembro != '' ? user.tipoMembro : 'Visitante',
-                      style: Theme.of(context).textTheme.headline6,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      user.congregacao != ''
-                          ? user.congregacao
-                          : 'Congregação não informada',
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 48),
-                    ListItemMenu(
-                      title: 'Serviços',
-                      icon: FeatherIcons.server,
-                      badge: false,
-                      page: 1,
-                    ),
-                    ListItemMenu(
-                      title: 'Informações Pessoais',
-                      icon: FeatherIcons.user,
-                      badge: false,
-                      page: 2,
-                    ),
-                    ListItemMenu(
-                      title: 'Endereço',
-                      icon: FeatherIcons.mapPin,
-                      badge: false,
-                      page: 3,
-                    ),
-                    ListItemMenu(
-                      title: 'Contatos',
-                      icon: FeatherIcons.phone,
-                      badge: false,
-                      page: 4,
-                    ),
-                    ListItemMenu(
-                      title: 'Perfil Cristão',
-                      icon: FeatherIcons.book,
-                      badge: false,
-                      page: 5,
-                    ),
-                    ListItemMenu(
-                      title: 'Currículo',
-                      icon: FeatherIcons.fileText,
-                      badge: false,
-                      page: 6,
-                    ),
-                    ListItemMenu(
-                      title: 'Conta',
-                      icon: FeatherIcons.key,
-                      badge: false,
-                      page: 7,
-                    ),
-                    Container(
-                      color: Colors.grey[400],
-                      height: 40,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 46,
-                      child: TextButton(
-                        child: Text(
-                          isLoggedIn ? 'Sair' : 'Fazer Login',
-                          style: Theme.of(context).textTheme.overline,
-                        ),
-                        onPressed: () => _handlerExit(
-                          isLoggedIn,
-                          auth,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
-
-/*
-
-SingleChildScrollView(
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnimatedContainer(
-                    height: _showUserCard ? 268 : 0,
-                    duration: Duration(milliseconds: 200),
-                    color: LightStyle.paleta['Background'],
-                    child: Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 32,
-                      ),
-                      child: Container(), //UserCard(),
-                    ),
-                  ),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: _showUserCard
-                          ? LightStyle.paleta['BgCard']
-                          : LightStyle.paleta['Background'],
-                    ),
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        color: _showUserCard
-                            ? LightStyle.paleta['Background']
-                            : LightStyle.paleta['BgCard'],
-                        borderRadius: BorderRadius.only(
-                          topLeft: _showUserCard
-                              ? Radius.circular(0)
-                              : Radius.circular(40),
-                          topRight: _showUserCard
-                              ? Radius.circular(0)
-                              : Radius.circular(40),
-                          bottomLeft: _showUserCard
-                              ? Radius.circular(40)
-                              : Radius.circular(0),
-                          bottomRight: _showUserCard
-                              ? Radius.circular(40)
-                              : Radius.circular(0),
-                        ),
-                      ),
-                      height: 40,
-                    ),
-                  ),
-                  Container(
-                    color: LightStyle.paleta['BgCard'],
-                    height: MediaQuery.of(context).size.height * 1.5,
-                    padding: EdgeInsets.symmetric(vertical: 64),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 300,
-                          child: CircleAvatar(
-                            radius: 120,
-                            backgroundColor: LightStyle.paleta['Primaria'],
-                            //backgroundImage: AssetImage('user.jpeg'),
-                            /*_image != null
-                                  ? Image.file(_image)
-                                  : AssetImage('user.jpeg'), */
-                            child: Container(
-                              height: 300,
-                              width: 240,
-                              alignment: Alignment.bottomRight,
-                              child: MaterialButton(
-                                onPressed: () => {}, //getImage,
-                                color: LightStyle.paleta['Primaria'],
-                                child: Icon(
-                                  FeatherIcons.camera,
-                                  color: LightStyle.paleta['Branco'],
-                                ),
-                                padding: EdgeInsets.all(16),
-                                shape: CircleBorder(),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        /*
-                        Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 300,
-                            child: CircleAvatar(
-                              radius: 120,
-                              backgroundColor: paleta['Primaria'],
-                              backgroundImage: _image != null
-                                  ? Image.file(_image)
-                                  : AssetImage('user.jpeg'),
-                              child: Container(
-                                height: 300,
-                                width: 240,
-                                alignment: Alignment.bottomRight,
-                                child: MaterialButton(
-                                  onPressed: getImage,
-                                  color: paleta['Primaria'],
-                                  child: Icon(
-                                    FeatherIcons.camera,
-                                    color: paleta['Branco'],
-                                  ),
-                                  padding: EdgeInsets.all(16),
-                                  shape: CircleBorder(),
-                                ),
-                              ),
-                            ),
-                          ),
-                          */
-                        SizedBox(height: 48),
-                        Text(
-                          'Pastor de Área',
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                        Text(
-                          'Área 01',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        SizedBox(height: 48),
-                        ListItemMenu(
-                          title: 'Serviços',
-                          icon: FeatherIcons.server,
-                          badge: false,
-                          page: 1,
-                        ),
-                        ListItemMenu(
-                          title: 'Informações pessoais',
-                          icon: FeatherIcons.user,
-                          badge: false,
-                          page: 2,
-                        ),
-                        ListItemMenu(
-                          title: 'Endereço',
-                          icon: FeatherIcons.mapPin,
-                          badge: false,
-                          page: 3,
-                        ),
-                        ListItemMenu(
-                          title: 'Contatos',
-                          icon: FeatherIcons.phone,
-                          badge: false,
-                          page: 4,
-                        ),
-                        ListItemMenu(
-                          title: 'Perfil Cristão',
-                          icon: FeatherIcons.book,
-                          badge: false,
-                          page: 5,
-                        ),
-                        ListItemMenu(
-                          title: 'Currículo',
-                          icon: FeatherIcons.fileText,
-                          badge: false,
-                          page: 6,
-                        ),
-                        ListItemMenu(
-                          title: 'Conta',
-                          icon: FeatherIcons.key,
-                          badge: false,
-                          page: 7,
-                        ),
-                        Container(
-                          color: Colors.grey[400],
-                          height: 40,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 46,
-                          child: TextButton(
-                            child: Text(
-                              isLoggedIn ? 'Sair' : 'Fazer Login',
-                              style: Theme.of(context).textTheme.overline,
-                            ),
-                            onPressed: () => _handlerExit(
-                              isLoggedIn,
-                              auth,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-
-*/

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ieadi_app/screens/home/cristao/forms/cristao_form_screen.dart';
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -6,6 +7,12 @@ import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class CristaoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
+     void _handlerForm(String form) => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => CristaoFormScreen(form)),
+      );
+
+
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
         var user = auth.user;
@@ -24,81 +31,116 @@ class CristaoScreen extends StatelessWidget {
             ListItemMenu(
               title: 'Dizimista',
               text: user.isDizimista ? 'Sim' : 'Não informado',
-              badge: user.isDizimista,
-              onTap: () => {},
+              badge: false,
+              onTap: () => _handlerForm('Dizimista'),
             ),
             ListItemMenu(
-              title: 'Congragação',
-              text: user.congregacao ?? '',
+              title: 'Congregação',
+              text: user.congregacao != ''
+              ? user.congregacao 
+              : 'Não informado',
               badge: user.congregacao == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Congregacao'),
             ),
             ListItemMenu(
               title: 'Afiliação',
-              text: user.tipoMembro ?? 'Não informado',
+              text: user.tipoMembro != ''
+              ? user.tipoMembro 
+              : 'Não informado',
               badge: user.tipoMembro == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Afiliacao'),
             ),
             ListItemMenu(
               title: 'Situação',
-              text: user.situacaoMembro ?? 'Não informado',
+              text: user.situacaoMembro != ''
+              ? user.situacaoMembro
+              : 'Não informado',
               badge: user.situacaoMembro == '' ? true : false,
-              onTap: () => {},
+              onTap: () => _handlerForm('Situacao'),
             ),
             ListItemMenu(
               title: 'Procedência',
-              text: user.procedenciaMembro ?? 'Não informado',
-              badge: user.procedenciaMembro == '' ? true : false,
-              onTap: () => {},
+              text: user.procedenciaMembro != ''
+              ? user.procedenciaMembro 
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Procedencia'),
             ),
             ListItemMenu(
               title: 'Origem',
-              text: user.origemMembro ?? 'Não informado',
-              badge: user.origemMembro == '' ? true : false,
-              onTap: () => {},
+              text: user.origemMembro != ''
+              ? user.origemMembro 
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Origem'),
             ),
             ListItemMenu(
               title: 'Data de Mudança',
-              text: user.dataMudanca ?? 'Não informado',
-              badge: user.dataMudanca == '' ? true : false,
-              onTap: () => {},
+              text: user.dataMudanca != ''
+              ? user.dataMudanca
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Mudanca'),
             ),
             ListItemMenu(
               title: 'Local de Conversão',
-              text: user.localConversao ?? 'Não informado',
-              badge: user.localConversao == '' ? true : false,
-              onTap: () => {},
+              text: user.localConversao != ''
+              ? user.localConversao
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Local_Conversao'),
             ),
             ListItemMenu(
               title: 'Data de Conversão',
-              text: user.dataConversao ?? 'Não informado',
-              badge: user.dataConversao == '' ? true : false,
-              onTap: () => {},
+              text: user.dataConversao != ''
+              ? user.dataConversao 
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Data_Conversao'),
             ),
             ListItemMenu(
               title: 'Local de Batismo \nem Águas',
-              text: user.localBatismoAguas ?? 'Não informado',
-              badge: user.localBatismoAguas == '' ? true : false,
-              onTap: () => {},
+              text: user.localBatismoAguas != ''
+              ? user.localBatismoAguas 
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Local_Aguas'),
             ),
             ListItemMenu(
               title: 'Data de Batismo \nem Águas',
-              text: user.dataBatismoAguas ?? 'Não informado',
-              badge: user.dataBatismoAguas == '' ? true : false,
-              onTap: () => {},
+              text: user.dataBatismoAguas != ''
+              ? user.dataBatismoAguas
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Data_Aguas'),
             ),
             ListItemMenu(
               title: 'Local de Batismo no \nEspirito Santo',
-              text: user.localBatismoEspiritoSanto ?? 'Não informado',
-              badge: user.localBatismoEspiritoSanto == '' ? true : false,
-              onTap: () => {},
+              text: user.localBatismoEspiritoSanto != ''
+              ? user.localBatismoEspiritoSanto
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Local_Espirito'),
             ),
             ListItemMenu(
               title: 'Data de Batismo no \nEspirito Santo',
-              text: user.dataBatismoEspiritoSanto ?? 'Não informado',
-              badge: user.dataBatismoEspiritoSanto == '' ? true : false,
-              onTap: () => {},
+              text: user.dataBatismoEspiritoSanto != ''
+              ? user.dataBatismoEspiritoSanto 
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Data_Espirito'),
             ),
+            user.bio != ''
+            ? ListItemMenu(
+              title: 'Observações',
+              text: user.bio != ''
+              ? user.bio
+              : 'Não informado',
+              badge: false,
+              onTap: () => _handlerForm('Bio_Cristao'),
+            )
+            : Container(),
+
             user.isVerified
             ? Container(
               color: Colors.grey[400],

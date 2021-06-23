@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ieadi_app/models/models.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthRepository extends ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   UserModel user;
 
@@ -24,7 +29,7 @@ class AuthRepository extends ChangeNotifier {
 
   void _loadCurrentUser({firebaseUser}) async {
     var currentUser = firebaseUser ?? auth.currentUser;
-    if (currentUser.uid != null) {
+    if (currentUser?.uid != null) {
       this.user = await UserModel.getUser(currentUser.uid);
       //print(this.user.username);
       notifyListeners();
@@ -88,6 +93,43 @@ class AuthRepository extends ChangeNotifier {
     Navigator.of(context).pushNamed('/intro');
   }
 
+  Future<void> updateProfileImage({
+    @required UserModel user,
+    @required File image,
+    Function onFail,
+    Function onSuccess,
+  }) async {
+    setLoading = true;
+    try {
+      var imageId = Uuid().v4();
+
+      //var profileImageUrl = user.profileImageUrl;
+
+      // Update user profile image.
+      if (user.profileImageUrl.isNotEmpty) {
+        final exp = RegExp(r'userProfile_(.*).jpg');
+        imageId = exp.firstMatch(user.profileImageUrl)[1];
+      }
+
+      user.profileImageUrl = await _firebaseStorage
+        .ref('images/users/userProfile_$imageId.jpg')
+        .putFile(image)
+        .then((taskSnapshot) => taskSnapshot.ref.getDownloadURL());
+
+      this.user = user;
+  
+      await _firebaseFirestore
+          .collection('/users')
+          .doc(user.id)
+          .update(user.toDocument());
+
+      onSuccess(user.id);
+    } catch (e) {
+      onFail(e);
+    }
+    setLoading = false;
+  }
+
   Future<void> update({
     @required UserModel user,
     Function onFail,
@@ -96,8 +138,6 @@ class AuthRepository extends ChangeNotifier {
     setLoading = true;
     try {
       this.user = user;
-
-      print(user.username);
 
       await _firebaseFirestore
           .collection('/users')
@@ -108,6 +148,7 @@ class AuthRepository extends ChangeNotifier {
     } catch (e) {
       onFail(e.message);
     }
+
     setLoading = false;
   }
 }

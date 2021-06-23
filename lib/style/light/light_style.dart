@@ -7,6 +7,7 @@ class LightStyle {
     'Primaria': Color(0xFF4478EE),
     'Shadow': Color(0x304478EE),
     'PrimariaClaro': Color(0xFFCBD9F7),
+    'PrimariaCinza': Color(0x30C4C4C4),
     'Background': Color(0xFF1A1C28),
     'BgSecundario': Color(0x48070C13),
     'BgCard': Color(0xFFE5E5E5),

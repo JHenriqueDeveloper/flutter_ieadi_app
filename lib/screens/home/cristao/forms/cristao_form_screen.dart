@@ -8,12 +8,12 @@ import 'package:flutter_ieadi_app/style/style.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class PessoaisFormScreen extends StatelessWidget {
+class CristaoFormScreen extends StatelessWidget {
   final String form;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  PessoaisFormScreen(this.form);
+  CristaoFormScreen(this.form);
 
   _snackBar({
     BuildContext context,
@@ -141,72 +141,173 @@ class PessoaisFormScreen extends StatelessWidget {
       auth,
     }) {
       Map<String, List<Widget>> forms = {
-        'Nome': [
-          _title(context, 'Seu nome completo.'),
-          TextFormField(
-            keyboardType: TextInputType.name,
-            autocorrect: false,
-            maxLength: 50,
-            maxLines: 1,
-            textAlign: TextAlign.left,
-            style: Theme.of(context).textTheme.bodyText1,
-            decoration: InputDecoration(
-              labelText: 'Nome Completo',
-              labelStyle: Theme.of(context).textTheme.bodyText1,
-              fillColor: LightStyle.paleta['PrimariaCinza'],
-            ),
-            enabled: !auth.isLoading,
-            validator: (userName) => Validator.nameValidator(userName),
-            onSaved: (username) => auth.user.setUsername = username,
-            initialValue:
-                auth.user.username != null ? auth.user.username : null,
+        'Dizimista': [
+          _title(context, 'Você é dizimista?'),
+          buttonOption(
+            context: context,
+            text: 'Sim',
+            auth: auth,
+            onOption: () => auth.user.isDizimista = true,
+            isActive: auth.user.isDizimista ? true : false,
           ),
+          SizedBox(height: 16),
+         buttonOption(
+            context: context,
+            text: 'Não',
+            auth: auth,
+            onOption: () => auth.user.isDizimista = false,
+            isActive: auth.user.isDizimista ? false : true,
+          ),
+        ],
+
+
+        'Congregacao': [
+          _title(context, 'Sua congregação.'),
           SizedBox(height: 16),
           _save(
             context: context,
             auth: auth,
           ),
         ],
-        'Genero': [
+        'Afiliacao': [
           _title(context, 'Você é?'),
           buttonOption(
             context: context,
-            text: 'Masculino',
+            text: 'Membro',
             auth: auth,
-            onOption: () => auth.user.genero = 'Masculino',
-            isActive: auth.user.genero == 'Masculino' ? true : false,
+            onOption: () => auth.user.tipoMembro = 'Membro',
+            isActive: auth.user.tipoMembro == 'Membro' ? true : false,
           ),
           SizedBox(height: 16),
           buttonOption(
             context: context,
-            text: 'Feminino',
+            text: 'Congregado',
             auth: auth,
-            isActive: auth.user.genero == 'Feminino' ? true : false,
-            onOption: () => auth.user.genero = 'Feminino',
+            onOption: () => auth.user.tipoMembro = 'Congregado',
+            isActive: auth.user.tipoMembro == 'Congregado' ? true : false,
           ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Criança',
+            auth: auth,
+            onOption: () => auth.user.tipoMembro = 'Criança',
+            isActive: auth.user.tipoMembro == 'Criança' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Amigo do Evangelho',
+            auth: auth,
+            onOption: () => auth.user.tipoMembro = 'Amigo do Evangelho',
+            isActive: auth.user.tipoMembro == 'Amigo do Evangelho' ? true : false,
+          ),
+          SizedBox(height: 16),
         ],
-        'CPF': [
-          _title(context, 'Informe seu CPF.'),
+        'Situacao': [
+          _title(context, 'Qual é a sua situação atual?'),
+          buttonOption(
+            context: context,
+            text: 'Comunhão',
+            auth: auth,
+            onOption: () => auth.user.situacaoMembro = 'Comunhão',
+            isActive: auth.user.situacaoMembro == 'Comunhão' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Afastado',
+            auth: auth,
+            onOption: () => auth.user.situacaoMembro = 'Afastado',
+            isActive: auth.user.situacaoMembro == 'Afastado' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Disciplinado',
+            auth: auth,
+            onOption: () => auth.user.situacaoMembro = 'Disciplinado',
+            isActive: auth.user.situacaoMembro == 'Disciplinado' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Mudou de Campo',
+            auth: auth,
+            onOption: () => auth.user.situacaoMembro = 'Mudou de Campo',
+            isActive: auth.user.situacaoMembro == 'Mudou de Campo' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Mudou de Ministério',
+            auth: auth,
+            onOption: () => auth.user.situacaoMembro = 'Mudou de Ministério',
+            isActive: auth.user.situacaoMembro == 'Mudou de Ministério' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Falecido',
+            auth: auth,
+            onOption: () => auth.user.situacaoMembro = 'Falecido',
+            isActive: auth.user.situacaoMembro == 'Falecido' ? true : false,
+          ),
+          SizedBox(height: 16),
+        ],
+        'Procedencia': [
+          _title(context, 'A sua afiliação é procedente de?'),
+          buttonOption(
+            context: context,
+            text: 'Batizado no Campo',
+            auth: auth,
+            onOption: () => auth.user.procedenciaMembro = 'Batizado no Campo',
+            isActive: auth.user.procedenciaMembro == 'Batizado no Campo' ? true : false,
+          ),
+          SizedBox(height: 16),
+          buttonOption(
+            context: context,
+            text: 'Carta de Mudança de Outro Ministério',
+            auth: auth,
+            onOption: () => auth.user.procedenciaMembro = 'Carta de Mudança de Outro Ministério',
+            isActive: auth.user.procedenciaMembro == 'Carta de Mudança de Outro Ministério' ? true : false,
+          ),
+          SizedBox(height: 16),
+           buttonOption(
+            context: context,
+            text: 'Carta de Mudança do mesmo Ministério',
+            auth: auth,
+            onOption: () => auth.user.procedenciaMembro = 'Carta de Mudança do mesmo Ministério',
+            isActive: auth.user.procedenciaMembro == 'Carta de Mudança do mesmo Ministério' ? true : false,
+          ),
+          SizedBox(height: 16),
+           buttonOption(
+            context: context,
+            text: 'Aclamação',
+            auth: auth,
+            onOption: () => auth.user.procedenciaMembro = 'Aclamação',
+            isActive: auth.user.procedenciaMembro == 'Aclamação' ? true : false,
+          ),
+          SizedBox(height: 16),
+        ],
+        'Origem': [
+          _title(context, 'Informe de onde você é.'),
           TextFormField(
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.text,
             autocorrect: false,
             maxLength: 50,
             maxLines: 1,
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              CpfInputFormatter(),
-            ],
             decoration: InputDecoration(
-              labelText: 'CPF',
+              labelText: 'Origem',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
             enabled: !auth.isLoading,
-            validator: (cpf) => Validator.cpfValidator(cpf),
-            onSaved: (cpf) => auth.user.cpf = cpf,
-            initialValue: auth.user.cpf != null ? auth.user.cpf : null,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.origemMembro = value,
+            initialValue: auth.user.origemMembro != null ? auth.user.origemMembro : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -214,68 +315,8 @@ class PessoaisFormScreen extends StatelessWidget {
             auth: auth,
           ),
         ],
-        'RG': [
-          _title(context, 'Informe seu RG.'),
-          TextFormField(
-            keyboardType: TextInputType.number,
-            autocorrect: false,
-            maxLength: 50,
-            maxLines: 1,
-            textAlign: TextAlign.left,
-            style: Theme.of(context).textTheme.bodyText1,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            decoration: InputDecoration(
-              labelText: 'RG',
-              labelStyle: Theme.of(context).textTheme.bodyText1,
-              fillColor: LightStyle.paleta['PrimariaCinza'],
-            ),
-            enabled: !auth.isLoading,
-            validator: (rg) => Validator.rgValidator(rg),
-            onSaved: (rg) => auth.user.rg = rg,
-            initialValue: auth.user.rg != null ? auth.user.rg : null,
-          ),
-          SizedBox(height: 16),
-          _save(
-            context: context,
-            auth: auth,
-          ),
-        ],
-        'Naturalidade': [
-          _title(context, 'Cidade de nascimento.'),
-          TextFormField(
-            keyboardType: TextInputType.name,
-            autocorrect: false,
-            maxLength: 50,
-            maxLines: 1,
-            textAlign: TextAlign.left,
-            style: Theme.of(context).textTheme.bodyText1,
-            decoration: InputDecoration(
-              labelText: 'Naturalidade',
-              labelStyle: Theme.of(context).textTheme.bodyText1,
-              fillColor: LightStyle.paleta['PrimariaCinza'],
-            ),
-            enabled: !auth.isLoading,
-            validator: (naturalidade) => Validator.rgValidator(naturalidade),
-            onSaved: (naturalidade) => auth.user.naturalidade = naturalidade,
-            initialValue: auth.user.naturalidade != null ? auth.user.naturalidade : null,
-          ),
-          SizedBox(height: 16),
-          _save(
-            context: context,
-            auth: auth,
-          ),
-        ],
-        'Nascimento': [
-          _title(context, 'Sua data de nascimento.'),
-          /*
-            _item(
-          title: 'Data de Nascimento',
-          text: formataData(data: _selectedDate),
-          onTap: () => _selectDate(context, 'Data de Nascimento'),
-        ),
-          */
+        'Mudanca': [
+          _title(context, 'Quando você mudou para esse Ministério.'),
           TextFormField(
             keyboardType: TextInputType.datetime,
             autocorrect: false,
@@ -284,7 +325,7 @@ class PessoaisFormScreen extends StatelessWidget {
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
             decoration: InputDecoration(
-              labelText: 'Data de Nascimento',
+              labelText: 'Data de Mudança',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
@@ -293,36 +334,34 @@ class PessoaisFormScreen extends StatelessWidget {
               DataInputFormatter(),
             ],
             enabled: !auth.isLoading,
-            validator: (nascimento) => Validator.rgValidator(nascimento),
-            onSaved: (nascimento) => auth.user.dataNascimento = nascimento,
-            initialValue: auth.user.dataNascimento != null ? auth.user.dataNascimento : null,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.dataMudanca = value,
+            initialValue: auth.user.dataMudanca != null ? auth.user.dataMudanca : null,
           ),
-
-
           SizedBox(height: 16),
           _save(
             context: context,
             auth: auth,
           ),
         ],
-        'Pai': [
-          _title(context, 'Nome completo do seu pai.'),
+        'Local_Conversao': [
+          _title(context, 'Onde você aceitou a Jesus.'),
           TextFormField(
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             autocorrect: false,
             maxLength: 50,
             maxLines: 1,
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
             decoration: InputDecoration(
-              labelText: 'Nome do Pai',
+              labelText: 'Local de Conversão',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
             enabled: !auth.isLoading,
-            validator: (pai) => Validator.nameValidator(pai),
-            onSaved: (pai) => auth.user.nomePai = pai,
-            initialValue: auth.user.nomePai != null ? auth.user.nomePai : null,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.localConversao = value,
+            initialValue: auth.user.localConversao != null ? auth.user.localConversao : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -330,162 +369,39 @@ class PessoaisFormScreen extends StatelessWidget {
             auth: auth,
           ),
         ],
-        'Mae': [
-          _title(context, 'Nome completo da sua mãe.'),
+        'Data_Conversao': [
+          _title(context, 'O dia em que você aceitou a Jesus.'),
           TextFormField(
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.datetime,
             autocorrect: false,
             maxLength: 50,
             maxLines: 1,
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
             decoration: InputDecoration(
-              labelText: 'Nome da Mãe',
-              labelStyle: Theme.of(context).textTheme.bodyText1,
-              fillColor: LightStyle.paleta['PrimariaCinza'],
-            ),
-            enabled: !auth.isLoading,
-            validator: (mae) => Validator.nameValidator(mae),
-            onSaved: (mae) => auth.user.nomeMae = mae,
-            initialValue: auth.user.nomeMae != null ? auth.user.nomeMae : null,
-          ),
-          SizedBox(height: 16),
-          _save(
-            context: context,
-            auth: auth,
-          ),
-        ],
-        'Civil': [
-          _title(context, 'Você está?'),
-          buttonOption(
-            context: context,
-            text: 'Solteiro',
-            auth: auth,
-            onOption: () => auth.user.estadoCivil = 'Solteiro',
-            isActive: auth.user.estadoCivil == 'Solteiro' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Casado',
-            auth: auth,
-            onOption: () => auth.user.estadoCivil = 'Casado',
-            isActive: auth.user.estadoCivil == 'Casado' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Divorciado',
-            auth: auth,
-            onOption: () => auth.user.estadoCivil = 'Divorciado',
-            isActive: auth.user.estadoCivil == 'Divorciado' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Emancebado',
-            auth: auth,
-            onOption: () => auth.user.estadoCivil = 'Emancebado',
-            isActive: auth.user.estadoCivil == 'Emancebado' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Viúvo',
-            auth: auth,
-            onOption: () => auth.user.estadoCivil = 'Viúvo',
-            isActive: auth.user.estadoCivil == 'Viúvo' ? true : false,
-          ),
-          SizedBox(height: 16),
-        ],
-        'Sangue': [
-          _title(context, 'Informe seu tipo sanguíneo.'),
-          buttonOption(
-            context: context,
-            text: 'A+',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'A+',
-            isActive: auth.user.tipoSanguineo == 'A+' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'A-',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'A-',
-            isActive: auth.user.tipoSanguineo == 'A-' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'B+',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'B+',
-            isActive: auth.user.tipoSanguineo == 'B+' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'AB+',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'AB+',
-            isActive: auth.user.tipoSanguineo == 'AB+' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'AB-',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'AB-',
-            isActive: auth.user.tipoSanguineo == 'AB-' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'O+',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'O+',
-            isActive: auth.user.tipoSanguineo == 'O+' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'O-',
-            auth: auth,
-            onOption: () => auth.user.tipoSanguineo = 'O-',
-            isActive: auth.user.tipoSanguineo == 'O-' ? true : false,
-          ),
-        ],
-        'Titulo': [
-          _title(context, 'Informe seu Título de Eleitor.'),
-          TextFormField(
-            keyboardType: TextInputType.number,
-            autocorrect: false,
-            maxLength: 50,
-            maxLines: 1,
-            textAlign: TextAlign.left,
-            style: Theme.of(context).textTheme.bodyText1,
-            decoration: InputDecoration(
-              labelText: 'Número do Título de Eleitor',
+              labelText: 'Data de Conversão',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
+              DataInputFormatter(),
             ],
             enabled: !auth.isLoading,
-            validator: (titulo) => Validator.tituloValidator(titulo),
-            onSaved: (titulo) => auth.user.tituloEleitor = titulo,
-            initialValue: auth.user.tituloEleitor != null ? auth.user.tituloEleitor : null,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.dataConversao = value,
+            initialValue: auth.user.dataConversao != null ? auth.user.dataConversao : null,
           ),
+
+
           SizedBox(height: 16),
           _save(
             context: context,
             auth: auth,
           ),
         ],
-        'Zona': [
-          _title(context, 'Informe a sua Zona Eleitoral.'),
+        'Local_Aguas': [
+          _title(context, 'Onde você foi batizado em águas.'),
           TextFormField(
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -494,14 +410,14 @@ class PessoaisFormScreen extends StatelessWidget {
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
             decoration: InputDecoration(
-              labelText: 'Zona Eleitoral',
+              labelText: 'Local de Batismo em Águas',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
             enabled: !auth.isLoading,
-            validator: (zona) => Validator.zonaValidator(zona),
-            onSaved: (zona) => auth.user.zonaEleitor = zona,
-            initialValue: auth.user.zonaEleitor != null ? auth.user.zonaEleitor : null,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.localBatismoAguas = value,
+            initialValue: auth.user.localBatismoAguas != null ? auth.user.localBatismoAguas : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -509,8 +425,39 @@ class PessoaisFormScreen extends StatelessWidget {
             auth: auth,
           ),
         ],
-        'Secao': [
-          _title(context, 'Informe sua Seção Eleitoral.'),
+        'Data_Aguas': [
+          _title(context, 'O dia em que você foi batizado em águas.'),
+          TextFormField(
+            keyboardType: TextInputType.datetime,
+            autocorrect: false,
+            maxLength: 50,
+            maxLines: 1,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.bodyText1,
+            decoration: InputDecoration(
+              labelText: 'Data de Batismo em Águas',
+              labelStyle: Theme.of(context).textTheme.bodyText1,
+              fillColor: LightStyle.paleta['PrimariaCinza'],
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              DataInputFormatter(),
+            ],
+            enabled: !auth.isLoading,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.dataBatismoAguas = value,
+            initialValue: auth.user.dataBatismoAguas != null ? auth.user.dataBatismoAguas : null,
+          ),
+
+
+          SizedBox(height: 16),
+          _save(
+            context: context,
+            auth: auth,
+          ),
+        ],
+        'Local_Espirito': [
+          _title(context, 'Onde você foi batizado no Espirito Santo.'),
           TextFormField(
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -519,14 +466,14 @@ class PessoaisFormScreen extends StatelessWidget {
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
             decoration: InputDecoration(
-              labelText: 'Seção Eleitoral',
+              labelText: 'Local de Batismo no Espirito',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
             enabled: !auth.isLoading,
-            validator: (secao) => Validator.zonaValidator(secao),
-            onSaved: (secao) => auth.user.secaoEleitor = secao,
-            initialValue: auth.user.secaoEleitor != null ? auth.user.secaoEleitor : null,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.localBatismoEspiritoSanto = value,
+            initialValue: auth.user.localBatismoEspiritoSanto != null ? auth.user.localBatismoEspiritoSanto : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -534,70 +481,37 @@ class PessoaisFormScreen extends StatelessWidget {
             auth: auth,
           ),
         ],
-        'Especial': [
-          _title(context, 'Você é portador de alguma necessidade especial?'),
-          buttonOption(
-            context: context,
-            text: 'Sim',
-            auth: auth,
-            onOption: () => auth.user.isPortadorNecessidade = true,
-            isActive: auth.user.isPortadorNecessidade ? true : false,
+        'Data_Espirito': [
+          _title(context, 'O dia em que você foi batizado no Espirito Santo.'),
+          TextFormField(
+            keyboardType: TextInputType.datetime,
+            autocorrect: false,
+            maxLength: 50,
+            maxLines: 1,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.bodyText1,
+            decoration: InputDecoration(
+              labelText: 'Data de Batismo no Espirito',
+              labelStyle: Theme.of(context).textTheme.bodyText1,
+              fillColor: LightStyle.paleta['PrimariaCinza'],
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              DataInputFormatter(),
+            ],
+            enabled: !auth.isLoading,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => auth.user.dataBatismoEspiritoSanto = value,
+            initialValue: auth.user.dataBatismoEspiritoSanto != null ? auth.user.dataBatismoEspiritoSanto : null,
           ),
           SizedBox(height: 16),
-           buttonOption(
+          _save(
             context: context,
-            text: 'Não',
             auth: auth,
-            onOption: () => auth.user.isPortadorNecessidade = false,
-            isActive: !auth.user.isPortadorNecessidade ? true : false,
           ),
-          SizedBox(height: 16),
         ],
-        'Tipo Necessidade': [
-          _title(context, 'Qual é o tipo da sua necessidade especial?'),
-          buttonOption(
-            context: context,
-            text: 'Visual',
-            auth: auth,
-            onOption: () => auth.user.tipoNecessidade = 'Visual',
-            isActive: auth.user.tipoNecessidade == 'Visual' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Auditiva',
-            auth: auth,
-            onOption: () => auth.user.tipoNecessidade = 'Auditiva',
-            isActive: auth.user.tipoNecessidade == 'Auditiva' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Mental',
-            auth: auth,
-            onOption: () => auth.user.tipoNecessidade = 'Mental',
-            isActive: auth.user.tipoNecessidade == 'Mental' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Fisica',
-            auth: auth,
-            onOption: () => auth.user.tipoNecessidade = 'Fisica',
-            isActive: auth.user.tipoNecessidade == 'Fisica' ? true : false,
-          ),
-          SizedBox(height: 16),
-          buttonOption(
-            context: context,
-            text: 'Outra',
-            auth: auth,
-            onOption: () => auth.user.tipoNecessidade = 'Outra',
-            isActive: auth.user.tipoNecessidade == 'Outra' ? true : false,
-          ),
-          
-        ],
-        'Descricao Necessidade': [
-          _title(context, 'Descreva brevemente quais são as suas limitações para \nque possamos \nmelhor servi-lo.'),
+        'Bio_Cristao': [
+          _title(context, 'Observações a respeito do membro.'),
           TextFormField(
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -606,14 +520,14 @@ class PessoaisFormScreen extends StatelessWidget {
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
             decoration: InputDecoration(
-              labelText: 'Descreva sua necessidade.',
+              labelText: '.',
               labelStyle: Theme.of(context).textTheme.bodyText1,
               fillColor: LightStyle.paleta['PrimariaCinza'],
             ),
-            enabled: !auth.isLoading,
+            enabled: false,
             validator: (descri) => Validator.descricaoValidator(descri),
-            onSaved: (descri) => auth.user.descricaoNecessidade = descri,
-            initialValue: auth.user.descricaoNecessidade != null ? auth.user.descricaoNecessidade : null,
+            onSaved: (descri) => auth.user.bio = descri,
+            initialValue: auth.user.bio != null ? auth.user.bio : null,
           ),
           SizedBox(height: 16),
           _save(
