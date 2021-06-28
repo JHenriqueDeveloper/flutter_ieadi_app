@@ -25,6 +25,16 @@ class BaseScreen extends StatelessWidget {
           ContaScreen(), //7
           //secretaria
           DashboardScreen(), //8
+          AreasScreen(), //9
+          CertificadosScreen(),//10
+          CongregacoesScreen(), //11
+          DocumentosScreen(), //12
+          MembrosScreen(), //13
+          MinisterioScreen(), //14
+          PastoresScreen(), //15
+          SetoresScreen(), //16
+          SolicitacoesScreen(), //17
+          VerificacoesScreen(), //18
         ],
       ),
     );

@@ -1,14 +1,55 @@
 import 'dart:io';
 
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:provider/provider.dart';
-
-import '../../repositories/auth/auth_repository.dart';
 import '../../style/style.dart';
 
+class UploadImage extends StatelessWidget {
+  final double radius;
+  final String imageUrl;
+  final File image;
+  final Function onTap;
+  final bool isLoading;
+
+  UploadImage({
+    this.radius,
+    this.imageUrl,
+    this.image,
+    this.onTap,
+    this.isLoading,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 300,
+      child: GestureDetector(
+        onTap: isLoading ? () {} : onTap,
+        child: CircleAvatar(
+          radius: radius,
+          backgroundColor: LightStyle.paleta['Primaria'],
+          backgroundImage: image != null
+              ? FileImage(image)
+              : imageUrl.isNotEmpty
+                  ? CachedNetworkImageProvider(imageUrl)
+                  : null,
+          child: !isLoading
+              ? Icon(
+                  FeatherIcons.camera,
+                  color: LightStyle.paleta['Branco'],
+                )
+              : CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+/*
 class ProfileImage extends StatelessWidget {
   final double radius;
   final String profileImageUrl;
@@ -89,3 +130,4 @@ class ProfileImage extends StatelessWidget {
     );
   }
 }
+*/

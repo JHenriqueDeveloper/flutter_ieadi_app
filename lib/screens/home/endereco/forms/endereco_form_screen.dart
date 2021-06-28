@@ -8,6 +8,8 @@ import 'package:flutter_ieadi_app/style/style.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../helpers/util.dart';
+
 class EnderecoFormScreen extends StatelessWidget {
   final String form;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -15,35 +17,7 @@ class EnderecoFormScreen extends StatelessWidget {
 
   EnderecoFormScreen(this.form);
 
-  final List<String> _ufs = [
-    'AC',
-    'AL',
-    'AP',
-    'AM',
-    'BA',
-    'CE',
-    'DF',
-    'ES',
-    'GO',
-    'MA',
-    'MT',
-    'MS',
-    'MG',
-    'PA',
-    'PB',
-    'PR',
-    'PE',
-    'PI',
-    'RJ',
-    'RN',
-    'RS',
-    'RO',
-    'RR',
-    'SC',
-    'SP',
-    'SE',
-    'TO',
-  ];
+  final List<String> _ufs = uf_list;
 
   _snackBar({
     BuildContext context,

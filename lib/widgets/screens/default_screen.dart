@@ -8,6 +8,7 @@ class DefaultScreen extends StatelessWidget {
   final int backToPage;
   final List<Widget> children;
   final EdgeInsets padding;
+  final Widget fab;
   final GlobalKey<ScaffoldState> key;
 
   DefaultScreen({
@@ -15,55 +16,60 @@ class DefaultScreen extends StatelessWidget {
     @required this.backToPage,
     this.key,
     this.padding,
+    this.fab,
     this.children,
   });
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      extendBody: true,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 90,
-        elevation: 0,
-        brightness: Brightness.dark,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
-        centerTitle: true,
-        title: Text(
-          this.title,
-          style: Theme.of(context).textTheme.subtitle1,
-        ),
-        leadingWidth: 64,
-        leading: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: 16,
+        extendBody: true,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 90,
+          elevation: 0,
+          brightness: Brightness.dark,
+          backgroundColor: Theme.of(context).backgroundColor,
+          centerTitle: true,
+          title: Text(
+            this.title,
+            style: Theme.of(context).textTheme.subtitle1,
           ),
-          child: FloatingActionButton(
-            mini: true,
-            child: Icon(FeatherIcons.chevronLeft),
-            onPressed: () =>
-                context.read<CustomRouter>().setPage(this.backToPage),
+          leadingWidth: 64,
+          leading: Container(
+            margin: EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: FloatingActionButton(
+              mini: true,
+              child: Icon(FeatherIcons.chevronLeft),
+              onPressed: () =>
+                  context.read<CustomRouter>().setPage(this.backToPage),
+            ),
           ),
         ),
+        floatingActionButton: this.fab,
+        body: DraggableScrollableSheet(
+            initialChildSize: 1.0,
+            builder: (_, ScrollController scrollController) {
+              return Container(
+                padding: this.padding != null
+                    ? this.padding
+                    : EdgeInsets.symmetric(vertical: 32),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).canvasColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    )),
+                child: ListView(
+                  children: this.children,
+                ),
+              );
+            }),
       ),
-      body: DraggableScrollableSheet(
-          initialChildSize: 1.0,
-          builder: (_, ScrollController scrollController) {
-            return Container(
-              padding: this.padding != null
-                  ? this.padding
-                  : EdgeInsets.symmetric(vertical: 32),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).canvasColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  )),
-              child: ListView(
-                children: this.children,
-              ),
-            );
-          }),
     );
   }
 }

@@ -11,6 +11,8 @@ import 'package:flutter_ieadi_app/style/style.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 
+import '../../../config/config.dart';
+
 class NavScreen extends StatefulWidget {
   NavScreen();
 
@@ -42,6 +44,10 @@ class _NavScreenState extends State<NavScreen> {
     );
     if (pickedFile != null) {
       //context.read<EditProfileCubit>().profileImageChanged(pickedFile);
+
+       setState(() {
+        profileImage = pickedFile;
+      });
 
       auth.updateProfileImage(
         user: auth.user,
@@ -237,7 +243,7 @@ class _NavScreenState extends State<NavScreen> {
                 isAdmin
                     ? IconButton(
                         icon: Icon(FeatherIcons.sliders),
-                        onPressed: () => {} //_handlerScreen(DashboardScreen()),
+                        onPressed: () => context.read<CustomRouter>().setPage(8), //_handlerScreen(DashboardScreen()),
                         )
                     : Container(),
               ],

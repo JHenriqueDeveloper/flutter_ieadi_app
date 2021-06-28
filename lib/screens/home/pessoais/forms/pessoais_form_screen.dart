@@ -12,6 +12,7 @@ class PessoaisFormScreen extends StatelessWidget {
   final String form;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
 
   PessoaisFormScreen(this.form);
 
@@ -20,7 +21,8 @@ class PessoaisFormScreen extends StatelessWidget {
     String msg,
     bool isSuccess = true,
   }) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
         content: Text(msg),
         backgroundColor: isSuccess
             ? LightStyle.paleta['Sucesso']

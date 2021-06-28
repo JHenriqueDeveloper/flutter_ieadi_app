@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
 
+import 'repositories/auth/auth_repository.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -18,16 +20,24 @@ void main() async {
 class IeadiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthRepository(),
-      lazy: false, //instancia imediatamente o AuthRepository
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthRepository(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CongregRepository(),
+          lazy: false,
+        ),
+      ],
       child: MaterialApp(
-        title: 'Flutter IEADI app',
-        debugShowCheckedModeBanner: false,
-        theme: LightStyle.themeLight(),
-        initialRoute: '/splash',
-        onGenerateRoute: (route) => CustomRouter.getPageRoute(route.name),
-      ),
+          title: 'Flutter IEADI app',
+          debugShowCheckedModeBanner: false,
+          theme: LightStyle.themeLight(),
+          initialRoute: '/splash',
+          onGenerateRoute: (route) => CustomRouter.getPageRoute(route.name),
+        ),
     );
   }
 }
