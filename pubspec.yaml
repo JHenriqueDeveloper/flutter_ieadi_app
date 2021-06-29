@@ -7,8 +7,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  #flutter_localizations:
-  #  sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.0
   cached_network_image: ^2.4.1
   enum_to_string: ^1.0.14
@@ -34,6 +34,9 @@ dependencies:
   cpfcnpj: ^1.0.3
   mask_text_input_formatter: ^2.0.0
   brasil_fields: ^0.6.1
+
+dependency_overrides:
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

@@ -31,7 +31,9 @@ class CongregRepository extends ChangeNotifier {
   }) async {
     setLoading = true;
     try {
-      final congregs = await _firebaseFirestore.collection('/congregs').get();
+      final congregs = await _firebaseFirestore.collection('/congregs')
+      .orderBy('createdAt', descending: true)
+      .get();
 
       _listCongregs = congregs.docs
           .map(
@@ -73,6 +75,10 @@ class CongregRepository extends ChangeNotifier {
             .then((taskSnapshot) => taskSnapshot.ref.getDownloadURL());
       }
 
+      if (congreg.createdAt == null) {
+        congreg.setCreatedAt = DateTime.now();
+      }
+
       this.congreg = congreg;
 
       await _firebaseFirestore
@@ -103,6 +109,9 @@ class CongregRepository extends ChangeNotifier {
             .putFile(image)
             .then((taskSnapshot) => taskSnapshot.ref.getDownloadURL());
       }
+
+      congreg.setCreatedAt = DateTime.now();
+      congreg.isActive = true;
 
       var result = await _firebaseFirestore
           .collection('/congregs')

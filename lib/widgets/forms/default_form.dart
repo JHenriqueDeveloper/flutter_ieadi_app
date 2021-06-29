@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 
+import '../../style/style.dart';
+
 class DefaultForm extends StatelessWidget {
   final List<Widget> form;
   final GlobalKey<FormState> formKey;
@@ -34,7 +36,11 @@ class DefaultForm extends StatelessWidget {
           title: Text(
             this.title,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headline6,
+            style: TextStyle(
+            color: LightStyle.paleta['Background'],
+            fontSize: 20.0,
+            fontWeight: FontWeight.w600,
+          ),
           ),
           leading: Container(
             margin: EdgeInsets.symmetric(horizontal: 16),

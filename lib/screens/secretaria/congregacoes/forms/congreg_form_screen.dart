@@ -479,7 +479,35 @@ class _CongregFormState extends State<CongregForm> {
                 value: _congreg?.isSedeArea ?? false,
               ),
             ),
+
+            _congreg.id != null 
+            ? SizedBox(height: 8)
+            : SizedBox(),
+
+            _congreg?.id != null
+            ? ListTile(
+              //tileColor: LightStyle.paleta['PrimariaCinza'],
+              title: Text(
+                _congreg?.isActive != null 
+                ? _congreg?.isActive == true
+                  ? 'Desativar'
+                  : 'Ativar'
+                : 'Ativar',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              enabled: !state.isLoading,
+              trailing: Switch(
+                activeColor: Theme.of(context).primaryColor,
+                onChanged: (bool value) =>
+                    setState(() => _congreg.isActive = value),
+                value: _congreg?.isActive ?? false,
+              ),
+            )
+            : SizedBox(),
+
+
             SizedBox(height: 32),
+
             _buttonSave(
               context: context,
               state: state,

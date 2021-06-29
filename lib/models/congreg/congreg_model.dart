@@ -7,9 +7,7 @@ class CongregModel {
   String unidadeConsumidora;
   String profileImageUrl;
   //String idArea;
-  bool isSedeCampo;
-  bool isSedeSetor;
-  bool isSedeArea;
+
   //Endereco
   String cep;
   String complemento;
@@ -22,6 +20,13 @@ class CongregModel {
   String celular;
   String email;
 
+  //configurações
+  bool isSedeCampo;
+  bool isSedeSetor;
+  bool isSedeArea;
+  bool isActive;
+  DateTime createdAt;
+
   CongregModel({
     this.id,
     this.nome,
@@ -31,6 +36,7 @@ class CongregModel {
     this.isSedeCampo,
     this.isSedeSetor,
     this.isSedeArea,
+    this.isActive,
     this.cep,
     this.complemento,
     this.bairro,
@@ -40,6 +46,7 @@ class CongregModel {
     this.fixo,
     this.celular,
     this.email,
+    this.createdAt,
   });
 
   DocumentReference get firestoreRef =>
@@ -53,6 +60,7 @@ class CongregModel {
   get getIsSedeCampo => isSedeCampo;
   get getIsSedeArea => isSedeArea;
   get getIsSedeSetor => isSedeSetor;
+  get getIsActive => isActive;
   get getCep => cep;
   get getComplemento => complemento;
   get getBairro => bairro;
@@ -62,6 +70,7 @@ class CongregModel {
   get getFixo => fixo;
   get getCelular => celular;
   get getEmail => email;
+  get getCreatedAt => createdAt;
 
   set setId(String id) => this.id = id;
   set setNome(String nome) => this.nome = nome;
@@ -73,6 +82,7 @@ class CongregModel {
   set setIsSedeCampo(bool isSedeCampo) => this.isSedeCampo = isSedeCampo;
   set setIsSedeArea(bool isSedeArea) => this.isSedeArea = isSedeArea;
   set setIsSedeSetor(bool isSedeSetor) => this.isSedeSetor = isSedeSetor;
+  set setIsactive(bool isActive) => this.isActive = isActive;
   set setCep(String cep) => this.cep = cep;
   set setComplemento(String complemento) => this.complemento = complemento;
   set setBairro(String bairro) => this.bairro = bairro;
@@ -82,6 +92,7 @@ class CongregModel {
   set setFixo(String fixo) => this.fixo = fixo;
   set setCelular(String celular) => this.celular = celular;
   set setEmail(String email) => this.email = email;
+  set setCreatedAt(DateTime createdAt) => this.createdAt = createdAt;
 
   Map<String, dynamic> toDocument() => {
         'nome': nome,
@@ -91,6 +102,7 @@ class CongregModel {
         'isSedeCampo': isSedeCampo,
         'isSedeSetor': isSedeSetor,
         'isSedeArea': isSedeArea,
+        'isActive': isActive,
         'cep': cep,
         'complemento': complemento,
         'bairro': bairro,
@@ -100,6 +112,7 @@ class CongregModel {
         'fixo': fixo,
         'celular': celular,
         'email': email,
+        'createdAt': Timestamp.fromDate(createdAt),
       };
 
   get getCongregEmpty => empty;
@@ -113,6 +126,7 @@ class CongregModel {
     isSedeCampo: false,
     isSedeSetor: false,
     isSedeArea: false,
+    isActive: false,
     cep: '',
     complemento: '',
     bairro: '',
@@ -122,6 +136,7 @@ class CongregModel {
     fixo: '',
     celular: '',
     email: '',
+    createdAt: DateTime.now(),
   );
 
   factory CongregModel.fromDocument(DocumentSnapshot doc) {
@@ -136,6 +151,7 @@ class CongregModel {
       isSedeCampo: data['isSedeCampo'] as bool,
       isSedeSetor: data['isSedeSetor'] as bool,
       isSedeArea: data['isSedeArea'] as bool,
+      isActive: data['isActive'] as bool,
       cep: data['cep'] as String,
       complemento: data['complemento'] as String,
       bairro: data['bairro'] as String,
@@ -145,39 +161,19 @@ class CongregModel {
       fixo: data['fixo'] as String,
       celular: data['celular'] as String,
       email: data['email'] as String,
+      createdAt: (data['createdAt'] as Timestamp)?.toDate(),
     );
-    /*
-    CongregModel(
-      id: doc.id,
-      nome: data['nome'] ?? '',
-      dataFundacao: data['dataFundacao'] ?? '',
-      unidadeConsumidora: data['unidadeConsumidora'] ?? '',
-      profileImageUrl: data['profileImageUrl'] ?? '',
-      isSedeCampo: data['isSedeCampo'] ?? false,
-      isSedeSetor: data['isSedeSetor'] ?? false,
-      isSedeArea: data['isSedeArea'] ?? false,
-      cep: data['cep'] ?? '',
-      complemento: data['complemento'] ?? '',
-      bairro: data['bairro'] ?? '',
-      cidade: data['cidade'] ?? '',
-      uf: data['uf'] ?? '',
-      numero: data['numero'] ?? '',
-      fixo: data['fixo'] ?? '',
-      celular: data['celular'] ?? '',
-      email: data['email'] ?? '',
-    );
-    */
   }
 
-  static Future<CongregModel> getUser(String congregId) async {
+  static Future<CongregModel> getCongreg(String congregId) async {
     final doc =
         await FirebaseFirestore.instance.doc('congregs/$congregId').get();
     return doc.exists ? CongregModel.fromDocument(doc) : CongregModel.empty;
   }
 
-  Future<void> saveUser() async => await firestoreRef.set(toDocument());
+  Future<void> saveCongreg() async => await firestoreRef.set(toDocument());
 
-  Future<void> updateUser(CongregModel congreg) async {
+  Future<void> updateCongreg(CongregModel congreg) async {
     return await FirebaseFirestore.instance
         .doc('congregs/${congreg.id}')
         .update(congreg.toDocument());

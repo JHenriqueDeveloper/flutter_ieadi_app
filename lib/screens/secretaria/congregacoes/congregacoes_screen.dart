@@ -5,18 +5,18 @@ import 'package:flutter_ieadi_app/screens/secretaria/congregacoes/forms/congreg_
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../helpers/util.dart';
 import '../../../models/models.dart';
 import '../../../repositories/repositories.dart';
 import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
 class CongregacoesScreen extends StatelessWidget {
-
-
   void _handlerForm({
     BuildContext ctx,
     CongregModel congreg,
-  }) => Navigator.push(
+  }) =>
+      Navigator.push(
         ctx,
         MaterialPageRoute(builder: (_) => CongregForm(congreg: congreg)),
       );
@@ -27,8 +27,8 @@ class CongregacoesScreen extends StatelessWidget {
       builder: (_, state, __) {
         String _verificaSede(e) {
           if (e.isSedeCampo != null && e.isSedeCampo) return 'Sede do Campo';
-          if (e.isSedeArea != null && e.isSedeArea) return 'Sede de Área';
           if (e.isSedeSetor != null && e.isSedeSetor) return 'Sede de Setor';
+          if (e.isSedeArea != null && e.isSedeArea) return 'Sede de Área';
           return '';
         }
 
@@ -51,31 +51,50 @@ class CongregacoesScreen extends StatelessWidget {
                     color: LightStyle.paleta['Cinza'],
                   ),
                 ),
-                subtitle: _verificaSede(e) != ''
-                    ? Text(
-                        _verificaSede(e),
-                        style: Theme.of(context).textTheme.bodyText1,
-                      )
-                    : null,
+                subtitle: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _verificaSede(e) != ''
+                        ? Text(
+                            _verificaSede(e),
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
+                        : SizedBox(),
+                    e.createdAt != null
+                        ? Text(
+                            'criado em: ${formataData(data: e.createdAt)}',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
+                        : SizedBox(),
+                    e?.isActive == false
+                        ? Text(
+                            'situação: Inativa',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
+                        : SizedBox(),
+                  ],
+                ),
                 leading: CircleAvatar(
                   //radius: radius,
                   backgroundColor: Theme.of(context).primaryColor,
-                  backgroundImage: e.profileImageUrl != null 
-                  ? e.profileImageUrl != ''
-                    ? CachedNetworkImageProvider(e.profileImageUrl)
-                    : null
-                  : null,
+                  backgroundImage: e.profileImageUrl != null
+                      ? e.profileImageUrl != ''
+                          ? CachedNetworkImageProvider(e.profileImageUrl)
+                          : null
+                      : null,
                   child: e.profileImageUrl != null
-                  ? e.profileImageUrl != ''
-                    ? null
-                    : Icon(
-                        FeatherIcons.home,
-                        color: Theme.of(context).canvasColor,
-                      )
-                  : Icon(
-                        FeatherIcons.home,
-                        color: Theme.of(context).canvasColor,
-                      ),
+                      ? e.profileImageUrl != ''
+                          ? null
+                          : Icon(
+                              FeatherIcons.home,
+                              color: Theme.of(context).canvasColor,
+                            )
+                      : Icon(
+                          FeatherIcons.home,
+                          color: Theme.of(context).canvasColor,
+                        ),
                 ),
                 trailing: Icon(
                   FeatherIcons.moreHorizontal,
