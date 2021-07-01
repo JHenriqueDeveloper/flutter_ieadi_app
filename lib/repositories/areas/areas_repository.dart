@@ -21,6 +21,15 @@ class AreasRepository extends ChangeNotifier {
   List<AreasModel> _listAreas = [];
   List<AreasModel> get getListAreas => _listAreas;
 
+  AreasModel getArea(String id) {
+    for (AreasModel e in _listAreas) {
+      if (e.id == id) {
+        return e;
+      }
+    }
+    return null;
+  }
+
   Future<void> loadAreas({
     Function onFail,
   }) async {
@@ -31,9 +40,7 @@ class AreasRepository extends ChangeNotifier {
       .get();
 
       _listAreas = areas.docs
-          .map(
-            (doc) => AreasModel.fromDocument(doc),
-          )
+          .map((doc) => AreasModel.fromDocument(doc))
           .toList();
 
       notifyListeners();

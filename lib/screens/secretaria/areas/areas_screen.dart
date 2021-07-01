@@ -48,6 +48,22 @@ class AreasScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    e.sede != null
+                      ? e.sede != ''
+                        ? Text(
+                            'Sede: ${context.read<CongregRepository>().getCongreg(e.sede).nome}',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
+                        : SizedBox()
+                      : SizedBox(),
+                    e.setor != null
+                      ? e.setor != ''
+                        ? Text(
+                            'Setor: ${context.read<SetorRepository>().getSetor(e.setor).nome}',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
+                        : SizedBox()
+                      : SizedBox(),
                     e.createdAt != null
                         ? Text(
                             'criado em: ${formataData(data: e.createdAt)}',
@@ -64,7 +80,7 @@ class AreasScreen extends StatelessWidget {
                 ),
                 leading: null,
                 trailing: Icon(
-                  FeatherIcons.moreHorizontal,
+                  FeatherIcons.chevronRight,
                   color: Colors.grey[400],
                 ),
               ),

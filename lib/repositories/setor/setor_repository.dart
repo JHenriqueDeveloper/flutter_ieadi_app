@@ -21,6 +21,15 @@ class SetorRepository extends ChangeNotifier {
   List<SetorModel> _listSetor = [];
   List<SetorModel> get getListSetor => _listSetor;
 
+  SetorModel getSetor(String id) {
+    for (SetorModel e in _listSetor) {
+      if (e.id == id) {
+        return e;
+      }
+    }
+    return null;
+  }
+
   Future<void> loadSetor({
     Function onFail,
   }) async {

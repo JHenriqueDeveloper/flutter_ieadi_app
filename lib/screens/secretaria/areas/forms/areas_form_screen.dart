@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../helpers/validator.dart';
@@ -50,6 +51,48 @@ class _AreaFormState extends State<AreaForm> {
             ? LightStyle.paleta['Sucesso']
             : Theme.of(context).errorColor,
       ));
+
+  List<DropdownMenuItem<String>> _listCongreg({
+    BuildContext context,
+  }) {
+    List<CongregModel> list = context.read<CongregRepository>().getListCongregs;
+
+    return list.map<DropdownMenuItem<String>>((CongregModel congreg) {
+      return DropdownMenuItem(
+        value: congreg.id,
+        child: Text(
+              congreg.nome,
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                height: 1.5,
+                letterSpacing: 0,
+                color: LightStyle.paleta['Cinza'],
+              ),
+            ),
+      );
+    }).toList();
+  }
+
+  List<DropdownMenuItem<String>> _listSetor({
+    BuildContext context,
+  }) {
+    List<SetorModel> list = context.read<SetorRepository>().getListSetor;
+
+    return list.map<DropdownMenuItem<String>>((SetorModel setor) {
+      return DropdownMenuItem(
+        value: setor.id,
+        child: Text(
+              setor.nome,
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                height: 1.5,
+                letterSpacing: 0,
+                color: LightStyle.paleta['Cinza'],
+              ),
+            ),
+      );
+    }).toList();
+  }
 
   Widget _buttonSave({
     BuildContext context,
@@ -118,7 +161,7 @@ class _AreaFormState extends State<AreaForm> {
         return DefaultForm(
           formKey: _formKey,
           scaffoldKey: _scaffoldKey,
-          title: _title,
+          title: _area?.nome ?? _title,
           form: [
             SizedBox(height: 48),
             TextFormField(
@@ -139,7 +182,41 @@ class _AreaFormState extends State<AreaForm> {
               initialValue: _area?.nome ?? null,
             ),
             SizedBox(height: 16),
-            
+
+            ListTile(
+              //tileColor: LightStyle.paleta['PrimariaCinza'],
+              title: Text(
+                'Sede',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              enabled: !state.isLoading,
+              trailing: DropdownButton(
+                underline: Container(height: 0, color: Colors.transparent),
+                value: _area?.sede,
+                hint: Text('Escolha'),
+                onChanged: (value) => setState(() => _area.sede = value),
+                style: Theme.of(context).textTheme.bodyText1,
+                items: this._listCongreg(context: context),
+              ),
+            ),
+            SizedBox(height: 8),
+            ListTile(
+              //tileColor: LightStyle.paleta['PrimariaCinza'],
+              title: Text(
+                'Setor',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              enabled: !state.isLoading,
+              trailing: DropdownButton(
+                underline: Container(height: 0, color: Colors.transparent),
+                value: _area?.setor,
+                hint: Text('Escolha'),
+                onChanged: (value) => setState(() => _area.setor = value),
+                style: Theme.of(context).textTheme.bodyText1,
+                items: this._listSetor(context: context),
+              ),
+            ),
+            SizedBox(height: 32),
             _area.id != null 
             ? Row(
               mainAxisSize: MainAxisSize.max,

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../helpers/util.dart';
 import '../../../../helpers/validator.dart';
+import '../../../../models/models.dart';
 import '../../../../repositories/repositories.dart';
 import '../../../../style/style.dart';
 import '../../../../widgets/widgets.dart';
@@ -90,6 +90,27 @@ class _CongregFormState extends State<CongregForm> {
       )
       .toList();
 
+  List<DropdownMenuItem<String>> _listAreas({
+    BuildContext context,
+  }) {
+    List<AreasModel> list = context.read<AreasRepository>().getListAreas;
+
+    return list.map<DropdownMenuItem<String>>((AreasModel area) {
+      return DropdownMenuItem(
+        value: area.id,
+        child: Text(
+          area.nome,
+          style: GoogleFonts.roboto(
+            fontSize: 16,
+            height: 1.5,
+            letterSpacing: 0,
+            color: LightStyle.paleta['Cinza'],
+          ),
+        ),
+      );
+    }).toList();
+  }
+
   Widget _buttonSave({
     BuildContext context,
     state,
@@ -159,7 +180,7 @@ class _CongregFormState extends State<CongregForm> {
         return DefaultForm(
           formKey: _formKey,
           scaffoldKey: _scaffoldKey,
-          title: _title,
+          title: _congreg?.nome ?? _title,
           form: [
             UploadImage(
               onTap: () => _selectImage(context),
@@ -208,6 +229,25 @@ class _CongregFormState extends State<CongregForm> {
               initialValue: _congreg?.dataFundacao ?? null,
             ),
             SizedBox(height: 16),
+            ListTile(
+              //tileColor: LightStyle.paleta['PrimariaCinza'],
+              title: Text(
+                'Área',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              enabled: !state.isLoading,
+              trailing: DropdownButton(
+                underline: Container(height: 0, color: Colors.transparent),
+                value: _congreg?.idArea,
+                hint: Text('Escolha'),
+                onChanged: (value) => setState(
+                  () => _congreg.idArea = value,
+                ),
+                style: Theme.of(context).textTheme.bodyText1,
+                items: this._listAreas(context: context),
+              ),
+            ),
+            SizedBox(height: 32),
             TextFormField(
               keyboardType: TextInputType.name,
               autocorrect: false,
@@ -322,6 +362,7 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               trailing: DropdownButton(
+                underline: Container(height: 0, color: Colors.transparent),
                 value: _congreg?.uf,
                 hint: Text('UF'),
                 onChanged: (value) => setState(() => _congreg.uf = value),
@@ -423,7 +464,8 @@ class _CongregFormState extends State<CongregForm> {
               initialValue: _congreg?.celular ?? null,
             ),
             SizedBox(height: 16),
-            Row(
+            _congreg?.id != null
+            ? Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -433,81 +475,30 @@ class _CongregFormState extends State<CongregForm> {
                   textAlign: TextAlign.left,
                 ),
               ],
-            ),
-            SizedBox(height: 16),
-            ListTile(
-              //tileColor: LightStyle.paleta['PrimariaCinza'],
-              title: Text(
-                'É a sede do campo?',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              enabled: !state.isLoading,
-              trailing: Switch(
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (bool value) =>
-                    setState(() => _congreg.isSedeCampo = value),
-                value: _congreg?.isSedeCampo ?? false,
-              ),
-            ),
-            SizedBox(height: 8),
-            ListTile(
-              //tileColor: LightStyle.paleta['PrimariaCinza'],
-              title: Text(
-                'É sede de Setor?',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              enabled: !state.isLoading,
-              trailing: Switch(
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (bool value) =>
-                    setState(() => _congreg.isSedeSetor = value),
-                value: _congreg?.isSedeSetor ?? false,
-              ),
-            ),
-            SizedBox(height: 8),
-            ListTile(
-              //tileColor: LightStyle.paleta['PrimariaCinza'],
-              title: Text(
-                'É sede de Área?',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              enabled: !state.isLoading,
-              trailing: Switch(
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (bool value) =>
-                    setState(() => _congreg.isSedeArea = value),
-                value: _congreg?.isSedeArea ?? false,
-              ),
-            ),
-
-            _congreg.id != null 
-            ? SizedBox(height: 8)
-            : SizedBox(),
-
-            _congreg?.id != null
-            ? ListTile(
-              //tileColor: LightStyle.paleta['PrimariaCinza'],
-              title: Text(
-                _congreg?.isActive != null 
-                ? _congreg?.isActive == true
-                  ? 'Desativar'
-                  : 'Ativar'
-                : 'Ativar',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              enabled: !state.isLoading,
-              trailing: Switch(
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (bool value) =>
-                    setState(() => _congreg.isActive = value),
-                value: _congreg?.isActive ?? false,
-              ),
             )
             : SizedBox(),
-
-
+            SizedBox(height: _congreg?.id != null ? 16 : 0),
+            _congreg?.id != null
+                ? ListTile(
+                    //tileColor: LightStyle.paleta['PrimariaCinza'],
+                    title: Text(
+                      _congreg?.isActive != null
+                          ? _congreg?.isActive == true
+                              ? 'Desativar'
+                              : 'Ativar'
+                          : 'Ativar',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    enabled: !state.isLoading,
+                    trailing: Switch(
+                      activeColor: Theme.of(context).primaryColor,
+                      onChanged: (bool value) =>
+                          setState(() => _congreg.isActive = value),
+                      value: _congreg?.isActive ?? false,
+                    ),
+                  )
+                : SizedBox(),
             SizedBox(height: 32),
-
             _buttonSave(
               context: context,
               state: state,

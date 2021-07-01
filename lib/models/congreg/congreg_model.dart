@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CongregModel {
   String id;
+  String idArea;
   String nome;
   String dataFundacao;
   String unidadeConsumidora;
@@ -21,21 +22,16 @@ class CongregModel {
   String email;
 
   //configurações
-  bool isSedeCampo;
-  bool isSedeSetor;
-  bool isSedeArea;
   bool isActive;
   DateTime createdAt;
 
   CongregModel({
     this.id,
+    this.idArea,
     this.nome,
     this.dataFundacao,
     this.unidadeConsumidora,
     this.profileImageUrl,
-    this.isSedeCampo,
-    this.isSedeSetor,
-    this.isSedeArea,
     this.isActive,
     this.cep,
     this.complemento,
@@ -53,13 +49,11 @@ class CongregModel {
       FirebaseFirestore.instance.doc('congregs/${this.id}');
 
   get getId => id;
+  get getIdArea => idArea;
   get getNome => nome;
   get getDataFundacao => dataFundacao;
   get getUnidadeConsumidora => unidadeConsumidora;
   get getProfileImageUrl => profileImageUrl;
-  get getIsSedeCampo => isSedeCampo;
-  get getIsSedeArea => isSedeArea;
-  get getIsSedeSetor => isSedeSetor;
   get getIsActive => isActive;
   get getCep => cep;
   get getComplemento => complemento;
@@ -73,15 +67,13 @@ class CongregModel {
   get getCreatedAt => createdAt;
 
   set setId(String id) => this.id = id;
+  set setIdAdea(String idArea) => this.idArea = idArea;
   set setNome(String nome) => this.nome = nome;
   set setDataFundacao(String dataFundacao) => this.dataFundacao = dataFundacao;
   set setUnidadeConsumidora(String unidadeConsumidora) =>
       this.unidadeConsumidora = unidadeConsumidora;
   set setProfileImageUrl(String profileImageUrl) =>
       this.profileImageUrl = profileImageUrl;
-  set setIsSedeCampo(bool isSedeCampo) => this.isSedeCampo = isSedeCampo;
-  set setIsSedeArea(bool isSedeArea) => this.isSedeArea = isSedeArea;
-  set setIsSedeSetor(bool isSedeSetor) => this.isSedeSetor = isSedeSetor;
   set setIsactive(bool isActive) => this.isActive = isActive;
   set setCep(String cep) => this.cep = cep;
   set setComplemento(String complemento) => this.complemento = complemento;
@@ -95,13 +87,11 @@ class CongregModel {
   set setCreatedAt(DateTime createdAt) => this.createdAt = createdAt;
 
   Map<String, dynamic> toDocument() => {
+        'idArea': idArea,
         'nome': nome,
         'dataFundacao': dataFundacao,
         'unidadeConsumidora': unidadeConsumidora,
         'profileImageUrl': profileImageUrl,
-        'isSedeCampo': isSedeCampo,
-        'isSedeSetor': isSedeSetor,
-        'isSedeArea': isSedeArea,
         'isActive': isActive,
         'cep': cep,
         'complemento': complemento,
@@ -119,13 +109,11 @@ class CongregModel {
 
   static CongregModel empty = CongregModel(
     id: '',
+    idArea: '',
     nome: '',
     dataFundacao: '',
     unidadeConsumidora: '',
     profileImageUrl: '',
-    isSedeCampo: false,
-    isSedeSetor: false,
-    isSedeArea: false,
     isActive: false,
     cep: '',
     complemento: '',
@@ -144,13 +132,11 @@ class CongregModel {
     final data = doc.data();
     return CongregModel(
       id: doc.id,
+      idArea: data['idArea'] as String,
       nome: data['nome'] as String,
       dataFundacao: data['dataFundacao'] as String,
       unidadeConsumidora: data['unidadeConsumidora'] as String,
       profileImageUrl: data['profileImageUrl'] as String,
-      isSedeCampo: data['isSedeCampo'] as bool,
-      isSedeSetor: data['isSedeSetor'] as bool,
-      isSedeArea: data['isSedeArea'] as bool,
       isActive: data['isActive'] as bool,
       cep: data['cep'] as String,
       complemento: data['complemento'] as String,

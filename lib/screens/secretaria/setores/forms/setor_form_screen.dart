@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../helpers/validator.dart';
@@ -51,6 +52,27 @@ class _SetorFormState extends State<SetorForm> {
             : Theme.of(context).errorColor,
       ));
 
+  List<DropdownMenuItem<String>> _listCongreg({
+    BuildContext context,
+  }) {
+    List<CongregModel> list =
+        context.read<CongregRepository>().getListCongregs;
+    return list.map<DropdownMenuItem<String>>((CongregModel congreg) {
+      return DropdownMenuItem(
+        value: congreg.id,
+        child: Text(
+          congreg.nome,
+          style: GoogleFonts.roboto(
+            fontSize: 16,
+            height: 1.5,
+            letterSpacing: 0,
+            color: LightStyle.paleta['Cinza'],
+          ),
+        ),
+      );
+    }).toList();
+  }
+
   Widget _buttonSave({
     BuildContext context,
     state,
@@ -75,8 +97,7 @@ class _SetorFormState extends State<SetorForm> {
                               Navigator.of(context).pop();
                               _snackBar(
                                   context: context,
-                                  msg:
-                                      'Novo setor adicionado com successo!');
+                                  msg: 'Novo setor adicionado com successo!');
                             },
                           );
                     } else {
@@ -84,8 +105,7 @@ class _SetorFormState extends State<SetorForm> {
                             setor: _setor,
                             onFail: (e) => _snackBar(
                               context: context,
-                              msg:
-                                  'Não foi possivel atualizar o setor: $e',
+                              msg: 'Não foi possivel atualizar o setor: $e',
                               isSuccess: false,
                             ),
                             onSuccess: (uid) {
@@ -118,7 +138,7 @@ class _SetorFormState extends State<SetorForm> {
         return DefaultForm(
           formKey: _formKey,
           scaffoldKey: _scaffoldKey,
-          title: _title,
+          title: _setor?.nome ?? _title,
           form: [
             SizedBox(height: 48),
             TextFormField(
@@ -139,49 +159,58 @@ class _SetorFormState extends State<SetorForm> {
               initialValue: _setor?.nome ?? null,
             ),
             SizedBox(height: 16),
-            
-            _setor.id != null 
-            ? Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  'Outros',
-                  style: Theme.of(context).textTheme.bodyText1,
-                  textAlign: TextAlign.left,
-                ),
-              ],
-            )
-            : SizedBox(),
-
-            _setor.id != null 
-            ? SizedBox(height: 16)
-            : SizedBox(),
-
-            _setor?.id != null
-            ? ListTile(
+            ListTile(
               //tileColor: LightStyle.paleta['PrimariaCinza'],
               title: Text(
-                _setor?.isActive != null 
-                ? _setor?.isActive == true
-                  ? 'Desativar'
-                  : 'Ativar'
-                : 'Ativar',
+                'Sede',
                 style: Theme.of(context).textTheme.bodyText1,
               ),
               enabled: !state.isLoading,
-              trailing: Switch(
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (bool value) =>
-                    setState(() => _setor.isActive = value),
-                value: _setor?.isActive ?? false,
+              trailing: DropdownButton(
+                underline: Container(height: 0, color: Colors.transparent),
+                value: _setor?.sede,
+                hint: Text('Escolha'),
+                onChanged: (value) => setState(() => _setor.sede = value),
+                style: Theme.of(context).textTheme.bodyText1,
+                items: this._listCongreg(context: context),
               ),
-            )
-            : SizedBox(),
-
-
+            ),
             SizedBox(height: 32),
-
+            _setor.id != null
+                ? Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Outros',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.left,
+                      ),
+                    ],
+                  )
+                : SizedBox(),
+            _setor.id != null ? SizedBox(height: 16) : SizedBox(),
+            _setor?.id != null
+                ? ListTile(
+                    //tileColor: LightStyle.paleta['PrimariaCinza'],
+                    title: Text(
+                      _setor?.isActive != null
+                          ? _setor?.isActive == true
+                              ? 'Desativar'
+                              : 'Ativar'
+                          : 'Ativar',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    enabled: !state.isLoading,
+                    trailing: Switch(
+                      activeColor: Theme.of(context).primaryColor,
+                      onChanged: (bool value) =>
+                          setState(() => _setor.isActive = value),
+                      value: _setor?.isActive ?? false,
+                    ),
+                  )
+                : SizedBox(),
+            SizedBox(height: 32),
             _buttonSave(
               context: context,
               state: state,

@@ -25,12 +25,6 @@ class CongregacoesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<CongregRepository>(
       builder: (_, state, __) {
-        String _verificaSede(e) {
-          if (e.isSedeCampo != null && e.isSedeCampo) return 'Sede do Campo';
-          if (e.isSedeSetor != null && e.isSedeSetor) return 'Sede de Setor';
-          if (e.isSedeArea != null && e.isSedeArea) return 'Sede de Área';
-          return '';
-        }
 
         List<Widget> _listCongregs() {
           List<Widget> list = [];
@@ -56,12 +50,14 @@ class CongregacoesScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _verificaSede(e) != ''
+                    e.idArea != null
+                      ? e.idArea != ''
                         ? Text(
-                            _verificaSede(e),
+                            'Área: ${context.read<AreasRepository>().getArea(e.idArea).nome}',
                             style: Theme.of(context).textTheme.bodyText1,
                           )
-                        : SizedBox(),
+                        : SizedBox()
+                      : SizedBox(),
                     e.createdAt != null
                         ? Text(
                             'criado em: ${formataData(data: e.createdAt)}',
@@ -97,7 +93,7 @@ class CongregacoesScreen extends StatelessWidget {
                         ),
                 ),
                 trailing: Icon(
-                  FeatherIcons.moreHorizontal,
+                  FeatherIcons.chevronRight,
                   color: Colors.grey[400],
                 ),
               ),

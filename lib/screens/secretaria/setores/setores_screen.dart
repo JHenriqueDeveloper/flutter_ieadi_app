@@ -48,6 +48,19 @@ class SetorScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    e.sede != null
+                        ? e.sede != ''
+                            ? Consumer<CongregRepository>(
+                                builder: (_, congreg, __) {
+                                  return Text(
+                                    'Sede: ${congreg.getCongreg(e.sede).nome}',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  );
+                                },
+                              )
+                            : SizedBox()
+                        : SizedBox(),
                     e.createdAt != null
                         ? Text(
                             'criado em: ${formataData(data: e.createdAt)}',
@@ -64,7 +77,7 @@ class SetorScreen extends StatelessWidget {
                 ),
                 leading: null,
                 trailing: Icon(
-                  FeatherIcons.moreHorizontal,
+                  FeatherIcons.chevronRight,
                   color: Colors.grey[400],
                 ),
               ),
