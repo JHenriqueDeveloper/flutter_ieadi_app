@@ -1,59 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum Procedencias {
-  BATIZADO_NO_CAMPO,
-  CARTA_MUDANCA_MINISTERIO,
-  CARTA_MUDANCA_OUTRO_MINISTERIO,
-  ACLAMACAO,
-}
-
-enum TiposDeMembros {
-  MEMBRO,
-  CRIANCA,
-  CONGREGADO,
-  AMIGO_DO_EVANGELHO,
-}
-
-enum SituacoesMembros {
-  AFASTADO,
-  DISCIPLINADO,
-  COMUNHAO,
-  MUDOU_DE_CAMPO,
-  MUDOU_DE_MINISTERIO,
-  FALECIDO,
-}
-
-enum EstadosCivis {
-  SOLTEIRO,
-  CASADO,
-  DIVORCIADO,
-  EMANCEBADO,
-  VIUVO,
-}
-
-enum Genero {
-  MASCULINO,
-  FEMININO,
-}
-
-enum TiposSanguineos {
-  A_POSITIVO,
-  A_NEGATIVO,
-  B_POSITIVO,
-  B_NEGATIVO,
-  AB_POSITIVO,
-  AB_NEGATIVO,
-  O_POSITIVO,
-  O_NEGATIVO,
-}
-
-enum TiposNecessidadesEspeciais {
-  VISUAL,
-  AUDITIVA,
-  MENTAL,
-  FISICA,
-}
-
 class UserModel {
   //Conta
   String id;
@@ -122,7 +68,8 @@ class UserModel {
   bool isAdmin; //
   bool isMemberCard; //já possui cartão de membro
   bool isVerified; //conta verificada
-  //DateTime createAt;
+  bool isActive;
+  DateTime createdAt;
 
   UserModel({
     this.id,
@@ -190,7 +137,8 @@ class UserModel {
     this.isAdmin,
     this.isMemberCard,
     this.isVerified,
-    //this.createAt,
+    this.isActive,
+    this.createdAt,
   });
 
   get getId => id;
@@ -284,7 +232,8 @@ class UserModel {
         'isAdmin': isAdmin,
         'isMemberCard': isMemberCard,
         'isVerified': isVerified,
-        //'createAt': Timestamp.fromDate(createAt),
+        'isActive': isActive,
+        'createdAt' : Timestamp.fromDate(createdAt)
       };
 
   static UserModel empty = UserModel(
@@ -352,7 +301,8 @@ class UserModel {
     isAdmin: false,
     isMemberCard: false,
     isVerified: false,
-    //createAt: DateTime.now(),
+    isActive: false,
+    createdAt: DateTime.now(),
   );
 
   factory UserModel.fromDocument(DocumentSnapshot doc) {
@@ -360,70 +310,71 @@ class UserModel {
     final data = doc.data();
     return UserModel(
       id: doc.id,
-      username: data['username'] ?? '',
-      matricula: data['matricula'] ?? '',
-      email: data['email'] ?? '',
-      profileImageUrl: data['profileImageUrl'] ?? '',
+      username: data['username']  as String,
+      matricula: data['matricula'] as String,
+      email: data['email'] as String,
+      profileImageUrl: data['profileImageUrl'] as String,
       //Dados Civis
-      cpf: data['cpf'] ?? '',
-      rg: data['rg'] ?? '',
-      naturalidade: data['naturalidade'] ?? '',
-      nomePai: data['nomePai'] ?? '',
-      nomeMae: data['nomeMae'] ?? '',
-      dataNascimento: data['dataNascimento'] ?? '',
-      estadoCivil: data['estadoCivil'] ?? '',
-      genero: data['genero'] ?? '',
-      tipoSanguineo: data['tipoSanguineo'] ?? '',
+      cpf: data['cpf'] as String,
+      rg: data['rg'] as String,
+      naturalidade: data['naturalidade'] as String,
+      nomePai: data['nomePai'] as String,
+      nomeMae: data['nomeMae'] as String,
+      dataNascimento: data['dataNascimento'] as String,
+      estadoCivil: data['estadoCivil'] as String,
+      genero: data['genero'] as String,
+      tipoSanguineo: data['tipoSanguineo'] as String,
       //Dados eleitorais
-      tituloEleitor: data['tituloEleitor'] ?? '',
-      zonaEleitor: data['zonaEleitor'] ?? '',
-      secaoEleitor: data['secaoEleitor'] ?? '',
+      tituloEleitor: data['tituloEleitor'] as String,
+      zonaEleitor: data['zonaEleitor'] as String,
+      secaoEleitor: data['secaoEleitor'] as String,
       //Necessidades especiais
-      isPortadorNecessidade: data['isPortadorNecessidade'] ?? false,
-      tipoNecessidade: data['tipoNecessidade'] ?? '',
-      descricaoNecessidade: data['descricaoNecessidade'] ?? '',
+      isPortadorNecessidade: data['isPortadorNecessidade'] as bool,
+      tipoNecessidade: data['tipoNecessidade'] as String,
+      descricaoNecessidade: data['descricaoNecessidade'] as String,
       //Endereco
-      cep: data['cep'] ?? '',
-      uf: data['uf'] ?? '',
-      cidade: data['cidade'] ?? '',
-      bairro: data['bairro'] ?? '',
-      logradouro: data['logradouro'] ?? '',
-      complemento: data['complemento'] ?? '',
-      numero: data['numero'] ?? '',
+      cep: data['cep'] as String,
+      uf: data['uf'] as String,
+      cidade: data['cidade'] as String,
+      bairro: data['bairro'] as String,
+      logradouro: data['logradouro'] as String,
+      complemento: data['complemento'] as String,
+      numero: data['numero'] as String,
       //Contatos
-      numeroFixo: data['numeroFixo'] ?? '',
-      numeroCelular: data['numeroCelular'] ?? '',
+      numeroFixo: data['numeroFixo'] as String,
+      numeroCelular: data['numeroCelular'] as String,
       //Perfil Cristão
-      congregacao: data['congregacao'] ?? '',
-      tipoMembro: data['tipoMembro'] ?? '',
-      situacaoMembro: data['situacaoMembro'] ?? '',
-      procedenciaMembro: data['procedenciaMembro'] ?? '',
-      origemMembro: data['origemMembro'] ?? '',
-      dataMudanca: data['dataMudanca'] ?? '',
-      dataConversao: data['dataConversao'] ?? '',
-      localConversao: data['localConversao'] ?? '',
-      dataBatismoAguas: data['dataBatismoAguas'] ?? '',
-      localBatismoAguas: data['localBatismoAguas'] ?? '',
-      dataBatismoEspiritoSanto: data['dataBatismoEspiritoSanto'] ?? '',
-      localBatismoEspiritoSanto: data['localBatismoEspiritoSanto'] ?? '',
-      isDizimista: data['isDizimista'] ?? false,
-      bio: data['bio'] ?? '', //biografia do membro
+      congregacao: data['congregacao'] as String,
+      tipoMembro: data['tipoMembro'] as String,
+      situacaoMembro: data['situacaoMembro'] as String,
+      procedenciaMembro: data['procedenciaMembro'] as String,
+      origemMembro: data['origemMembro'] as String,
+      dataMudanca: data['dataMudanca'] as String,
+      dataConversao: data['dataConversao'] as String,
+      localConversao: data['localConversao'] as String,
+      dataBatismoAguas: data['dataBatismoAguas'] as String,
+      localBatismoAguas: data['localBatismoAguas'] as String,
+      dataBatismoEspiritoSanto: data['dataBatismoEspiritoSanto'] as String,
+      localBatismoEspiritoSanto: data['localBatismoEspiritoSanto'] as String,
+      isDizimista: data['isDizimista'] as bool,
+      bio: data['bio'] as String, //biografia do membro
       //curriculo
-      isProcurandoOportunidades: data['isProcurandoOportunidades'] ?? false,
-      profissao: data['profissao'] ?? '',
-      pretensaoSalarial: data['pretensaoSalarial'] ?? '',
+      isProcurandoOportunidades: data['isProcurandoOportunidades'] as bool,
+      profissao: data['profissao'] as String,
+      pretensaoSalarial: data['pretensaoSalarial'] as String,
       objetivos: data['objetivos'] ?? '',
-      bioProfissional: data['bioProfissional'] ?? '',
+      bioProfissional: data['bioProfissional'] as String,
       //Registro de membros
-      dataRegistro: data['dataRegistro'] ?? '',
-      numeroRegistro: data['numeroRegistro'] ?? '',
-      livroRegistro: data['livroRegistro'] ?? '',
-      paginaRegistro: data['paginaRegistro'] ?? '',
+      dataRegistro: data['dataRegistro'] as String,
+      numeroRegistro: data['numeroRegistro'] as String,
+      livroRegistro: data['livroRegistro'] as String,
+      paginaRegistro: data['paginaRegistro'] as String,
       //configurações da conta
-      isAdmin: data['isAdmin'] ?? false,
-      isMemberCard: data['isMemberCard'] ?? false,
-      isVerified: data['isVerified'] ?? false,
-      //createAt: (data['createAt'] as Timestamp)?.toDate() ?? DateTime.now(),
+      isAdmin: data['isAdmin'] as bool,
+      isMemberCard: data['isMemberCard'] as bool,
+      isVerified: data['isVerified'] as bool,
+      isActive: data['isActive'] as bool,
+      createdAt: (data['createdAt'] as Timestamp)?.toDate(),
     );
   }
 
@@ -440,16 +391,5 @@ class UserModel {
     .doc('users/${user.id}')
     .update(user.toDocument());
   }
-
-/*
-  Future<void> updateUser({
-    UserModel user
-  }) async {
-    await _firebaseFirestore
-        .collection(Paths.users)
-        .doc(user.id)
-        .update(user.toDocument());
-  }
-*/
 
 }

@@ -4,3 +4,4 @@ export 'storage/storage_repository.dart';
 export 'congreg/congreg_repository.dart';
 export 'areas/areas_repository.dart';
 export 'setor/setor_repository.dart';
+export 'membro/membro_repository.dart';

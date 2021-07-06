@@ -8,7 +8,7 @@ class MatriculaHelper {
 
   final String userCpf;
   final String userId;
-  
+
   String matricula;
 
   MatriculaHelper({
@@ -33,5 +33,4 @@ class MatriculaHelper {
   }
 
   String gerarMatricula(String mat) => mat;
-
 }

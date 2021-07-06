@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../../style/style.dart';
 
@@ -16,14 +17,14 @@ class ButtonDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 160,
-      height: 80,
+      width: 120.sp,
+      height: 46,
       child: ElevatedButton(
         child: Text(this.text),
         style: ElevatedButton.styleFrom(
           primary: LightStyle.paleta['Primaria'],
           textStyle: GoogleFonts.roboto(
-            fontSize: 14,
+            fontSize: 12.sp,
             fontWeight: FontWeight.bold,
             color: LightStyle.paleta['Branco'],
             letterSpacing: 0,

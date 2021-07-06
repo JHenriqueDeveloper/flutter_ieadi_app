@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sizer/sizer.dart';
 
 enum TiposCard {
   MEMBRO,
@@ -18,7 +19,7 @@ class UserCard extends StatelessWidget {
   });
 
   final TextStyle textCardStyle = GoogleFonts.ibmPlexMono(
-    fontSize: 16,
+    fontSize: 12.sp,
     color: Color(0xFFF6F6F6),
     letterSpacing: 0,
   );

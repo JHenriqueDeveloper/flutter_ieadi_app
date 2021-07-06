@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/screens/secretaria/dashboard/widgets/dashboard_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../config/config.dart';
 import '../../../style/style.dart';
@@ -12,14 +13,14 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-          child: Scaffold(
+      child: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           elevation: 0,
           brightness: Brightness.dark,
           backgroundColor: Theme.of(context).backgroundColor,
-          toolbarHeight: 90,
+          toolbarHeight: 60.sp,
           centerTitle: false,
           title: Text(
             'Secretaria',
@@ -46,41 +47,36 @@ class DashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 268,
+                  height: 128.sp,
+                  width: MediaQuery.of(context).size.width,
                   color: Theme.of(context).backgroundColor,
                   padding: EdgeInsets.symmetric(
-                    vertical: 32,
-                    horizontal: 32,
+                    vertical: 24.sp,
+                    horizontal: 24.sp,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    runAlignment: WrapAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          ButtonDashboard(
-                            text: 'Solicitaçãoes',
-                            onPressed: () => context.read<CustomRouter>().setPage(17),
-                          ),
-                          Spacer(),
-                          ButtonDashboard(
-                            text: 'Certificados',
-                            onPressed: () => context.read<CustomRouter>().setPage(10),
-                          ),
-                        ],
+                      ButtonDashboard(
+                        text: 'Solicitaçãoes',
+                        onPressed: () =>
+                            context.read<CustomRouter>().setPage(17),
                       ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          ButtonDashboard(
-                            text: 'Verificações',
-                            onPressed: () => context.read<CustomRouter>().setPage(18),
-                          ),
-                          Spacer(),
-                          ButtonDashboard(
-                            text: 'Documentos',
-                            onPressed: () => context.read<CustomRouter>().setPage(12),
-                          ),
-                        ],
+                      ButtonDashboard(
+                        text: 'Certificados',
+                        onPressed: () =>
+                            context.read<CustomRouter>().setPage(10),
+                      ),
+                      ButtonDashboard(
+                        text: 'Verificações',
+                        onPressed: () =>
+                            context.read<CustomRouter>().setPage(18),
+                      ),
+                      ButtonDashboard(
+                        text: 'Documentos',
+                        onPressed: () =>
+                            context.read<CustomRouter>().setPage(12),
                       ),
                     ],
                   ),
@@ -88,12 +84,12 @@ class DashboardScreen extends StatelessWidget {
                 Container(
                   color: LightStyle.paleta['BgCard'],
                   child: Container(
-                    height: 40,
+                    height: 12.sp,
                     decoration: BoxDecoration(
                       color: Theme.of(context).backgroundColor,
                       borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(40),
-                        bottomRight: Radius.circular(40),
+                        bottomLeft: Radius.circular(24.sp),
+                        bottomRight: Radius.circular(24.sp),
                       ),
                     ),
                   ),
@@ -133,17 +129,18 @@ class DashboardScreen extends StatelessWidget {
                         page: 11,
                       ),
                       ListItemMenu(
-                        title: 'Pastores',
-                        icon: FeatherIcons.book,
-                        badge: false,
-                        page: 15,
-                      ),
-                      ListItemMenu(
                         title: 'Membros',
                         icon: FeatherIcons.users,
                         badge: false,
                         page: 13,
                       ),
+                      ListItemMenu(
+                        title: 'Configurações',
+                        icon: FeatherIcons.settings,
+                        badge: false,
+                        page: 15,
+                      ),
+                      
                     ],
                   ),
                 ),

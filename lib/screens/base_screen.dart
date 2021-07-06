@@ -31,7 +31,7 @@ class BaseScreen extends StatelessWidget {
           DocumentosScreen(), //12
           MembrosScreen(), //13
           MinisterioScreen(), //14
-          PastoresScreen(), //15
+          SettingsScreen(), //15
           SetorScreen(), //16
           SolicitacoesScreen(), //17
           VerificacoesScreen(), //18

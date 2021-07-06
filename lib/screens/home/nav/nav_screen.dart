@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/helpers/image_helper.dart';
@@ -207,7 +208,7 @@ class _NavScreenState extends State<NavScreen> {
             extendBody: true,
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              toolbarHeight: 90,
+              toolbarHeight: 60.sp,
               centerTitle: false,
               title: Text(
                 'Olá, ${userName ?? 'visitante'}!',
@@ -219,6 +220,7 @@ class _NavScreenState extends State<NavScreen> {
                 IconButton(
                   icon: Icon(
                     FeatherIcons.award,
+                    size: 14.sp,
                     color: LightStyle.paleta[
                         user?.isVerified == true ? 'Sucesso' : 'Shadow'],
                   ),
@@ -227,6 +229,7 @@ class _NavScreenState extends State<NavScreen> {
                 IconButton(
                   icon: Icon(
                     FeatherIcons.creditCard,
+                    size: 14.sp,
                     color:
                         LightStyle.paleta[isMemberCard ? 'Primaria' : 'Shadow'],
                   ),
@@ -236,13 +239,17 @@ class _NavScreenState extends State<NavScreen> {
                 IconButton(
                   icon: Icon(
                     FeatherIcons.bell,
+                    size: 14.sp,
                     color: LightStyle.paleta['Shadow'],
                   ),
                   onPressed: () => _handlerShowAlerts(false),
                 ),
                 isAdmin
                     ? IconButton(
-                        icon: Icon(FeatherIcons.sliders),
+                        icon: Icon(
+                          FeatherIcons.sliders,
+                          size: 14.sp,
+                        ),
                         onPressed: () => context.read<CustomRouter>().setPage(8), //_handlerScreen(DashboardScreen()),
                         )
                     : Container(),
@@ -255,15 +262,15 @@ class _NavScreenState extends State<NavScreen> {
                   decoration: BoxDecoration(
                       color: Theme.of(context).canvasColor,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
+                        topLeft: Radius.circular(24.sp),
+                        topRight: Radius.circular(24.sp),
                       )),
                   //padding: const EdgeInsets.symmetric(vertical: 32),
                   child: ListView(
                     children: [
                       _showUserCard
                           ? AnimatedContainer(
-                              height: _showUserCard ? 268 : 0,
+                              height: _showUserCard ? 198.sp : 0,
                               duration: Duration(milliseconds: 200),
                               //color: LightStyle.paleta['Background'],
 
@@ -289,7 +296,7 @@ class _NavScreenState extends State<NavScreen> {
                             )
                           : Container(),
                       ProfileImage(
-                        radius: 120,
+                        radius: 120.sp,
                         profileImageUrl: user?.profileImageUrl != null
                             ? user?.profileImageUrl != ''
                                 ? user?.profileImageUrl
@@ -354,7 +361,7 @@ class _NavScreenState extends State<NavScreen> {
                         page: 6,
                       ),
                       /*
-                      TODO Fazer atualização de conta
+                      TODO: Fazer atualização de conta
                       ListItemMenu(
                         title: 'Conta',
                         icon: FeatherIcons.key,

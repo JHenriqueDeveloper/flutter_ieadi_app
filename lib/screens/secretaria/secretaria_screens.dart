@@ -5,7 +5,7 @@ export 'congregacoes/congregacoes_screen.dart';
 export 'documentos/documentos_screen.dart';
 export 'membros/membros_screen.dart';
 export 'ministerio/ministerio_screen.dart';
-export 'pastores/pastores_screen.dart';
+export 'settings/settings_screen.dart';
 export 'setores/setores_screen.dart';
 export 'solicitacoes/solicitacoes_screen.dart';
 export 'verificacoes/verificacoes_screen.dart';

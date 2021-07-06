@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sizer/sizer.dart';
 
 class LightStyle {
 
@@ -45,13 +46,16 @@ class LightStyle {
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: paleta['Primaria'],
         ),
+        iconTheme: IconThemeData(
+          size: 14.sp,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             primary: paleta['Primaria'],
             onPrimary: paleta['Branco'],
             onSurface: paleta['Shadow'],
             textStyle: GoogleFonts.roboto(
-              fontSize: 14,
+              fontSize: 12.sp, //14,
               fontWeight: FontWeight.bold,
               color: paleta['Branco'],
               letterSpacing: 0,
@@ -63,7 +67,7 @@ class LightStyle {
           style: TextButton.styleFrom(
             primary: paleta['Cinza'],
             textStyle: GoogleFonts.roboto(
-              fontSize: 16,
+              fontSize: 12.sp, //16,
               fontWeight: FontWeight.bold,
               letterSpacing: 0,
             ),
@@ -71,64 +75,64 @@ class LightStyle {
         ),
         textTheme: TextTheme(
           headline1: GoogleFonts.roboto(
-            fontSize: 64.0,
+            fontSize: 48.sp, //64.0,
             fontWeight: FontWeight.bold,
             color: paleta['Primaria'],
           ),
           headline2: GoogleFonts.roboto(
-            fontSize: 32,
+            fontSize: 24.sp, //32,
             fontWeight: FontWeight.bold,
             color: paleta['Primaria'],
           ),
           headline3: GoogleFonts.roboto(
-            fontSize: 48,
+            fontSize: 36.sp, //48,
             fontWeight: FontWeight.bold,
             color: paleta['Branco'],
             height: 1.5,
           ),
           headline4: GoogleFonts.roboto(
-            fontSize: 36,
+            fontSize: 24.sp, //36,
             fontWeight: FontWeight.bold,
             height: 1.5,
             color: paleta['Branco'],
           ),
           headline5: GoogleFonts.roboto(
-            fontSize: 30,
+            fontSize: 18.sp, //30
             fontWeight: FontWeight.bold,
             height: 1.5,
             color: paleta['Branco'],
           ),
           headline6: GoogleFonts.roboto(
-            fontSize: 30,
+            fontSize: 18.sp, //30,
             height: 1.5,
             color: paleta['Background'],
           ),
           subtitle1: TextStyle(
             color: paleta['Branco'],
-            fontSize: 20.0,
+            fontSize:  14.sp, //20.0,
             fontWeight: FontWeight.w600,
           ),
           subtitle2: TextStyle(
             color: paleta['Branco'],
-            fontSize: 16.0,
+            fontSize: 12.sp, //16.0,
             letterSpacing: 0,
             height: 1.5,
             fontWeight: FontWeight.w600,
           ),
           overline: GoogleFonts.roboto( //texto button vermelho
-            fontSize: 16,
+            fontSize: 12.sp, //16,
             fontWeight: FontWeight.bold,
             letterSpacing: 0,
             color: paleta['Erro'],
           ),
           bodyText1: GoogleFonts.roboto(
-            fontSize: 16,
+            fontSize: 12.sp, //16,
             height: 1.5,
             letterSpacing: 0,
             color: paleta['Cinza'],
           ),
           bodyText2: GoogleFonts.roboto(
-            fontSize: 16,
+            fontSize: 12.sp, //16,
             color: paleta['Branco'],
             letterSpacing: 0,
           ),
@@ -138,12 +142,12 @@ class LightStyle {
           fillColor: paleta['BgSecundario'],
           counterStyle: TextStyle(color: Colors.transparent),
           labelStyle: GoogleFonts.roboto(
-            fontSize: 16,
+            fontSize: 12.sp, //16,
             color: paleta['Cinza'],
             letterSpacing: 0,
           ),
           hintStyle: GoogleFonts.roboto(
-            fontSize: 16,
+            fontSize: 12.sp, //16,
             color: paleta['Branco'],
             letterSpacing: 0,
           ),
@@ -160,15 +164,3 @@ class LightStyle {
 
   );
 }
-
-/*
-AppBar(
-        brightness: Brightness.dark,
-        backgroundColor: paleta['Background'],
-        elevation: 0,
-        leadingWidth: 64,
-        leading: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: 16,
-          ),
-*/

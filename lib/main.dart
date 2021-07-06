@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
+import 'package:sizer/sizer.dart';
 
 import 'repositories/auth/auth_repository.dart';
 
@@ -39,21 +40,29 @@ class IeadiApp extends StatelessWidget {
           create: (_) => SetorRepository(),
           lazy: false,
         ),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: [
-        const Locale('pt', 'BR'),
-      ],
-          title: 'Flutter IEADI app',
-          debugShowCheckedModeBanner: false,
-          theme: LightStyle.themeLight(),
-          initialRoute: '/splash',
-          onGenerateRoute: (route) => CustomRouter.getPageRoute(route.name),
+        ChangeNotifierProvider(
+          create: (_) => MembroRepository(),
+          lazy: false,
         ),
+      ],
+      child: Sizer(
+        builder: (context, orientation, deviceType) {
+          return MaterialApp(
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: [
+              const Locale('pt', 'BR'),
+            ],
+            title: 'Flutter IEADI app',
+            debugShowCheckedModeBanner: false,
+            theme: LightStyle.themeLight(),
+            initialRoute: '/splash',
+            onGenerateRoute: (route) => CustomRouter.getPageRoute(route.name),
+          );
+        },
+      ),
     );
   }
 }

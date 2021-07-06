@@ -6,3 +6,4 @@ export 'items/list_head_menu.dart';
 export 'profileImage/profile_image.dart';
 export 'forms/default_form.dart';
 export 'images/upload_images.dart';
+export 'screens/default_auth_screen.dart';

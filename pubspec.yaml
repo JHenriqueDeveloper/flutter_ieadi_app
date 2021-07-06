@@ -34,9 +34,11 @@ dependencies:
   cpfcnpj: ^1.0.3
   mask_text_input_formatter: ^2.0.0
   brasil_fields: ^0.6.1
+  sizer: ^2.0.13
 
 dependency_overrides:
   intl: ^0.17.0
+  crypto: ^2.0.0
 
 dev_dependencies:
   flutter_test:

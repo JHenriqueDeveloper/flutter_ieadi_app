@@ -73,8 +73,10 @@ class AuthRepository extends ChangeNotifier {
         email: user.email,
         password: user.password,
       );
+
       if (result.user != null) {
         user.id = result.user.uid;
+        user.createdAt = DateTime.now();
         this.user = user;
         await user.saveUser();
 
@@ -112,12 +114,12 @@ class AuthRepository extends ChangeNotifier {
       }
 
       user.profileImageUrl = await _firebaseStorage
-        .ref('images/users/userProfile_$imageId.jpg')
-        .putFile(image)
-        .then((taskSnapshot) => taskSnapshot.ref.getDownloadURL());
+          .ref('images/users/userProfile_$imageId.jpg')
+          .putFile(image)
+          .then((taskSnapshot) => taskSnapshot.ref.getDownloadURL());
 
       this.user = user;
-  
+
       await _firebaseFirestore
           .collection('/users')
           .doc(user.id)
@@ -136,17 +138,19 @@ class AuthRepository extends ChangeNotifier {
     Function onSuccess,
   }) async {
     setLoading = true;
+
     try {
       this.user = user;
+      user.createdAt = user?.createdAt ?? DateTime.now();
 
       await _firebaseFirestore
-          .collection('/users')
+          .collection('users')
           .doc(user.id)
           .update(user.toDocument());
 
       onSuccess(user.id);
     } catch (e) {
-      onFail(e.message);
+      onFail(e);
     }
 
     setLoading = false;
