@@ -8,7 +8,7 @@ class SetorRepository extends ChangeNotifier {
   SetorModel setor;
 
   SetorRepository() {
-    loadSetor(onFail: (e) => print(e));
+    loadSetor();
   }
 
   bool _isLoading = false;
@@ -30,14 +30,14 @@ class SetorRepository extends ChangeNotifier {
     return null;
   }
 
-  Future<void> loadSetor({
-    Function onFail,
-  }) async {
+  Future<void> loadSetor() async {
     setLoading = true;
     try {
-      final setor = await _firebaseFirestore.collection('/setores')
-      .orderBy('createdAt', descending: true)
-      .get();
+      final setor = await _firebaseFirestore
+          .collection('/setores')
+          .orderBy('nome')
+          //.orderBy('createdAt', descending: true)
+          .get();
 
       _listSetor = setor.docs
           .map(
@@ -47,11 +47,11 @@ class SetorRepository extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      onFail(e);
+      print('Erro ao carregar os setores \n $e');
     }
 
     if (this.setor != null) {
-      this.setor = this.setor.getEmpty;
+      this.setor = null;
     }
 
     setLoading = false;
@@ -68,12 +68,14 @@ class SetorRepository extends ChangeNotifier {
         setor.setCreatedAt = DateTime.now();
       }
 
-      this.setor = setor;
-
       await _firebaseFirestore
           .collection('/setores')
           .doc(setor.id)
           .update(setor.toDocument());
+
+      this.setor = setor.getEmpty;
+
+      loadSetor();
 
       onSuccess(setor.id);
     } catch (e) {
@@ -95,12 +97,12 @@ class SetorRepository extends ChangeNotifier {
       var result = await _firebaseFirestore
           .collection('/setores')
           .add(setor.toDocument());
+      
+      this.setor = setor.getEmpty;
 
       loadSetor();
 
       onSuccess(result);
-
-      this.setor = setor.getEmpty;
     } catch (e) {
       onFail(e);
     }

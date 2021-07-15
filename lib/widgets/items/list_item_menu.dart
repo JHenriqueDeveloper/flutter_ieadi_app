@@ -11,6 +11,7 @@ class ListItemMenu extends StatelessWidget {
   final String text;
   final IconData icon;
   final int page;
+  final String form;
   final Function onTap;
   final bool badge;
 
@@ -19,6 +20,7 @@ class ListItemMenu extends StatelessWidget {
     this.text,
     this.icon,
     this.page,
+    this.form,
     this.onTap,
     @required this.badge,
   });
@@ -77,7 +79,7 @@ class ListItemMenu extends StatelessWidget {
             : Icon(icon),
         onTap: this.onTap != null
             ? this.onTap
-            : () => context.read<CustomRouter>().setPage(page),
+            : () => context.read<CustomRouter>().setPage(page, form: form),
       ),
     );
   }

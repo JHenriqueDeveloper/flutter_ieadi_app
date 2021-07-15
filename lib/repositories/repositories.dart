@@ -5,3 +5,5 @@ export 'congreg/congreg_repository.dart';
 export 'areas/areas_repository.dart';
 export 'setor/setor_repository.dart';
 export 'membro/membro_repository.dart';
+export 'ministerio/ministerio_repository.dart';
+export 'solicitacoes/solicitacoes_repository.dart';

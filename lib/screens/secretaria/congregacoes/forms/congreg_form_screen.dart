@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/image_helper.dart';
 import 'package:flutter_ieadi_app/models/congreg/congreg_model.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,35 +17,24 @@ import '../../../../style/style.dart';
 import '../../../../widgets/widgets.dart';
 
 class CongregForm extends StatefulWidget {
-  final CongregModel congreg;
-
-  CongregForm({
-    this.congreg,
-  });
-
+  CongregForm();
   _CongregFormState createState() => _CongregFormState();
 }
 
 class _CongregFormState extends State<CongregForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  static const _ufs = uf_list;
+  final PageController pageController = PageController();
+  final int page = 11;
 
-  CongregModel _congreg = new CongregModel();
-  String _title;
-  bool _isAddCong;
+  CongregModel congreg = new CongregModel();
+
+  void _handlerForm(BuildContext context) =>
+      context.read<CustomRouter>().setPage(page);
 
   @override
   void initState() {
     super.initState();
-    if (widget.congreg != null) {
-      _congreg = widget.congreg;
-      _title = 'Atualizar Congregação';
-      _isAddCong = false;
-    } else {
-      _title = 'Adicionar Congregação';
-      _isAddCong = true;
-    }
   }
 
   File profileImage;
@@ -73,120 +63,122 @@ class _CongregFormState extends State<CongregForm> {
             : Theme.of(context).errorColor,
       ));
 
-  final List<DropdownMenuItem<String>> _dropDownUf = _ufs
-      .map(
-        (String value) => DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: GoogleFonts.roboto(
-              fontSize: 16,
-              height: 1.5,
-              letterSpacing: 0,
-              color: LightStyle.paleta['Cinza'],
-            ),
-          ),
-        ),
-      )
-      .toList();
-
-  List<DropdownMenuItem<String>> _listAreas({
-    BuildContext context,
-  }) {
-    List<AreasModel> list = context.read<AreasRepository>().getListAreas;
-
-    return list.map<DropdownMenuItem<String>>((AreasModel area) {
-      return DropdownMenuItem(
-        value: area.id,
-        child: Text(
-          area.nome,
-          style: GoogleFonts.roboto(
-            fontSize: 16,
-            height: 1.5,
-            letterSpacing: 0,
-            color: LightStyle.paleta['Cinza'],
-          ),
-        ),
-      );
-    }).toList();
-  }
-
-  Widget _buttonSave({
-    BuildContext context,
-    state,
-  }) =>
-      SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: 46,
-        child: ElevatedButton(
-          onPressed: !state.isLoading
-              ? () {
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
-                    if (_isAddCong) {
-                      context.read<CongregRepository>().addCongreg(
-                            congreg: _congreg,
-                            image: profileImage ?? null,
-                            onFail: (e) => _snackBar(
-                              context: context,
-                              msg: 'Não foi possivel adicionar congregação: $e',
-                              isSuccess: false,
-                            ),
-                            onSuccess: (uid) {
-                              Navigator.of(context).pop();
-                              _snackBar(
-                                  context: context,
-                                  msg:
-                                      'Nova congregação adicionada com successo!');
-                            },
-                          );
-                    } else {
-                      context.read<CongregRepository>().updateCongreg(
-                            congreg: _congreg,
-                            image: profileImage ?? null,
-                            onFail: (e) => _snackBar(
-                              context: context,
-                              msg:
-                                  'Não foi possivel atualizar a congregação: $e',
-                              isSuccess: false,
-                            ),
-                            onSuccess: (uid) {
-                              Navigator.of(context).pop();
-                              _snackBar(
-                                  context: context,
-                                  msg: 'Congregação atualizada com sucesso!');
-                            },
-                          );
-                    }
-                  }
-                }
-              : () {},
-          child: !state.isLoading
-              ? Text(_isAddCong ? 'Adicionar' : 'Atualizar')
-              : SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                  ),
-                ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return Consumer<CongregRepository>(
       builder: (_, state, __) {
+        if (state.congreg != null) {
+          congreg = state.congreg;
+        }
+
+        List<DropdownMenuItem<String>> _dropDownUf() {
+          List<String> list = uf_list;
+          return list.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem(
+              value: value,
+              child: Text(
+                value,
+                style: GoogleFonts.roboto(
+                  fontSize: 16,
+                  height: 1.5,
+                  letterSpacing: 0,
+                  color: LightStyle.paleta['Cinza'],
+                ),
+              ),
+            );
+          }).toList();
+        }
+
+        List<DropdownMenuItem<String>> _listAreas() {
+          List<AreasModel> list = context.read<AreasRepository>().getListAreas;
+          return list.map<DropdownMenuItem<String>>((AreasModel area) {
+            return DropdownMenuItem(
+              value: area.id,
+              child: Text(
+                area.nome,
+                style: GoogleFonts.roboto(
+                  fontSize: 16,
+                  height: 1.5,
+                  letterSpacing: 0,
+                  color: LightStyle.paleta['Cinza'],
+                ),
+              ),
+            );
+          }).toList();
+        }
+
+        Widget _buttonSave() => SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 46,
+              child: ElevatedButton(
+                onPressed: !state.isLoading
+                    ? () {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          if (congreg?.id == null) {
+                            context.read<CongregRepository>().addCongreg(
+                                  congreg: congreg,
+                                  image: profileImage ?? null,
+                                  onFail: (e) => _snackBar(
+                                    context: context,
+                                    msg:
+                                        'Não foi possivel adicionar congregação: $e',
+                                    isSuccess: false,
+                                  ),
+                                  onSuccess: (uid) {
+                                    _handlerForm(context);
+                                    _snackBar(
+                                      context: context,
+                                      msg:
+                                          'Nova congregação adicionada com successo!',
+                                    );
+                                  },
+                                );
+                          } else {
+                            context.read<CongregRepository>().updateCongreg(
+                                  congreg: congreg,
+                                  image: profileImage ?? null,
+                                  onFail: (e) => _snackBar(
+                                    context: context,
+                                    msg:
+                                        'Não foi possivel atualizar a congregação: $e',
+                                    isSuccess: false,
+                                  ),
+                                  onSuccess: (uid) {
+                                    _handlerForm(context);
+                                    _snackBar(
+                                        context: context,
+                                        msg:
+                                            'Congregação atualizada com sucesso!');
+                                  },
+                                );
+                          }
+                        }
+                      }
+                    : () {},
+                child: !state.isLoading
+                    ? Text(congreg?.id == null ? 'Adicionar' : 'Atualizar')
+                    : SizedBox(
+                        height: 28,
+                        width: 28,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        ),
+                      ),
+              ),
+            );
+
         return DefaultForm(
           formKey: _formKey,
           scaffoldKey: _scaffoldKey,
-          title: _congreg?.nome ?? _title,
+          title: congreg?.nome ?? 'Adicionar Congregação',
+          page: page,
           form: [
             UploadImage(
               onTap: () => _selectImage(context),
               isLoading: false,
               image: profileImage,
-              imageUrl: _congreg?.profileImageUrl ?? '',
+              imageUrl: congreg?.profileImageUrl ?? '',
             ),
             SizedBox(height: 48),
             TextFormField(
@@ -203,8 +195,8 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setNome = value,
-              initialValue: _congreg?.nome ?? null,
+              onSaved: (value) => congreg.setNome = value,
+              initialValue: congreg?.nome ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -224,13 +216,11 @@ class _CongregFormState extends State<CongregForm> {
                 DataInputFormatter(),
               ],
               enabled: !state.isLoading,
-              //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setDataFundacao = value,
-              initialValue: _congreg?.dataFundacao ?? null,
+              onSaved: (value) => congreg.setDataFundacao = value,
+              initialValue: congreg?.dataFundacao ?? null,
             ),
             SizedBox(height: 16),
             ListTile(
-              //tileColor: LightStyle.paleta['PrimariaCinza'],
               title: Text(
                 'Área',
                 style: Theme.of(context).textTheme.bodyText1,
@@ -238,13 +228,11 @@ class _CongregFormState extends State<CongregForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _congreg?.idArea,
+                value: congreg?.idArea,
                 hint: Text('Escolha'),
-                onChanged: (value) => setState(
-                  () => _congreg.idArea = value,
-                ),
+                onChanged: (value) => setState(() => congreg.setIdArea = value),
                 style: Theme.of(context).textTheme.bodyText1,
-                items: this._listAreas(context: context),
+                items: _listAreas(),
               ),
             ),
             SizedBox(height: 32),
@@ -262,8 +250,8 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setUnidadeConsumidora = value,
-              initialValue: _congreg?.unidadeConsumidora ?? null,
+              onSaved: (value) => congreg.setUnidadeConsumidora = value,
+              initialValue: congreg?.unidadeConsumidora ?? null,
             ),
             SizedBox(height: 16),
             Row(
@@ -296,8 +284,25 @@ class _CongregFormState extends State<CongregForm> {
               ],
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setCep = value,
-              initialValue: _congreg?.cep ?? null,
+              onSaved: (value) => congreg.setCep = value,
+              initialValue: congreg?.cep ?? null,
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+              keyboardType: TextInputType.name,
+              autocorrect: false,
+              maxLength: 50,
+              maxLines: 1,
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.bodyText1,
+              decoration: InputDecoration(
+                labelText: 'Logradouro',
+                labelStyle: Theme.of(context).textTheme.bodyText1,
+                fillColor: LightStyle.paleta['PrimariaCinza'],
+              ),
+              enabled: !state.isLoading,
+              onSaved: (value) => congreg.setLogradouro = value,
+              initialValue: congreg?.logradouro ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -314,8 +319,8 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setComplemento = value,
-              initialValue: _congreg?.complemento ?? null,
+              onSaved: (value) => congreg.setComplemento = value,
+              initialValue: congreg?.complemento ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -332,8 +337,8 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setBairro = value,
-              initialValue: _congreg?.bairro ?? null,
+              onSaved: (value) => congreg.setBairro = value,
+              initialValue: congreg?.bairro ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -350,8 +355,8 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setCidade = value,
-              initialValue: _congreg?.cidade ?? null,
+              onSaved: (value) => congreg.setCidade = value,
+              initialValue: congreg?.cidade ?? null,
             ),
             SizedBox(height: 16),
             ListTile(
@@ -363,11 +368,11 @@ class _CongregFormState extends State<CongregForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _congreg?.uf,
+                value: congreg?.uf,
                 hint: Text('UF'),
-                onChanged: (value) => setState(() => _congreg.uf = value),
+                onChanged: (value) => setState(() => congreg.setUf = value),
                 style: Theme.of(context).textTheme.bodyText1,
-                items: this._dropDownUf,
+                items: _dropDownUf(),
               ),
             ),
             SizedBox(height: 32),
@@ -385,8 +390,8 @@ class _CongregFormState extends State<CongregForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setNumero = value,
-              initialValue: _congreg?.numero ?? null,
+              onSaved: (value) => congreg.setNumero = value,
+              initialValue: congreg?.numero ?? null,
             ),
             SizedBox(height: 16),
             Row(
@@ -416,12 +421,12 @@ class _CongregFormState extends State<CongregForm> {
               enabled: !state.isLoading,
               validator: (value) =>
                   value.length > 0 ? Validator.emailValidator(value) : null,
-              onSaved: (value) => _congreg.setEmail = value,
-              initialValue: _congreg?.email ?? null,
+              onSaved: (value) => congreg.setEmail = value,
+              initialValue: congreg?.email ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               autocorrect: false,
               maxLength: 50,
               maxLines: 1,
@@ -438,12 +443,12 @@ class _CongregFormState extends State<CongregForm> {
               ],
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setFixo = value,
-              initialValue: _congreg?.fixo ?? null,
+              onSaved: (value) => congreg.setFixo = value,
+              initialValue: congreg?.fixo ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               autocorrect: false,
               maxLength: 50,
               maxLines: 1,
@@ -460,30 +465,30 @@ class _CongregFormState extends State<CongregForm> {
               ],
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _congreg.setCelular = value,
-              initialValue: _congreg?.celular ?? null,
+              onSaved: (value) => congreg.setCelular = value,
+              initialValue: congreg?.celular ?? null,
             ),
             SizedBox(height: 16),
-            _congreg?.id != null
-            ? Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  'Outros',
-                  style: Theme.of(context).textTheme.bodyText1,
-                  textAlign: TextAlign.left,
-                ),
-              ],
-            )
-            : SizedBox(),
-            SizedBox(height: _congreg?.id != null ? 16 : 0),
-            _congreg?.id != null
+            congreg?.id != null
+                ? Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Outros',
+                        style: Theme.of(context).textTheme.bodyText1,
+                        textAlign: TextAlign.left,
+                      ),
+                    ],
+                  )
+                : SizedBox(),
+            SizedBox(height: congreg?.id != null ? 16 : 0),
+            congreg?.id != null
                 ? ListTile(
                     //tileColor: LightStyle.paleta['PrimariaCinza'],
                     title: Text(
-                      _congreg?.isActive != null
-                          ? _congreg?.isActive == true
+                      congreg?.isActive != null
+                          ? congreg?.isActive == true
                               ? 'Desativar'
                               : 'Ativar'
                           : 'Ativar',
@@ -493,16 +498,13 @@ class _CongregFormState extends State<CongregForm> {
                     trailing: Switch(
                       activeColor: Theme.of(context).primaryColor,
                       onChanged: (bool value) =>
-                          setState(() => _congreg.isActive = value),
-                      value: _congreg?.isActive ?? false,
+                          setState(() => congreg.isActive = value),
+                      value: congreg?.isActive ?? false,
                     ),
                   )
                 : SizedBox(),
             SizedBox(height: 32),
-            _buttonSave(
-              context: context,
-              state: state,
-            ),
+            _buttonSave(),
           ],
         );
       },

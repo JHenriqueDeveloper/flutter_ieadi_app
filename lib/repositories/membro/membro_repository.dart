@@ -16,7 +16,7 @@ class MembroRepository extends ChangeNotifier {
   UserModel membro;
 
   MembroRepository() {
-    loadMembros(onFail: (e) => print(e));
+    loadMembros();
   }
 
   bool _isLoading = false;
@@ -38,9 +38,14 @@ class MembroRepository extends ChangeNotifier {
     return null;
   }
 
-  Future<void> loadMembros({
-    Function onFail,
-  }) async {
+  Future<List<UserModel>> getBatismoMembros(String data) async {
+    setLoading = true;
+    List<UserModel> listBatizados = await UserModel.getUserBatismo(data);
+    setLoading = false;
+    return listBatizados;
+  }
+
+  Future<void> loadMembros() async {
     setLoading = true;
     try {
       final membros = await _firebaseFirestore
@@ -53,11 +58,11 @@ class MembroRepository extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      onFail(e);
+      print('Erro ao carregar os membros \n $e');
     }
 
     if (this.membro != null) {
-      this.membro = this.membro.getUserEmpty;
+      this.membro = null;
     }
 
     setLoading = false;
@@ -90,6 +95,20 @@ class MembroRepository extends ChangeNotifier {
   }) async {
     setLoading = true;
 
+    List<String> tagsList = [
+      membro.username,
+      membro.email,
+      membro.cpf,
+      membro.matricula,
+      membro.genero,
+      membro.congregacao,
+      membro.tipoMembro,
+      membro.procedenciaMembro,
+      membro.dataBatismoAguas,
+    ];
+
+    membro.tags = tagsList;
+
     if (image != null) {
       membro.profileImageUrl = await addImage(
         image: image,
@@ -97,14 +116,14 @@ class MembroRepository extends ChangeNotifier {
       );
     }
 
-    this.membro = membro;
-
     await _firebaseFirestore
         .collection('/users')
         .doc(membro.id)
         .update(membro.toDocument())
         .then((value) => onSuccess(value))
         .catchError((onError) => onFail(onError));
+
+    this.membro = membro.getUserEmpty;
 
     loadMembros();
 
@@ -119,16 +138,6 @@ class MembroRepository extends ChangeNotifier {
   }) async {
     setLoading = true;
 
-  /*
-    membro.matricula = MatriculaHelper(
-      userCpf: membro.cpf,
-      userId: membro.id,
-    ).matricula;
-
-    
-*/
-
-
     membro.createdAt = DateTime.now();
     membro.isActive = true;
     membro.isVerified = true;
@@ -136,18 +145,19 @@ class MembroRepository extends ChangeNotifier {
     membro.email = geraEmail(membro?.cpf);
     membro.password = gerarPassword();
 
-    this.membro = membro;
-      if (image != null) {
-        membro.profileImageUrl = await addImage(image: image);
-      }
+    if (image != null) {
+      membro.profileImageUrl = await addImage(image: image);
+    }
 
-      await _firebaseFirestore
-          .collection('users')
-          .add(membro.toDocument())
-          .then((value) => onSuccess(value))
-          .catchError((onError) => onFail(onError));
+    await _firebaseFirestore
+        .collection('users')
+        .add(membro.toDocument())
+        .then((value) => onSuccess(value))
+        .catchError((onError) => onFail(onError));
 
-      loadMembros();
+    this.membro = membro.getUserEmpty;
+
+    loadMembros();
 
     setLoading = false;
   }

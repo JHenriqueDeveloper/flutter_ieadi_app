@@ -13,7 +13,7 @@ class DefaultScreen extends StatelessWidget {
 
   DefaultScreen({
     @required this.title,
-    @required this.backToPage,
+    this.backToPage,
     this.key,
     this.padding,
     this.fab,
@@ -21,6 +21,8 @@ class DefaultScreen extends StatelessWidget {
   });
 
   Widget build(BuildContext context) {
+    void _handlerForm() => Navigator.pop(context);
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -45,8 +47,9 @@ class DefaultScreen extends StatelessWidget {
             child: FloatingActionButton(
               mini: true,
               child: Icon(FeatherIcons.chevronLeft),
-              onPressed: () =>
-                  context.read<CustomRouter>().setPage(this.backToPage),
+              onPressed: this.backToPage != null 
+              ? () => context.read<CustomRouter>().setPage(this.backToPage)
+              : () => _handlerForm(),
             ),
           ),
         ),

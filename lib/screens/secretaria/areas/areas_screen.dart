@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/areas/forms/areas_form_screen.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -11,19 +11,18 @@ import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
 class AreasScreen extends StatelessWidget {
-  void _handlerForm({
-    BuildContext ctx,
-    AreasModel area,
-  }) =>
-      Navigator.push(
-        ctx,
-        MaterialPageRoute(builder: (_) => AreaForm(area: area)),
-      );
+  final PageController pageController = PageController();
+  final int page = 24;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AreasRepository>(
       builder: (_, state, __) {
+        void _handlerForm({String form, AreasModel area}) {
+          state.area = area;
+          return context.read<CustomRouter>().setPage(page, form: form);
+        }
+
         List<Widget> _listAreas() {
           List<Widget> list = [];
           for (var e in state.getListAreas) {
@@ -31,7 +30,7 @@ class AreasScreen extends StatelessWidget {
               ListTile(
                 key: Key(e.id),
                 onTap: () {
-                  _handlerForm(ctx: context, area: e);
+                  _handlerForm(form: e.nome, area: e);
                 },
                 title: Text(
                   e.nome,
@@ -49,21 +48,21 @@ class AreasScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     e.sede != null
-                      ? e.sede != ''
-                        ? Text(
-                            'Sede: ${context.read<CongregRepository>().getCongreg(e.sede).nome}',
-                            style: Theme.of(context).textTheme.bodyText1,
-                          )
-                        : SizedBox()
-                      : SizedBox(),
+                        ? e.sede != ''
+                            ? Text(
+                                'Sede: ${context.read<CongregRepository>().getCongreg(e.sede).nome}',
+                                style: Theme.of(context).textTheme.bodyText1,
+                              )
+                            : SizedBox()
+                        : SizedBox(),
                     e.setor != null
-                      ? e.setor != ''
-                        ? Text(
-                            'Setor: ${context.read<SetorRepository>().getSetor(e.setor).nome}',
-                            style: Theme.of(context).textTheme.bodyText1,
-                          )
-                        : SizedBox()
-                      : SizedBox(),
+                        ? e.setor != ''
+                            ? Text(
+                                'Setor: ${context.read<SetorRepository>().getSetor(e.setor).nome}',
+                                style: Theme.of(context).textTheme.bodyText1,
+                              )
+                            : SizedBox()
+                        : SizedBox(),
                     e.createdAt != null
                         ? Text(
                             'criado em: ${formataData(data: e.createdAt)}',
@@ -94,7 +93,7 @@ class AreasScreen extends StatelessWidget {
           backToPage: 8,
           fab: ElevatedButton(
             onPressed: () {
-              _handlerForm(ctx: context);
+              _handlerForm();
             },
             child: const Icon(FeatherIcons.plus),
             style: ElevatedButton.styleFrom(

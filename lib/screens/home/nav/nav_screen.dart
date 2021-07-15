@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_ieadi_app/models/models.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -44,9 +45,7 @@ class _NavScreenState extends State<NavScreen> {
       title: 'Profile Image',
     );
     if (pickedFile != null) {
-      //context.read<EditProfileCubit>().profileImageChanged(pickedFile);
-
-       setState(() {
+      setState(() {
         profileImage = pickedFile;
       });
 
@@ -54,7 +53,6 @@ class _NavScreenState extends State<NavScreen> {
         user: auth.user,
         image: pickedFile,
         onFail: (e) {
-          print(e);
           _snackBar(
             context: context,
             msg: 'Falha ao atualizar a foto de perfil: $e',
@@ -78,13 +76,11 @@ class _NavScreenState extends State<NavScreen> {
 
   void _handlerShowAlerts(bool isAlerts) => isAlerts
       ? ScaffoldMessenger.of(context).showSnackBar(snackBar(
-          text:
-              'Precisa implementar o sistema de avisos.',
+          text: 'Precisa implementar o sistema de avisos.',
           paleta: 'Primaria',
         ))
       : ScaffoldMessenger.of(context).showSnackBar(snackBar(
-          text:
-              'Você não possui avisos.',
+          text: 'Você não possui avisos.',
           paleta: 'Primaria',
         ));
 
@@ -107,68 +103,6 @@ class _NavScreenState extends State<NavScreen> {
           paleta: 'Erro',
         ));
 
-  bool _handlerCheckPendenciaPessoalUser(user) => user?.username == ''
-      ? true
-      : user?.genero == ''
-          ? true
-          : user?.cpf == ''
-              ? true
-              : user?.rg == ''
-                  ? true
-                  : user?.naturalidade == ''
-                      ? true
-                      : user?.nomePai == ''
-                          ? true
-                          : user?.nomeMae == ''
-                              ? true
-                              : user?.estadoCivil == ''
-                                  ? true
-                                  : user?.dataNascimento == ''
-                                      ? true
-                                      : user?.tipoSanguineo == ''
-                                          ? true
-                                          : user?.isPortadorNecessidade != null
-                                              ? user?.tipoNecessidade == ''
-                                                  ? true
-                                                  : user?.descricaoNecessidade ==
-                                                          ''
-                                                      ? true
-                                                      : false
-                                              : false;
-
-  bool _handlerCheckPendenciaEnderecoUser(user) => user?.cep == ''
-      ? true
-      : user?.uf == ''
-          ? true
-          : user?.cidade == ''
-              ? true
-              : user?.bairro == ''
-                  ? true
-                  : user?.logradouro == ''
-                      ? true
-                      : user?.complemento == ''
-                          ? true
-                          : user?.numero == ''
-                              ? true
-                              : false;
-
-  bool _handlerCheckPendenciaCristaoUser(user) => user?.congregacao == ''
-      ? true
-      : user?.tipoMembro == ''
-          ? true
-          : user?.situacaoMembro == ''
-              ? true
-              : false;
-
-  bool _handlerCheckPendenciaCurriculoUser(user) =>
-      user?.isProcurandoOportunidades == true
-          ? user?.profissao == ''
-              ? true
-              : user?.pretensaoSalarial == ''
-                  ? true
-                  : false
-          : false;
-
   @override
   Widget build(BuildContext context) {
     void _handlerExit(
@@ -187,7 +121,9 @@ class _NavScreenState extends State<NavScreen> {
           String userName =
               user?.username != '' ? firstName(user?.username) : '';
 
-          String fullname = auth.user?.username ?? '';
+          String nomeCard = formataNome(user?.username ?? '');
+
+          //String fullname = auth.user?.username ?? '';
           String matricula = user?.matricula != null
               ? auth.user.matricula != ''
                   ? auth.user.matricula
@@ -198,10 +134,42 @@ class _NavScreenState extends State<NavScreen> {
           bool isMemberCard = auth.user?.isMemberCard ?? false;
           bool isAdmin = auth.user?.isAdmin ?? false;
 
-          bool isPessoalPendencia = _handlerCheckPendenciaPessoalUser(user);
-          bool isEnderecoPendencia = _handlerCheckPendenciaEnderecoUser(user);
-          bool isCristaoPendencia = _handlerCheckPendenciaCristaoUser(user);
-          bool isCurriculoPendencia = _handlerCheckPendenciaCurriculoUser(user);
+          bool isPessoalPendencia = auth.pendencias['pessoal'];
+          bool isEnderecoPendencia = auth.pendencias['endereco'];
+          bool isContatosPendencias = auth.pendencias['contatos'];
+          bool isCristaoPendencia = auth.pendencias['cristao'];
+          bool isCurriculoPendencia = auth.pendencias['curriculo'];
+          bool isPendencias = auth.pendencias['pendencias'];
+
+          verificaConta() {
+            SolicitacoesModel verificarConta = new SolicitacoesModel(
+                solicitante: user.id,
+                tipo: 'Verificar Conta',
+                status: 'Aberto',
+                descricao: 'Solicitação de conta de membro.');
+
+            user.isVerificacaoSolicitada = true;
+
+            onFail() => ScaffoldMessenger.of(context).showSnackBar(snackBar(
+                  text: 'Solicitação não enviada.',
+                  paleta: 'Erro',
+                ));
+
+            onSucess() => ScaffoldMessenger.of(context).showSnackBar(snackBar(
+                  text: 'Solicitação enviada.',
+                  paleta: 'Sucesso',
+                ));
+
+            context.read<SolicitacoesRepository>().addSolicitacao(
+                  solicitacao: verificarConta,
+                  onFail: (e) => onFail(),
+                  onSuccess: (uid) => auth.update(
+                    user: user,
+                    onFail: (e) => onFail(),
+                    onSuccess: (uid) => onSucess(),
+                  ),
+                );
+          }
 
           return Scaffold(
             key: _scaffoldKey,
@@ -250,8 +218,10 @@ class _NavScreenState extends State<NavScreen> {
                           FeatherIcons.sliders,
                           size: 14.sp,
                         ),
-                        onPressed: () => context.read<CustomRouter>().setPage(8), //_handlerScreen(DashboardScreen()),
-                        )
+                        onPressed: () => context
+                            .read<CustomRouter>()
+                            .setPage(8), //_handlerScreen(DashboardScreen()),
+                      )
                     : Container(),
               ],
             ),
@@ -284,12 +254,12 @@ class _NavScreenState extends State<NavScreen> {
 
                               child: Container(
                                 margin: EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 32,
+                                  horizontal: 12.sp,
+                                  vertical: 24.sp,
                                 ),
                                 child: UserCard(
                                   tipoCard: TiposCard.MEMBRO,
-                                  username: fullname,
+                                  username: nomeCard, //fullname,
                                   matricula: matricula ?? '',
                                 ), //UserCard(),
                               ),
@@ -297,28 +267,24 @@ class _NavScreenState extends State<NavScreen> {
                           : Container(),
                       ProfileImage(
                         radius: 120.sp,
-                        profileImageUrl: user?.profileImageUrl != null
-                            ? user?.profileImageUrl != ''
-                                ? user?.profileImageUrl
-                                : ''
-                            : '',
+                        profileImageUrl: user?.profileImageUrl ?? '',
                         profileImage: profileImage,
                         onTap: () => _selectImage(context, auth),
                       ),
                       Text(
-                        user?.tipoMembro != null
+                        user != null
                             ? user?.tipoMembro != ''
-                                ? user?.tipoMembro
+                                ? user.tipoMembro
                                 : 'Visitante'
-                            : 'Visitante',
+                            : '',
                         style: Theme.of(context).textTheme.headline6,
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        user?.congregacao != null
-                            ? user?.congregacao != ''
-                                ? user?.congregacao
-                                : 'Congregação não informada'
+                        user?.congregacao != ''
+                            ? auth.congreg != null
+                                ? auth?.congreg?.nome //user?.congregacao
+                                : 'Congregação não encontrada'
                             : 'Congregação não informada',
                         style: Theme.of(context).textTheme.bodyText1,
                         textAlign: TextAlign.center,
@@ -345,7 +311,7 @@ class _NavScreenState extends State<NavScreen> {
                       ListItemMenu(
                         title: 'Contatos',
                         icon: FeatherIcons.phone,
-                        badge: false,
+                        badge: isContatosPendencias,
                         page: 4,
                       ),
                       ListItemMenu(
@@ -369,28 +335,8 @@ class _NavScreenState extends State<NavScreen> {
                         page: 7,
                       ),
                       */
-                      user?.isVerified != null
-                          ? user?.isVerified == true
-                              ? Container()
-                              : Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 32,
-                                    horizontal: 16,
-                                  ),
-                                  child: SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 46,
-                                    child: ElevatedButton(
-                                      onPressed: () =>
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(snackBar(
-                                        text: 'Solicitação enviada.',
-                                        paleta: 'Sucesso',
-                                      )),
-                                      child: Text('Verificar minha conta'),
-                                    ),
-                                  ),
-                                )
+                      user?.isVerified == true
+                          ? Container()
                           : Container(
                               margin: const EdgeInsets.symmetric(
                                 vertical: 32,
@@ -400,12 +346,30 @@ class _NavScreenState extends State<NavScreen> {
                                 width: MediaQuery.of(context).size.width,
                                 height: 46,
                                 child: ElevatedButton(
-                                  onPressed: () => ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar(
-                                    text: 'Solicitação enviada.',
-                                    paleta: 'Sucesso',
-                                  )),
-                                  child: Text('Verificar minha conta'),
+                                  onPressed: isPendencias
+                                      ? null
+                                      : auth.user?.isVerificacaoSolicitada !=
+                                              null
+                                          ? auth.user.isVerificacaoSolicitada
+                                              ? null
+                                              : () => verificaConta()
+                                          : () => verificaConta(),
+                                  child: auth.isLoading
+                                      ? SizedBox(
+                                          height: 28,
+                                          width: 28,
+                                          child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Colors.white),
+                                          ),
+                                        )
+                                      : auth.user?.isVerificacaoSolicitada !=
+                                              null
+                                          ? auth.user.isVerificacaoSolicitada
+                                              ? Text(
+                                                  'Solicitação de conta enviada')
+                                              : Text('Verificar minha conta')
+                                          : Text('Verificar minha conta'),
                                 ),
                               ),
                             ),

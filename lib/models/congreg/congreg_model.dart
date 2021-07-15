@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CongregModel {
   String id;
+  String dirigente;
   String idArea;
   String nome;
   String dataFundacao;
@@ -11,6 +12,7 @@ class CongregModel {
 
   //Endereco
   String cep;
+  String logradouro;
   String complemento;
   String bairro;
   String cidade;
@@ -24,9 +26,11 @@ class CongregModel {
   //configurações
   bool isActive;
   DateTime createdAt;
+  List tags;
 
   CongregModel({
     this.id,
+    this.dirigente,
     this.idArea,
     this.nome,
     this.dataFundacao,
@@ -34,6 +38,7 @@ class CongregModel {
     this.profileImageUrl,
     this.isActive,
     this.cep,
+    this.logradouro,
     this.complemento,
     this.bairro,
     this.cidade,
@@ -43,12 +48,14 @@ class CongregModel {
     this.celular,
     this.email,
     this.createdAt,
+    this.tags,
   });
 
   DocumentReference get firestoreRef =>
       FirebaseFirestore.instance.doc('congregs/${this.id}');
 
   get getId => id;
+  get getDirigente => dirigente;
   get getIdArea => idArea;
   get getNome => nome;
   get getDataFundacao => dataFundacao;
@@ -56,6 +63,7 @@ class CongregModel {
   get getProfileImageUrl => profileImageUrl;
   get getIsActive => isActive;
   get getCep => cep;
+  get getLogradouro => logradouro;
   get getComplemento => complemento;
   get getBairro => bairro;
   get getCidade => cidade;
@@ -67,7 +75,8 @@ class CongregModel {
   get getCreatedAt => createdAt;
 
   set setId(String id) => this.id = id;
-  set setIdAdea(String idArea) => this.idArea = idArea;
+  set setDirigente(String dirigente) => this.dirigente = dirigente;
+  set setIdArea(String idArea) => this.idArea = idArea;
   set setNome(String nome) => this.nome = nome;
   set setDataFundacao(String dataFundacao) => this.dataFundacao = dataFundacao;
   set setUnidadeConsumidora(String unidadeConsumidora) =>
@@ -76,6 +85,7 @@ class CongregModel {
       this.profileImageUrl = profileImageUrl;
   set setIsactive(bool isActive) => this.isActive = isActive;
   set setCep(String cep) => this.cep = cep;
+  set setLogradouro(String logradouro) => this.logradouro = logradouro;
   set setComplemento(String complemento) => this.complemento = complemento;
   set setBairro(String bairro) => this.bairro = bairro;
   set setCidade(String cidade) => this.cidade = cidade;
@@ -87,6 +97,7 @@ class CongregModel {
   set setCreatedAt(DateTime createdAt) => this.createdAt = createdAt;
 
   Map<String, dynamic> toDocument() => {
+        'dirigente': dirigente,
         'idArea': idArea,
         'nome': nome,
         'dataFundacao': dataFundacao,
@@ -94,6 +105,7 @@ class CongregModel {
         'profileImageUrl': profileImageUrl,
         'isActive': isActive,
         'cep': cep,
+        'logradouro': logradouro,
         'complemento': complemento,
         'bairro': bairro,
         'cidade': cidade,
@@ -102,28 +114,32 @@ class CongregModel {
         'fixo': fixo,
         'celular': celular,
         'email': email,
+        'tags': tags,
         'createdAt': Timestamp.fromDate(createdAt),
       };
 
   get getCongregEmpty => empty;
 
   static CongregModel empty = CongregModel(
-    id: '',
-    idArea: '',
+    id: null,
+    dirigente: null,
+    idArea: null,
     nome: '',
     dataFundacao: '',
     unidadeConsumidora: '',
     profileImageUrl: '',
-    isActive: false,
+    isActive: true,
     cep: '',
+    logradouro: '',
     complemento: '',
     bairro: '',
     cidade: '',
-    uf: '',
+    uf: null,
     numero: '',
     fixo: '',
     celular: '',
     email: '',
+    tags: [],
     createdAt: DateTime.now(),
   );
 
@@ -132,6 +148,7 @@ class CongregModel {
     final data = doc.data();
     return CongregModel(
       id: doc.id,
+      dirigente: data['dirigente'] as String,
       idArea: data['idArea'] as String,
       nome: data['nome'] as String,
       dataFundacao: data['dataFundacao'] as String,
@@ -139,6 +156,7 @@ class CongregModel {
       profileImageUrl: data['profileImageUrl'] as String,
       isActive: data['isActive'] as bool,
       cep: data['cep'] as String,
+      logradouro: data['logradouro'] as String,
       complemento: data['complemento'] as String,
       bairro: data['bairro'] as String,
       cidade: data['cidade'] as String,
@@ -148,13 +166,17 @@ class CongregModel {
       celular: data['celular'] as String,
       email: data['email'] as String,
       createdAt: (data['createdAt'] as Timestamp)?.toDate(),
+      tags: data['tags'] as List,
     );
   }
 
   static Future<CongregModel> getCongreg(String congregId) async {
-    final doc =
-        await FirebaseFirestore.instance.doc('congregs/$congregId').get();
-    return doc.exists ? CongregModel.fromDocument(doc) : CongregModel.empty;
+    if (congregId != null) {
+      final doc =
+          await FirebaseFirestore.instance.doc('congregs/$congregId').get();
+      return doc.exists ? CongregModel.fromDocument(doc) : CongregModel.empty;
+    }
+    return CongregModel.empty;
   }
 
   Future<void> saveCongreg() async => await firestoreRef.set(toDocument());

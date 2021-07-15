@@ -30,7 +30,7 @@ class StorageRepository {
     try {
       var imageId = Uuid().v4();
 
-      print('upload profile image: ${image.path}');
+      //print('upload profile image: ${image.path}');
 
       // Update user profile image.
       if (url.isNotEmpty) {

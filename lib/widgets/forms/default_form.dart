@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
+import 'package:provider/provider.dart';
 
 import '../../style/style.dart';
 
@@ -8,17 +10,21 @@ class DefaultForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final GlobalKey<ScaffoldState> scaffoldKey;
   final String title;
+  final int page;
+  final String screen;
 
   DefaultForm({
     this.form,
     this.formKey,
     this.scaffoldKey,
     this.title,
+    this.page,
+    this.screen,
   });
 
   @override
   Widget build(BuildContext context) {
-    void _handlerForm() => Navigator.pop(context);
+    void _handlerForm() => context.read<CustomRouter>().setPage(page, screen: screen);
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -37,10 +43,10 @@ class DefaultForm extends StatelessWidget {
             this.title,
             textAlign: TextAlign.center,
             style: TextStyle(
-            color: LightStyle.paleta['Background'],
-            fontSize: 20.0,
-            fontWeight: FontWeight.w600,
-          ),
+              color: LightStyle.paleta['Background'],
+              fontSize: 20.0,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           leading: Container(
             margin: EdgeInsets.symmetric(horizontal: 16),

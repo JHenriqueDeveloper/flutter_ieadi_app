@@ -13,7 +13,6 @@ class ButtonDashboard extends StatelessWidget {
     @required this.onPressed,
   });
 
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(

@@ -9,7 +9,7 @@ import 'package:sizer/sizer.dart';
 class SignupScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final UserModel user = UserModel();
+  final UserModel user = UserModel().getUserEmpty;
   final TextEditingController passwordController = TextEditingController();
 
   @override

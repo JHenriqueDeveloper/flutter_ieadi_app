@@ -46,11 +46,11 @@ class SetorModel {
   get getEmpty => empty;
 
   static SetorModel empty = SetorModel(
-    id: '',
+    id: null,
     nome: '',
-    sede: '',
-    supervisor: '',
-    isActive: false,
+    sede: null,
+    supervisor: null,
+    isActive: true,
     createdAt: DateTime.now(),
   );
 

@@ -2,6 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/validator.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
@@ -9,11 +10,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class CristaoFormScreen extends StatelessWidget {
-  final String form;
+ final PageController pageController = PageController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final int page = 5;
 
-  CristaoFormScreen(this.form);
+  void _handlerForm(BuildContext context) => context
+    .read<CustomRouter>()
+    .setPage(page);
 
   _snackBar({
     BuildContext context,
@@ -58,7 +62,7 @@ class CristaoFormScreen extends StatelessWidget {
                         isSuccess: false,
                       ),
                       onSuccess: (uid) {
-                        Navigator.of(context).pop();
+                        _handlerForm(context);
                         _snackBar(context: context, msg: 'Dados atualizados');
                       },
                     );
@@ -92,6 +96,20 @@ class CristaoFormScreen extends StatelessWidget {
               ? () {
                   onOption();
 
+                  context.read<AuthRepository>().update(
+                        user: auth.user,
+                        onFail: (e) => _snackBar(
+                          context: context,
+                          msg: 'Falha ao atualizar os dados: $e',
+                          isSuccess: false,
+                        ),
+                        onSuccess: (uid) {
+                          _handlerForm(context);
+                          _snackBar(context: context, msg: 'Dados atualizados');
+                        },
+                      );
+                  /*
+
                   auth.update(
                     user: auth.user,
                     onFail: (e) => _snackBar(
@@ -104,6 +122,7 @@ class CristaoFormScreen extends StatelessWidget {
                       _snackBar(context: context, msg: 'Dados atualizados');
                     },
                   );
+                  */
                 }
               : () {},
           style: isActive
@@ -134,8 +153,6 @@ class CristaoFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _handlerForm() => Navigator.pop(context);
-
     List<Widget> _forms({
       String form,
       auth,
@@ -151,7 +168,7 @@ class CristaoFormScreen extends StatelessWidget {
             isActive: auth.user.isDizimista ? true : false,
           ),
           SizedBox(height: 16),
-         buttonOption(
+          buttonOption(
             context: context,
             text: 'Não',
             auth: auth,
@@ -159,15 +176,29 @@ class CristaoFormScreen extends StatelessWidget {
             isActive: auth.user.isDizimista ? false : true,
           ),
         ],
-
-
         'Congregacao': [
           _title(context, 'Sua congregação.'),
           SizedBox(height: 16),
+          Consumer<CongregRepository>(builder: (_, congreg, __) {
+            List<Widget> congs = [];
+
+            for (var congregs in congreg.getListCongregs)
+              congs.add(buttonOption(
+                context: context,
+                text: congregs.nome,
+                auth: auth,
+                onOption: () => auth.user.congregacao = congregs.id,
+                isActive: auth.user.congregacao == congregs.id ? true : false,
+              ));
+            return Column(children: congs);
+          }),
+          SizedBox(height: 16),
+          /*
           _save(
             context: context,
             auth: auth,
           ),
+          */
         ],
         'Afiliacao': [
           _title(context, 'Você é?'),
@@ -200,7 +231,8 @@ class CristaoFormScreen extends StatelessWidget {
             text: 'Amigo do Evangelho',
             auth: auth,
             onOption: () => auth.user.tipoMembro = 'Amigo do Evangelho',
-            isActive: auth.user.tipoMembro == 'Amigo do Evangelho' ? true : false,
+            isActive:
+                auth.user.tipoMembro == 'Amigo do Evangelho' ? true : false,
           ),
           SizedBox(height: 16),
         ],
@@ -235,7 +267,8 @@ class CristaoFormScreen extends StatelessWidget {
             text: 'Mudou de Campo',
             auth: auth,
             onOption: () => auth.user.situacaoMembro = 'Mudou de Campo',
-            isActive: auth.user.situacaoMembro == 'Mudou de Campo' ? true : false,
+            isActive:
+                auth.user.situacaoMembro == 'Mudou de Campo' ? true : false,
           ),
           SizedBox(height: 16),
           buttonOption(
@@ -243,7 +276,9 @@ class CristaoFormScreen extends StatelessWidget {
             text: 'Mudou de Ministério',
             auth: auth,
             onOption: () => auth.user.situacaoMembro = 'Mudou de Ministério',
-            isActive: auth.user.situacaoMembro == 'Mudou de Ministério' ? true : false,
+            isActive: auth.user.situacaoMembro == 'Mudou de Ministério'
+                ? true
+                : false,
           ),
           SizedBox(height: 16),
           buttonOption(
@@ -262,26 +297,36 @@ class CristaoFormScreen extends StatelessWidget {
             text: 'Batizado no Campo',
             auth: auth,
             onOption: () => auth.user.procedenciaMembro = 'Batizado no Campo',
-            isActive: auth.user.procedenciaMembro == 'Batizado no Campo' ? true : false,
+            isActive: auth.user.procedenciaMembro == 'Batizado no Campo'
+                ? true
+                : false,
           ),
           SizedBox(height: 16),
           buttonOption(
             context: context,
             text: 'Carta de Mudança de Outro Ministério',
             auth: auth,
-            onOption: () => auth.user.procedenciaMembro = 'Carta de Mudança de Outro Ministério',
-            isActive: auth.user.procedenciaMembro == 'Carta de Mudança de Outro Ministério' ? true : false,
+            onOption: () => auth.user.procedenciaMembro =
+                'Carta de Mudança de Outro Ministério',
+            isActive: auth.user.procedenciaMembro ==
+                    'Carta de Mudança de Outro Ministério'
+                ? true
+                : false,
           ),
           SizedBox(height: 16),
-           buttonOption(
+          buttonOption(
             context: context,
             text: 'Carta de Mudança do mesmo Ministério',
             auth: auth,
-            onOption: () => auth.user.procedenciaMembro = 'Carta de Mudança do mesmo Ministério',
-            isActive: auth.user.procedenciaMembro == 'Carta de Mudança do mesmo Ministério' ? true : false,
+            onOption: () => auth.user.procedenciaMembro =
+                'Carta de Mudança do mesmo Ministério',
+            isActive: auth.user.procedenciaMembro ==
+                    'Carta de Mudança do mesmo Ministério'
+                ? true
+                : false,
           ),
           SizedBox(height: 16),
-           buttonOption(
+          buttonOption(
             context: context,
             text: 'Aclamação',
             auth: auth,
@@ -307,7 +352,8 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.origemMembro = value,
-            initialValue: auth.user.origemMembro != null ? auth.user.origemMembro : null,
+            initialValue:
+                auth.user.origemMembro != null ? auth.user.origemMembro : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -336,7 +382,8 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.dataMudanca = value,
-            initialValue: auth.user.dataMudanca != null ? auth.user.dataMudanca : null,
+            initialValue:
+                auth.user.dataMudanca != null ? auth.user.dataMudanca : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -361,7 +408,9 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.localConversao = value,
-            initialValue: auth.user.localConversao != null ? auth.user.localConversao : null,
+            initialValue: auth.user.localConversao != null
+                ? auth.user.localConversao
+                : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -390,10 +439,10 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.dataConversao = value,
-            initialValue: auth.user.dataConversao != null ? auth.user.dataConversao : null,
+            initialValue: auth.user.dataConversao != null
+                ? auth.user.dataConversao
+                : null,
           ),
-
-
           SizedBox(height: 16),
           _save(
             context: context,
@@ -417,7 +466,9 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.localBatismoAguas = value,
-            initialValue: auth.user.localBatismoAguas != null ? auth.user.localBatismoAguas : null,
+            initialValue: auth.user.localBatismoAguas != null
+                ? auth.user.localBatismoAguas
+                : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -446,10 +497,10 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.dataBatismoAguas = value,
-            initialValue: auth.user.dataBatismoAguas != null ? auth.user.dataBatismoAguas : null,
+            initialValue: auth.user.dataBatismoAguas != null
+                ? auth.user.dataBatismoAguas
+                : null,
           ),
-
-
           SizedBox(height: 16),
           _save(
             context: context,
@@ -473,7 +524,9 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.localBatismoEspiritoSanto = value,
-            initialValue: auth.user.localBatismoEspiritoSanto != null ? auth.user.localBatismoEspiritoSanto : null,
+            initialValue: auth.user.localBatismoEspiritoSanto != null
+                ? auth.user.localBatismoEspiritoSanto
+                : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -502,7 +555,9 @@ class CristaoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (value) => Validator.rgValidator(value),
             onSaved: (value) => auth.user.dataBatismoEspiritoSanto = value,
-            initialValue: auth.user.dataBatismoEspiritoSanto != null ? auth.user.dataBatismoEspiritoSanto : null,
+            initialValue: auth.user.dataBatismoEspiritoSanto != null
+                ? auth.user.dataBatismoEspiritoSanto
+                : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -534,7 +589,6 @@ class CristaoFormScreen extends StatelessWidget {
             context: context,
             auth: auth,
           ),
-          
         ],
       };
       return forms[form];
@@ -560,7 +614,7 @@ class CristaoFormScreen extends StatelessWidget {
             child: FloatingActionButton(
               mini: true,
               child: Icon(FeatherIcons.chevronLeft),
-              onPressed: () => _handlerForm(),
+              onPressed: () => _handlerForm(context),
             ),
           ),
         ),
@@ -577,7 +631,7 @@ class CristaoFormScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: _forms(
-                    form: this.form,
+                    form: context.read<CustomRouter>().getForm,
                     auth: auth,
                   ),
                 );

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ieadi_app/screens/home/endereco/forms/endereco_form_screen.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class EnderecoScreen extends StatelessWidget {
+  final int page = 22; //vai para enderecoFormScreen
+
+  @override 
   Widget build(BuildContext context) {
-    void _handlerForm(String form) => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => EnderecoFormScreen(form)),
-      );
+    void _handlerForm(String form) =>
+        context.read<CustomRouter>().setPage(page, form: form);
 
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
@@ -50,7 +51,7 @@ class EnderecoScreen extends StatelessWidget {
             ListItemMenu(
               title: 'Logradouro',
               text: user.logradouro != '' ? user.logradouro : 'Não informado',
-              badge: user.logradouro == '' ? true : false,
+              badge: false,
               onTap: () =>  _handlerForm('Logradouro'),
             ),
             ListItemMenu(

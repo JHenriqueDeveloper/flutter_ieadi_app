@@ -7,13 +7,13 @@ import 'package:flutter_ieadi_app/models/models.dart';
 import 'package:uuid/uuid.dart';
 
 class CongregRepository extends ChangeNotifier {
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  static FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   CongregModel congreg;
 
   CongregRepository() {
-    loadCongregs(onFail: (e) => print(e));
+    loadCongregs();
   }
 
   bool _isLoading = false;
@@ -23,7 +23,7 @@ class CongregRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<CongregModel> _listCongregs = [];
+  List<CongregModel> _listCongregs;
   List<CongregModel> get getListCongregs => _listCongregs;
 
   CongregModel getCongreg(String id) {
@@ -35,14 +35,13 @@ class CongregRepository extends ChangeNotifier {
     return null;
   }
 
-  Future<void> loadCongregs({
-    Function onFail,
-  }) async {
+  Future<void> loadCongregs() async {
     setLoading = true;
     try {
       final congregs = await _firebaseFirestore
           .collection('congregs')
-          .orderBy('createdAt', descending: true)
+          .orderBy('nome')
+          //.orderBy('createdAt', descending: true)
           .get();
 
       _listCongregs =
@@ -50,11 +49,11 @@ class CongregRepository extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      onFail(e);
+      print('Erro ao carregar Congregações: \n $e');
     }
 
     if (this.congreg != null) {
-      this.congreg = this.congreg.getCongregEmpty;
+      this.congreg = null;
     }
 
     setLoading = false;
@@ -64,7 +63,8 @@ class CongregRepository extends ChangeNotifier {
     if (image != null) {
       var imageId = Uuid().v4();
       if (congreg != null) {
-        if (congreg?.profileImageUrl != null ?? congreg?.profileImageUrl != '') {
+        if (congreg?.profileImageUrl != null ??
+            congreg?.profileImageUrl != '') {
           final exp = RegExp(r'congregProfile_(.*).jpg');
           imageId = exp.firstMatch(congreg.profileImageUrl)[1];
         }
@@ -86,25 +86,31 @@ class CongregRepository extends ChangeNotifier {
     Function onSuccess,
   }) async {
     setLoading = true;
+     try {
+       if (image != null) {
+        congreg.profileImageUrl = await addImage(
+          image: image,
+          congreg: congreg,
+        );
+      }
+      if (congreg.createdAt == null) {
+        congreg.setCreatedAt = DateTime.now();
+      }
 
-    if (image != null) {
-      congreg.profileImageUrl = await addImage(
-        image: image,
-        congreg: congreg,
-      );
+      await _firebaseFirestore
+          .collection('/congregs')
+          .doc(congreg.id)
+          .update(congreg.toDocument());
+
+      onSuccess(congreg.id);
+
+      this.congreg = congreg.getCongregEmpty;
+
+      loadCongregs();
+      
+    } catch (e) {
+      onFail(e);
     }
-
-    this.congreg = congreg;
-
-    await _firebaseFirestore
-        .collection('/congregs')
-        .doc(congreg.id)
-        .update(congreg.toDocument())
-        .then((value) => onSuccess(value))
-        .catchError((onError) => onFail(onError));
-    
-    loadCongregs();
-
     setLoading = false;
   }
 
@@ -115,22 +121,26 @@ class CongregRepository extends ChangeNotifier {
     Function onSuccess,
   }) async {
     setLoading = true;
+    try{
+      if (image != null) {
+        congreg.profileImageUrl = await addImage(image: image);
+      }
 
-    if (image != null) {
-      congreg.profileImageUrl = await addImage(image: image);
-    }
-    //congreg.profileImageUrl = await addImage(image: image);
     congreg.setCreatedAt = DateTime.now();
     congreg.isActive = true;
 
-    await _firebaseFirestore
-        .collection('congregs')
-        .add(congreg.toDocument())
-        .then((value) => onSuccess(value))
-        .catchError((onError) => onFail(onError));
+    var result = await _firebaseFirestore
+    .collection('/congregs').add(congreg.toDocument());
+
+    onSuccess(result);
+
+    this.congreg = congreg.getCongregEmpty;
 
     loadCongregs();
 
+    }catch(e){
+      onFail(e);
+    }
     setLoading = false;
   }
 }

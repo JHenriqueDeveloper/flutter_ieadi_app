@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/screens/secretaria/dashboard/widgets/dashboard_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -42,6 +43,7 @@ class DashboardScreen extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Container(
+            color: LightStyle.paleta['BgCard'],
             child: Column(
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +51,13 @@ class DashboardScreen extends StatelessWidget {
                 Container(
                   height: 128.sp,
                   width: MediaQuery.of(context).size.width,
-                  color: Theme.of(context).backgroundColor,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).backgroundColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(24.sp),
+                      bottomRight: Radius.circular(24.sp),
+                    ),
+                  ),
                   padding: EdgeInsets.symmetric(
                     vertical: 24.sp,
                     horizontal: 24.sp,
@@ -59,7 +67,7 @@ class DashboardScreen extends StatelessWidget {
                     runAlignment: WrapAlignment.spaceBetween,
                     children: [
                       ButtonDashboard(
-                        text: 'Solicitaçãoes',
+                        text: 'Solicitações',
                         onPressed: () =>
                             context.read<CustomRouter>().setPage(17),
                       ),
@@ -79,19 +87,6 @@ class DashboardScreen extends StatelessWidget {
                             context.read<CustomRouter>().setPage(12),
                       ),
                     ],
-                  ),
-                ),
-                Container(
-                  color: LightStyle.paleta['BgCard'],
-                  child: Container(
-                    height: 12.sp,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).backgroundColor,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(24.sp),
-                        bottomRight: Radius.circular(24.sp),
-                      ),
-                    ),
                   ),
                 ),
                 Container(
@@ -140,7 +135,6 @@ class DashboardScreen extends StatelessWidget {
                         badge: false,
                         page: 15,
                       ),
-                      
                     ],
                   ),
                 ),

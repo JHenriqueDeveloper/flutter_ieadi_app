@@ -2,6 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/validator.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
@@ -11,11 +12,14 @@ import 'package:provider/provider.dart';
 import '../../../../helpers/util.dart';
 
 class EnderecoFormScreen extends StatelessWidget {
-  final String form;
+  final PageController pageController = PageController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final int page = 3;
 
-  EnderecoFormScreen(this.form);
+  void _handlerForm(BuildContext context) => context
+    .read<CustomRouter>()
+    .setPage(page);
 
   final List<String> _ufs = uf_list;
 
@@ -62,7 +66,7 @@ class EnderecoFormScreen extends StatelessWidget {
                         isSuccess: false,
                       ),
                       onSuccess: (uid) {
-                        Navigator.of(context).pop();
+                        _handlerForm(context);
                         _snackBar(context: context, msg: 'Dados atualizados');
                       },
                     );
@@ -104,7 +108,7 @@ class EnderecoFormScreen extends StatelessWidget {
                       isSuccess: false,
                     ),
                     onSuccess: (uid) {
-                      Navigator.of(context).pop();
+                      _handlerForm(context);
                       _snackBar(context: context, msg: 'Dados atualizados');
                     },
                   );
@@ -138,8 +142,6 @@ class EnderecoFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _handlerForm() => Navigator.pop(context);
-
     List<Widget> _forms({
       String form,
       auth,
@@ -176,14 +178,14 @@ class EnderecoFormScreen extends StatelessWidget {
         ],
         'UF': [
           _title(context, 'Informe o Estado de sua residência.'),
-
-          for (var uf in _ufs) buttonOption(
-            context: context,
-            text: uf,
-            auth: auth,
-            onOption: () => auth.user.uf = uf,
-            isActive: auth.user.uf == uf ? true : false,
-          ),
+          for (var uf in _ufs)
+            buttonOption(
+              context: context,
+              text: uf,
+              auth: auth,
+              onOption: () => auth.user.uf = uf,
+              isActive: auth.user.uf == uf ? true : false,
+            ),
           SizedBox(height: 16),
         ],
         'Cidade': [
@@ -195,7 +197,6 @@ class EnderecoFormScreen extends StatelessWidget {
             maxLines: 1,
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.bodyText1,
-            
             decoration: InputDecoration(
               labelText: 'Cidade',
               labelStyle: Theme.of(context).textTheme.bodyText1,
@@ -280,7 +281,8 @@ class EnderecoFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (complemento) => Validator.rgValidator(complemento),
             onSaved: (complemento) => auth.user.complemento = complemento,
-            initialValue: auth.user.complemento != null ? auth.user.complemento : null,
+            initialValue:
+                auth.user.complemento != null ? auth.user.complemento : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -337,7 +339,7 @@ class EnderecoFormScreen extends StatelessWidget {
             child: FloatingActionButton(
               mini: true,
               child: Icon(FeatherIcons.chevronLeft),
-              onPressed: () => _handlerForm(),
+              onPressed: () => _handlerForm(context),
             ),
           ),
         ),
@@ -354,7 +356,7 @@ class EnderecoFormScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: _forms(
-                    form: this.form,
+                    form: context.read<CustomRouter>().getForm,
                     auth: auth,
                   ),
                 );

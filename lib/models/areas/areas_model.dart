@@ -51,12 +51,12 @@ class AreasModel {
   get getEmpty => empty;
 
   static AreasModel empty = AreasModel(
-    id: '',
+    id: null,
     nome: '',
-    setor: '',
-    sede: '',
-    supervisor: '',
-    isActive: false,
+    setor: null,
+    sede: null,
+    supervisor: null,
+    isActive: true,
     createdAt: DateTime.now(),
   );
 

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/congregacoes/forms/congreg_form_screen.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -12,19 +12,16 @@ import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
 class CongregacoesScreen extends StatelessWidget {
-  void _handlerForm({
-    BuildContext ctx,
-    CongregModel congreg,
-  }) =>
-      Navigator.push(
-        ctx,
-        MaterialPageRoute(builder: (_) => CongregForm(congreg: congreg)),
-      );
-
+  final PageController pageController = PageController();
+  final int page = 25;
   @override
   Widget build(BuildContext context) {
     return Consumer<CongregRepository>(
       builder: (_, state, __) {
+        void _handlerForm({String form, CongregModel congreg}) {
+          state.congreg = congreg;
+          return context.read<CustomRouter>().setPage(page, form: form);
+        }
 
         List<Widget> _listCongregs() {
           List<Widget> list = [];
@@ -33,7 +30,7 @@ class CongregacoesScreen extends StatelessWidget {
               ListTile(
                 key: Key(e.id),
                 onTap: () {
-                  _handlerForm(ctx: context, congreg: e);
+                  _handlerForm(form: e.nome, congreg: e);
                 },
                 title: Text(
                   e.nome,
@@ -58,6 +55,13 @@ class CongregacoesScreen extends StatelessWidget {
                           )
                         : SizedBox()
                       : SizedBox(),
+                    e?.unidadeConsumidora != ''
+                    ? Text(
+                            'U.C: ${e.unidadeConsumidora}',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
+                        : SizedBox(),
+
                     e.createdAt != null
                         ? Text(
                             'criado em: ${formataData(data: e.createdAt)}',
@@ -107,7 +111,7 @@ class CongregacoesScreen extends StatelessWidget {
           backToPage: 8,
           fab: ElevatedButton(
             onPressed: () {
-              _handlerForm(ctx: context);
+              _handlerForm();
             },
             child: const Icon(FeatherIcons.plus),
             style: ElevatedButton.styleFrom(

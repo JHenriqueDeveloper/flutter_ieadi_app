@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/setores/forms/setor_form_screen.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -11,19 +11,18 @@ import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
 class SetorScreen extends StatelessWidget {
-  void _handlerForm({
-    BuildContext ctx,
-    SetorModel setor,
-  }) =>
-      Navigator.push(
-        ctx,
-        MaterialPageRoute(builder: (_) => SetorForm(setor: setor)),
-      );
+  final PageController pageController = PageController();
+  final int page = 29;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<SetorRepository>(
       builder: (_, state, __) {
+        void _handlerForm({String form, SetorModel setor}) {
+          state.setor = setor;
+          return context.read<CustomRouter>().setPage(page, form: form);
+        }
+
         List<Widget> _listSetor() {
           List<Widget> list = [];
           for (var e in state.getListSetor) {
@@ -31,7 +30,7 @@ class SetorScreen extends StatelessWidget {
               ListTile(
                 key: Key(e.id),
                 onTap: () {
-                  _handlerForm(ctx: context, setor: e);
+                  _handlerForm(form: e.nome, setor: e);
                 },
                 title: Text(
                   e.nome,
@@ -91,7 +90,7 @@ class SetorScreen extends StatelessWidget {
           backToPage: 8,
           fab: ElevatedButton(
             onPressed: () {
-              _handlerForm(ctx: context);
+              _handlerForm();
             },
             child: const Icon(FeatherIcons.plus),
             style: ElevatedButton.styleFrom(

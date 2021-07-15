@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ieadi_app/screens/home/curriculo/forms/curriculo_form_screen.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class CurriculoScreen extends StatelessWidget {
+  final PageController pageController = PageController();
+  final int page = 21;
+
+  @override 
   Widget build(BuildContext context) {
-    void _handlerForm(String form) => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => CurriculoFormScreen(form)),
-      );
+
+    void _handlerForm(String form) => context
+    .read<CustomRouter>()
+    .setPage(page, form: form);
 
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
@@ -43,7 +47,7 @@ class CurriculoScreen extends StatelessWidget {
               onTap: () => _handlerForm('Profissao'),
             ),
             ListItemMenu(
-              title: 'Pretensão Salárial',
+              title: 'Pretensão \nSalárial',
               text: user.pretensaoSalarial != ''
               ? user.pretensaoSalarial
               : 'Não informado',
@@ -53,7 +57,7 @@ class CurriculoScreen extends StatelessWidget {
               onTap: () => _handlerForm('Salario'),
             ),
             ListItemMenu(
-              title: 'Objetivos de Carreira',
+              title: 'Objetivos \nde Carreira',
               text: user.objetivos != ''
               ? user.objetivos
               : 'Não informado',
@@ -61,7 +65,7 @@ class CurriculoScreen extends StatelessWidget {
               onTap: () => _handlerForm('Objetivos'),
             ),
             ListItemMenu(
-              title: 'Biografia Profissional',
+              title: 'Biografia \nProfissional',
               text: user.bioProfissional != ''
               ? user.bioProfissional
               : 'Não informado',

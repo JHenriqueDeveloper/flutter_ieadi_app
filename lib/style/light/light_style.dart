@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
 
 class LightStyle {
-
   static const Map<String, Color> paleta = {
     'Primaria': Color(0xFF4478EE),
     'Shadow': Color(0x304478EE),
@@ -22,6 +21,12 @@ class LightStyle {
     'Alert': Color(0xFFEEBE44),
   };
 
+  static TextStyle textOverlinePrimary = GoogleFonts.roboto(
+    fontSize: 12.sp, //16,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 0,
+    color: paleta['Primaria'],
+  );
 
   static ThemeData themeLight() => ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -41,8 +46,8 @@ class LightStyle {
           ),
         ),
         buttonTheme: ButtonThemeData(
-          //disabledColor: paleta['CinzaClaro'],
-        ),
+            //disabledColor: paleta['CinzaClaro'],
+            ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: paleta['Primaria'],
         ),
@@ -50,29 +55,27 @@ class LightStyle {
           size: 14.sp,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            primary: paleta['Primaria'],
-            onPrimary: paleta['Branco'],
-            onSurface: paleta['Shadow'],
-            textStyle: GoogleFonts.roboto(
-              fontSize: 12.sp, //14,
-              fontWeight: FontWeight.bold,
-              color: paleta['Branco'],
-              letterSpacing: 0,
-            ),
-            shadowColor: paleta['Secundaria'],
-          )
-        ),
+            style: ElevatedButton.styleFrom(
+          primary: paleta['Primaria'],
+          onPrimary: paleta['Branco'],
+          onSurface: paleta['Shadow'],
+          textStyle: GoogleFonts.roboto(
+            fontSize: 12.sp, //14,
+            fontWeight: FontWeight.bold,
+            color: paleta['Branco'],
+            letterSpacing: 0,
+          ),
+          shadowColor: paleta['Secundaria'],
+        )),
         textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            primary: paleta['Cinza'],
-            textStyle: GoogleFonts.roboto(
-              fontSize: 12.sp, //16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0,
-            ),
-          )
-        ),
+            style: TextButton.styleFrom(
+          primary: paleta['Cinza'],
+          textStyle: GoogleFonts.roboto(
+            fontSize: 12.sp, //16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0,
+          ),
+        )),
         textTheme: TextTheme(
           headline1: GoogleFonts.roboto(
             fontSize: 48.sp, //64.0,
@@ -109,7 +112,7 @@ class LightStyle {
           ),
           subtitle1: TextStyle(
             color: paleta['Branco'],
-            fontSize:  14.sp, //20.0,
+            fontSize: 14.sp, //20.0,
             fontWeight: FontWeight.w600,
           ),
           subtitle2: TextStyle(
@@ -119,7 +122,8 @@ class LightStyle {
             height: 1.5,
             fontWeight: FontWeight.w600,
           ),
-          overline: GoogleFonts.roboto( //texto button vermelho
+          overline: GoogleFonts.roboto(
+            //texto button vermelho
             fontSize: 12.sp, //16,
             fontWeight: FontWeight.bold,
             letterSpacing: 0,
@@ -138,29 +142,27 @@ class LightStyle {
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: paleta['BgSecundario'],
-          counterStyle: TextStyle(color: Colors.transparent),
-          labelStyle: GoogleFonts.roboto(
-            fontSize: 12.sp, //16,
-            color: paleta['Cinza'],
-            letterSpacing: 0,
-          ),
-          hintStyle: GoogleFonts.roboto(
-            fontSize: 12.sp, //16,
-            color: paleta['Branco'],
-            letterSpacing: 0,
-          ),
-          
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(
-              color: Colors.transparent,
+            filled: true,
+            fillColor: paleta['BgSecundario'],
+            counterStyle: TextStyle(color: Colors.transparent),
+            labelStyle: GoogleFonts.roboto(
+              fontSize: 12.sp, //16,
+              color: paleta['Cinza'],
+              letterSpacing: 0,
             ),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          )),
-
-  );
+            hintStyle: GoogleFonts.roboto(
+              fontSize: 12.sp, //16,
+              color: paleta['Branco'],
+              letterSpacing: 0,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.transparent,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            )),
+      );
 }

@@ -49,8 +49,8 @@ class UserCard extends StatelessWidget {
         ],
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 12,
+        horizontal: 12.sp,
+        vertical: 12.sp,
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -59,6 +59,7 @@ class UserCard extends StatelessWidget {
           ),
         ),
         child: Column(
+          //crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -74,24 +75,28 @@ class UserCard extends StatelessWidget {
               ],
             ),
             Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      this.username,
-                      style: textCardStyle,
-                    ),
-                    Text(
-                      this.matricula,
-                      //'6B55668R-93',
-                      style: textCardStyle,
-                    ),
-                  ],
-                ),
-              ],
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        this.username,
+                        style: textCardStyle,
+                        //textAlign: TextAlign.left,
+                      ),
+                    ],
+                  ),
+                  Text(
+                    this.matricula,
+                    //'6B55668R-93',
+                    style: textCardStyle,
+                    //textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

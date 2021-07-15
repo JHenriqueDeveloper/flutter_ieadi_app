@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ieadi_app/screens/home/home_screens.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
@@ -13,12 +13,16 @@ class PessoaisScreen extends StatefulWidget {
 }
 
 class _PessoaisScreenState extends State<PessoaisScreen> {
-  void _handlerForm(String form) => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => PessoaisFormScreen(form)),
-      );
+  final PageController pageController = PageController();
+  final int page = 23;
 
+  @override 
   Widget build(BuildContext context) {
+
+    void _handlerForm(String form) => context
+    .read<CustomRouter>()
+    .setPage(page, form: form);
+    
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
         var user = auth.user;
@@ -65,7 +69,7 @@ class _PessoaisScreenState extends State<PessoaisScreen> {
               onTap: () => _handlerForm('Naturalidade'),
             ),
             ListItemMenu(
-              title: 'Data de Nascimento',
+              title: 'Data \nde Nascimento',
               text: user.dataNascimento != '' 
               ? user.dataNascimento : 'Não informado',
               badge: user.dataNascimento == '' ? true : false,
@@ -94,7 +98,7 @@ class _PessoaisScreenState extends State<PessoaisScreen> {
               text: user.tipoSanguineo != ''
                   ? user.tipoSanguineo
                   : 'Não informado',
-              badge: user.tipoSanguineo == '' ? true : false,
+              badge: false,
               onTap: () => _handlerForm('Sangue'),
             ),
             ListItemMenu(

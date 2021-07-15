@@ -2,6 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/validator.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
@@ -9,11 +10,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class CurriculoFormScreen extends StatelessWidget {
-  final String form;
+  final PageController pageController = PageController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final int page = 6;
 
-  CurriculoFormScreen(this.form);
+  void _handlerForm(BuildContext context) => context
+    .read<CustomRouter>()
+    .setPage(page);
 
   _snackBar({
     BuildContext context,
@@ -58,7 +62,7 @@ class CurriculoFormScreen extends StatelessWidget {
                         isSuccess: false,
                       ),
                       onSuccess: (uid) {
-                        Navigator.of(context).pop();
+                        _handlerForm(context);
                         _snackBar(context: context, msg: 'Dados atualizados');
                       },
                     );
@@ -100,7 +104,7 @@ class CurriculoFormScreen extends StatelessWidget {
                       isSuccess: false,
                     ),
                     onSuccess: (uid) {
-                      Navigator.of(context).pop();
+                      _handlerForm(context);
                       _snackBar(context: context, msg: 'Dados atualizados');
                     },
                   );
@@ -134,8 +138,6 @@ class CurriculoFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _handlerForm() => Navigator.pop(context);
-
     List<Widget> _forms({
       String form,
       auth,
@@ -294,7 +296,7 @@ class CurriculoFormScreen extends StatelessWidget {
             child: FloatingActionButton(
               mini: true,
               child: Icon(FeatherIcons.chevronLeft),
-              onPressed: () => _handlerForm(),
+              onPressed: () => _handlerForm(context),
             ),
           ),
         ),
@@ -311,7 +313,7 @@ class CurriculoFormScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: _forms(
-                    form: this.form,
+                    form: context.read<CustomRouter>().getForm,
                     auth: auth,
                   ),
                 );

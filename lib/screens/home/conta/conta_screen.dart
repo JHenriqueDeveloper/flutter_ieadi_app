@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class ContaScreen extends StatelessWidget {
+ final PageController pageController = PageController();
+ //TODO: DESENVOLVER A ROTA
+  final int page = 23;
+
+  @override 
   Widget build(BuildContext context) {
+/*
+    void _handlerForm(String form) => context
+    .read<CustomRouter>()
+    .setPage(page, form: form);
+*/
+    
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
         var user = auth.user;

@@ -28,22 +28,6 @@ class IeadiApp extends StatelessWidget {
           create: (_) => AuthRepository(),
           lazy: false,
         ),
-        ChangeNotifierProvider(
-          create: (_) => CongregRepository(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AreasRepository(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => SetorRepository(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => MembroRepository(),
-          lazy: false,
-        ),
       ],
       child: Sizer(
         builder: (context, orientation, deviceType) {

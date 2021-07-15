@@ -9,12 +9,28 @@ import 'package:provider/provider.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class ServicosScreen extends StatelessWidget {
+  final PageController pageController = PageController();
+
+  //TODO: IMPLEMENTAR ROTA
+
+  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  //final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final int page = 19;
+
+/*
+  void _handlerForm(BuildContext context) => context
+    .read<CustomRouter>()
+    .setPage(page);
+*/
+
   final snackBar = SnackBar(
     content: Text('Solicitação Recebida!'),
     backgroundColor: LightStyle.paleta['Primaria'],
   );
 
+  @override 
   Widget build(BuildContext context) {
+
     void _showDialog({
       String title,
       String body,

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/image_helper.dart';
 import 'package:flutter_ieadi_app/models/models.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,34 +17,31 @@ import '../../../../style/style.dart';
 import '../../../../widgets/widgets.dart';
 
 class MembroForm extends StatefulWidget {
-  final UserModel membro;
-
-  MembroForm({
-    this.membro,
-  });
-
-  _MembroFormState createState() => _MembroFormState();
+  MembroForm();
+  MembroFormState createState() => MembroFormState();
 }
 
-class _MembroFormState extends State<MembroForm> {
+class MembroFormState extends State<MembroForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final PageController pageController = PageController();
+  int page = 13;
 
-  UserModel _membro = new UserModel();
-  String _title;
-  bool _isAddMembro;
+  UserModel membro = new UserModel();
+
+  void _handlerForm(BuildContext context) {
+    if (context.read<CustomRouter>().getBackPage > 0) {
+      int back = context.read<CustomRouter>().getBackPage;
+      context.read<CustomRouter>().setPage(back);
+      context.read<CustomRouter>().setBackPage = 0;
+    } else {
+      context.read<CustomRouter>().setPage(page);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    if (widget.membro != null) {
-      _membro = widget.membro;
-      _title = 'Atualizar membro';
-      _isAddMembro = false;
-    } else {
-      _title = 'Adicionar membro';
-      _isAddMembro = true;
-    }
   }
 
   File profileImage;
@@ -72,124 +70,160 @@ class _MembroFormState extends State<MembroForm> {
             : Theme.of(context).errorColor,
       ));
 
-  _dropList(List<String> list) {
-    return list
-        .map(
-          (String value) => DropdownMenuItem<String>(
-            value: value,
-            child: Text(
-              value,
-              style: GoogleFonts.roboto(
-                fontSize: 16,
-                height: 1.5,
-                letterSpacing: 0,
-                color: LightStyle.paleta['Cinza'],
-              ),
-            ),
-          ),
-        )
-        .toList();
-  }
-
-  List<DropdownMenuItem<String>> _listCongreg({
-    BuildContext context,
-  }) {
-    List<CongregModel> list = context.read<CongregRepository>().getListCongregs;
-    return list.map<DropdownMenuItem<String>>((CongregModel congreg) {
-      return DropdownMenuItem(
-        value: congreg.id,
-        child: Text(
-          congreg.nome,
-          style: GoogleFonts.roboto(
-            fontSize: 16,
-            height: 1.5,
-            letterSpacing: 0,
-            color: LightStyle.paleta['Cinza'],
-          ),
-        ),
-      );
-    }).toList();
-  }
-
-  Widget _buttonSave({
-    BuildContext context,
-    state,
-  }) =>
-      SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: 46,
-        child: ElevatedButton(
-          onPressed: !state.isLoading
-              ? () {
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
-                    if (_isAddMembro) {
-                      context.read<MembroRepository>().addMembro(
-                            membro: _membro,
-                            image: profileImage ?? null,
-                            onFail: (e) => _snackBar(
-                              context: context,
-                              msg: 'Não foi possivel adicionar o membro: $e',
-                              isSuccess: false,
-                            ),
-                            onSuccess: (uid) {
-                              Navigator.of(context).pop();
-                              _snackBar(
-                                  context: context,
-                                  msg: 'Nova membro adicionado com successo!');
-                            },
-                          );
-                    } else {
-                      context.read<MembroRepository>().updateMembro(
-                            membro: _membro,
-                            image: profileImage ?? null,
-                            onFail: (e) => _snackBar(
-                              context: context,
-                              msg: 'Não foi possivel atualizar o membro: $e',
-                              isSuccess: false,
-                            ),
-                            onSuccess: (uid) {
-                              Navigator.of(context).pop();
-                              _snackBar(
-                                  context: context,
-                                  msg: 'membro atualizado com sucesso!');
-                            },
-                          );
-                    }
-                  }
-                }
-              : () {
-                  print('Teste de button');
-                },
-          child: !state.isLoading
-              ? Text(_isAddMembro ? 'Adicionar' : 'Atualizar')
-              : SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                  ),
-                ),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return Consumer<MembroRepository>(
       builder: (_, state, __) {
+        if (state.membro != null) {
+          membro = state.membro;
+        }
+
+        _dropList(List<String> list) {
+          return list
+              .map(
+                (String value) => DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      height: 1.5,
+                      letterSpacing: 0,
+                      color: LightStyle.paleta['Cinza'],
+                    ),
+                  ),
+                ),
+              )
+              .toList();
+        }
+
+        List<DropdownMenuItem<String>> _listCongreg() {
+          List<CongregModel> list =
+              context.read<CongregRepository>().getListCongregs;
+          return list.map<DropdownMenuItem<String>>((CongregModel congreg) {
+            return DropdownMenuItem(
+              value: congreg.id,
+              child: Text(
+                congreg.nome,
+                style: GoogleFonts.roboto(
+                  fontSize: 16,
+                  height: 1.5,
+                  letterSpacing: 0,
+                  color: LightStyle.paleta['Cinza'],
+                ),
+              ),
+            );
+          }).toList();
+        }
+
+        Widget _buttonSave() => SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 46,
+              child: ElevatedButton(
+                onPressed: !state.isLoading
+                    ? () {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+
+                          if (membro?.isVerificacaoSolicitada == true) {
+                              membro.isVerified = true;
+                              membro.isVerificacaoSolicitada = false;
+
+                              SolicitacoesModel solicitacao = context
+                                  .read<SolicitacoesRepository>()
+                                  .solicitacao;
+
+                              solicitacao.status = 'Resolvida';
+                              solicitacao.isActive = false;
+
+                              context
+                                  .read<SolicitacoesRepository>()
+                                  .updateSolicitacao(
+                                      solicitacao: solicitacao,
+                                      onFail: (e) => _snackBar(
+                                            context: context,
+                                            msg: membro?.isVerificacaoSolicitada ==
+                                                    true
+                                                ? 'Não foi possivel verificar o membro: $e'
+                                                : 'Não foi possivel atualizar o membro: $e',
+                                            isSuccess: false,
+                                          ),
+                                      onSuccess: (uid) {
+                                        context
+                                            .read<MembroRepository>()
+                                            .updateMembro(
+                                              membro: membro,
+                                              image: profileImage ?? null,
+                                              onFail: (e) => _snackBar(
+                                                context: context,
+                                                msg:
+                                                    'Não foi possivel verificar o membro: $e',
+                                                isSuccess: false,
+                                              ),
+                                              onSuccess: (uid) {
+                                                _handlerForm(context);
+                                                _snackBar(
+                                                  context: context,
+                                                  msg:
+                                                      'membro verificado com sucesso!',
+                                                );
+                                              },
+                                            );
+                                      });
+                            } else {
+                              context.read<MembroRepository>().updateMembro(
+                                    membro: membro,
+                                    image: profileImage ?? null,
+                                    onFail: (e) => _snackBar(
+                                      context: context,
+                                      msg:
+                                          'Não foi possivel atualizar o membro: $e',
+                                      isSuccess: false,
+                                    ),
+                                    onSuccess: (uid) {
+                                      _handlerForm(context);
+                                      _snackBar(
+                                          context: context,
+                                          msg:
+                                              'membro atualizado com sucesso!');
+                                    },
+                                  );
+                            }
+                        }
+                      }
+                    : () {},
+                child: !state.isLoading
+                    ? membro?.isVerified == false
+                        ? Text(membro?.isVerificacaoSolicitada == true
+                            ? 'Verificar conta'
+                            : 'Atualizar')
+                        : Text('Atualizar')
+                    : SizedBox(
+                        height: 28,
+                        width: 28,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        ),
+                      ),
+              ),
+            );
+
         String membroNome =
-            _membro?.username != '' ? firstName(_membro?.username) : '';
+            membro?.username != '' ? firstName(membro?.username) : '';
 
         return DefaultForm(
           formKey: _formKey,
           scaffoldKey: _scaffoldKey,
-          title: membroNome.length > 0 ? membroNome : _title,
+          title: membroNome ?? 'Verificar Membro',
+          page: context.read<CustomRouter>().getBackPage > 0
+              ? context.read<CustomRouter>().getBackPage
+              : page,
           form: [
             UploadImage(
               onTap: () => _selectImage(context),
               isLoading: false,
               image: profileImage,
-              imageUrl: _membro?.profileImageUrl ?? '',
+              imageUrl: membro?.profileImageUrl ?? '',
             ),
             SizedBox(height: 48),
             Row(
@@ -218,8 +252,8 @@ class _MembroFormState extends State<MembroForm> {
               ),
               enabled: !state.isLoading,
               validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _membro.username = value,
-              initialValue: _membro?.username ?? null,
+              onSaved: (value) => membro.username = value,
+              initialValue: membro?.username ?? null,
             ),
             SizedBox(height: 16),
             ListTile(
@@ -231,9 +265,9 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.genero,
+                value: membro?.genero == '' ? null : membro.genero,
                 hint: Text('Não Informado'),
-                onChanged: (value) => setState(() => _membro.genero = value),
+                onChanged: (value) => setState(() => membro.genero = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(generos_list),
               ),
@@ -257,8 +291,8 @@ class _MembroFormState extends State<MembroForm> {
               ],
               enabled: !state.isLoading,
               validator: (value) => Validator.cpfValidator(value),
-              onSaved: (value) => _membro.cpf = value,
-              initialValue: _membro?.cpf ?? null,
+              onSaved: (value) => membro.cpf = value,
+              initialValue: membro?.cpf ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -274,8 +308,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.rg = value,
-              initialValue: _membro?.rg ?? null,
+              onSaved: (value) => membro.rg = value,
+              initialValue: membro?.rg ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -291,8 +325,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.naturalidade = value,
-              initialValue: _membro?.naturalidade ?? null,
+              onSaved: (value) => membro.naturalidade = value,
+              initialValue: membro?.naturalidade ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -312,8 +346,8 @@ class _MembroFormState extends State<MembroForm> {
                 DataInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.dataNascimento = value,
-              initialValue: _membro?.dataNascimento ?? null,
+              onSaved: (value) => membro.dataNascimento = value,
+              initialValue: membro?.dataNascimento ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -330,8 +364,8 @@ class _MembroFormState extends State<MembroForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _membro.nomePai = value,
-              initialValue: _membro?.nomePai ?? null,
+              onSaved: (value) => membro.nomePai = value,
+              initialValue: membro?.nomePai ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -348,8 +382,8 @@ class _MembroFormState extends State<MembroForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _membro.nomeMae = value,
-              initialValue: _membro?.nomeMae ?? null,
+              onSaved: (value) => membro.nomeMae = value,
+              initialValue: membro?.nomeMae ?? null,
             ),
             ListTile(
               title: Text(
@@ -359,10 +393,10 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.estadoCivil,
+                value: membro?.estadoCivil == '' ? null : membro.estadoCivil,
                 hint: Text('Não Informado'),
                 onChanged: (value) =>
-                    setState(() => _membro.estadoCivil = value),
+                    setState(() => membro.estadoCivil = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(civil_list),
               ),
@@ -377,10 +411,11 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.tipoSanguineo,
+                value:
+                    membro?.tipoSanguineo == '' ? null : membro?.tipoSanguineo,
                 hint: Text('Não Informado'),
                 onChanged: (value) =>
-                    setState(() => _membro.tipoSanguineo = value),
+                    setState(() => membro.tipoSanguineo = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(sangue_list),
               ),
@@ -400,8 +435,8 @@ class _MembroFormState extends State<MembroForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _membro.tituloEleitor = value,
-              initialValue: _membro?.tituloEleitor ?? null,
+              onSaved: (value) => membro.tituloEleitor = value,
+              initialValue: membro?.tituloEleitor ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -418,8 +453,8 @@ class _MembroFormState extends State<MembroForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _membro.zonaEleitor = value,
-              initialValue: _membro?.zonaEleitor ?? null,
+              onSaved: (value) => membro.zonaEleitor = value,
+              initialValue: membro?.zonaEleitor ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -436,8 +471,8 @@ class _MembroFormState extends State<MembroForm> {
               ),
               enabled: !state.isLoading,
               //validator: (value) => Validator.rgValidator(value),
-              onSaved: (value) => _membro.secaoEleitor = value,
-              initialValue: _membro?.secaoEleitor ?? null,
+              onSaved: (value) => membro.secaoEleitor = value,
+              initialValue: membro?.secaoEleitor ?? null,
             ),
             SizedBox(height: 16),
             ListTile(
@@ -450,14 +485,14 @@ class _MembroFormState extends State<MembroForm> {
               trailing: Switch(
                 activeColor: Theme.of(context).primaryColor,
                 onChanged: (bool value) =>
-                    setState(() => _membro.isPortadorNecessidade = value),
-                value: _membro?.isPortadorNecessidade ?? false,
+                    setState(() => membro.isPortadorNecessidade = value),
+                value: membro?.isPortadorNecessidade ?? false,
               ),
             ),
-            _membro?.isPortadorNecessidade == true
+            membro?.isPortadorNecessidade == true
                 ? SizedBox(height: 16)
                 : SizedBox(),
-            _membro?.isPortadorNecessidade == true
+            membro?.isPortadorNecessidade == true
                 ? ListTile(
                     title: Text(
                       'Tipo de \nnecessidade especial',
@@ -467,19 +502,19 @@ class _MembroFormState extends State<MembroForm> {
                     trailing: DropdownButton(
                       underline:
                           Container(height: 0, color: Colors.transparent),
-                      value: _membro?.tipoNecessidade,
+                      value: membro?.tipoNecessidade,
                       hint: Text('Não Informado'),
                       onChanged: (value) =>
-                          setState(() => _membro.tipoNecessidade = value),
+                          setState(() => membro.tipoNecessidade = value),
                       style: Theme.of(context).textTheme.bodyText1,
                       items: _dropList(necessidades_list),
                     ),
                   )
                 : SizedBox(),
-            _membro?.isPortadorNecessidade == true
+            membro?.isPortadorNecessidade == true
                 ? SizedBox(height: 32)
                 : SizedBox(),
-            _membro?.isPortadorNecessidade == true
+            membro?.isPortadorNecessidade == true
                 ? TextFormField(
                     keyboardType: TextInputType.text,
                     autocorrect: false,
@@ -493,8 +528,8 @@ class _MembroFormState extends State<MembroForm> {
                       fillColor: LightStyle.paleta['PrimariaCinza'],
                     ),
                     enabled: !state.isLoading,
-                    onSaved: (value) => _membro.descricaoNecessidade = value,
-                    initialValue: _membro?.descricaoNecessidade ?? null,
+                    onSaved: (value) => membro.descricaoNecessidade = value,
+                    initialValue: membro?.descricaoNecessidade ?? null,
                   )
                 : SizedBox(),
             SizedBox(height: 48),
@@ -527,8 +562,8 @@ class _MembroFormState extends State<MembroForm> {
                 CepInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.cep = value,
-              initialValue: _membro?.cep ?? null,
+              onSaved: (value) => membro.cep = value,
+              initialValue: membro?.cep ?? null,
             ),
             SizedBox(height: 16),
             ListTile(
@@ -539,9 +574,9 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.uf,
+                value: membro?.uf == '' ? null : membro.uf,
                 hint: Text('UF'),
-                onChanged: (value) => setState(() => _membro.uf = value),
+                onChanged: (value) => setState(() => membro.uf = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(uf_list),
               ),
@@ -560,8 +595,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.cidade = value,
-              initialValue: _membro?.cidade ?? null,
+              onSaved: (value) => membro.cidade = value,
+              initialValue: membro?.cidade ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -577,8 +612,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.bairro = value,
-              initialValue: _membro?.bairro ?? null,
+              onSaved: (value) => membro.bairro = value,
+              initialValue: membro?.bairro ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -594,8 +629,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.logradouro = value,
-              initialValue: _membro?.logradouro ?? null,
+              onSaved: (value) => membro.logradouro = value,
+              initialValue: membro?.logradouro ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -611,8 +646,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.complemento = value,
-              initialValue: _membro?.complemento ?? null,
+              onSaved: (value) => membro.complemento = value,
+              initialValue: membro?.complemento ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -628,8 +663,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.numero = value,
-              initialValue: _membro?.numero ?? null,
+              onSaved: (value) => membro.numero = value,
+              initialValue: membro?.numero ?? null,
             ),
             SizedBox(height: 48),
             Row(
@@ -661,8 +696,8 @@ class _MembroFormState extends State<MembroForm> {
                 TelefoneInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.numeroFixo = value,
-              initialValue: _membro?.numeroFixo ?? null,
+              onSaved: (value) => membro.numeroFixo = value,
+              initialValue: membro?.numeroFixo ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -682,8 +717,8 @@ class _MembroFormState extends State<MembroForm> {
                 TelefoneInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.numeroCelular = value,
-              initialValue: _membro?.numeroCelular ?? null,
+              onSaved: (value) => membro.numeroCelular = value,
+              initialValue: membro?.numeroCelular ?? null,
             ),
             SizedBox(height: 48),
             Row(
@@ -708,8 +743,8 @@ class _MembroFormState extends State<MembroForm> {
               trailing: Switch(
                 activeColor: Theme.of(context).primaryColor,
                 onChanged: (bool value) =>
-                    setState(() => _membro.isDizimista = value),
-                value: _membro?.isDizimista ?? false,
+                    setState(() => membro.isDizimista = value),
+                value: membro?.isDizimista ?? false,
               ),
             ),
             SizedBox(height: 8),
@@ -722,16 +757,16 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.congregacao != null
-                    ? _membro?.congregacao != ''
-                        ? _membro?.congregacao
+                value: membro?.congregacao != null
+                    ? membro?.congregacao != ''
+                        ? membro?.congregacao
                         : null
                     : null,
                 hint: Text('Não Informado'),
                 onChanged: (value) =>
-                    setState(() => _membro.congregacao = value),
+                    setState(() => membro.congregacao = value),
                 style: Theme.of(context).textTheme.bodyText1,
-                items: this._listCongreg(context: context),
+                items: _listCongreg(),
               ),
             ),
             SizedBox(height: 8),
@@ -744,10 +779,9 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.tipoMembro,
+                value: membro?.tipoMembro == '' ? null : membro.tipoMembro,
                 hint: Text('Não Informado'),
-                onChanged: (value) =>
-                    setState(() => _membro.tipoMembro = value),
+                onChanged: (value) => setState(() => membro.tipoMembro = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(tipos_membros), //_dropDownTipoMembros,
               ),
@@ -762,10 +796,11 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               trailing: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.situacaoMembro,
+                value:
+                    membro?.situacaoMembro == '' ? null : membro.situacaoMembro,
                 hint: Text('Não Informado'),
                 onChanged: (value) =>
-                    setState(() => _membro.situacaoMembro = value),
+                    setState(() => membro.situacaoMembro = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(situacao_membros), //_dropDownTipoMembros,
               ),
@@ -779,10 +814,12 @@ class _MembroFormState extends State<MembroForm> {
               enabled: !state.isLoading,
               subtitle: DropdownButton(
                 underline: Container(height: 0, color: Colors.transparent),
-                value: _membro?.procedenciaMembro,
+                value: membro?.procedenciaMembro == ''
+                    ? null
+                    : membro.procedenciaMembro,
                 hint: Text('Não Informado'),
                 onChanged: (value) =>
-                    setState(() => _membro.procedenciaMembro = value),
+                    setState(() => membro.procedenciaMembro = value),
                 style: Theme.of(context).textTheme.bodyText1,
                 items: _dropList(procedencias), //_dropDownTipoMembros,
               ),
@@ -802,8 +839,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.origemMembro = value,
-              initialValue: _membro?.origemMembro ?? null,
+              onSaved: (value) => membro.origemMembro = value,
+              initialValue: membro?.origemMembro ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -823,8 +860,8 @@ class _MembroFormState extends State<MembroForm> {
                 DataInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.dataMudanca = value,
-              initialValue: _membro?.dataMudanca ?? null,
+              onSaved: (value) => membro.dataMudanca = value,
+              initialValue: membro?.dataMudanca ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -840,8 +877,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.localConversao = value,
-              initialValue: _membro?.localConversao ?? null,
+              onSaved: (value) => membro.localConversao = value,
+              initialValue: membro?.localConversao ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -861,8 +898,8 @@ class _MembroFormState extends State<MembroForm> {
                 DataInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.dataConversao = value,
-              initialValue: _membro?.dataConversao ?? null,
+              onSaved: (value) => membro.dataConversao = value,
+              initialValue: membro?.dataConversao ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -878,8 +915,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.localBatismoAguas = value,
-              initialValue: _membro?.localBatismoAguas ?? null,
+              onSaved: (value) => membro.localBatismoAguas = value,
+              initialValue: membro?.localBatismoAguas ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -899,8 +936,8 @@ class _MembroFormState extends State<MembroForm> {
                 DataInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.dataBatismoAguas = value,
-              initialValue: _membro?.dataBatismoAguas ?? null,
+              onSaved: (value) => membro.dataBatismoAguas = value,
+              initialValue: membro?.dataBatismoAguas ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -916,8 +953,8 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.localBatismoEspiritoSanto = value,
-              initialValue: _membro?.localBatismoEspiritoSanto ?? null,
+              onSaved: (value) => membro.localBatismoEspiritoSanto = value,
+              initialValue: membro?.localBatismoEspiritoSanto ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -937,8 +974,8 @@ class _MembroFormState extends State<MembroForm> {
                 DataInputFormatter(),
               ],
               enabled: !state.isLoading,
-              onSaved: (value) => _membro.dataBatismoEspiritoSanto = value,
-              initialValue: _membro?.dataBatismoEspiritoSanto ?? null,
+              onSaved: (value) => membro.dataBatismoEspiritoSanto = value,
+              initialValue: membro?.dataBatismoEspiritoSanto ?? null,
             ),
             SizedBox(height: 16),
             TextFormField(
@@ -954,14 +991,11 @@ class _MembroFormState extends State<MembroForm> {
                 fillColor: LightStyle.paleta['PrimariaCinza'],
               ),
               enabled: !state.isLoading,
-              onSaved: (value) => _membro?.bio = value,
-              initialValue: _membro?.bio ?? null,
+              onSaved: (value) => membro?.bio = value,
+              initialValue: membro?.bio ?? null,
             ),
             SizedBox(height: 32),
-            _buttonSave(
-              context: context,
-              state: state,
-            ),
+            _buttonSave(),
           ],
         );
       },

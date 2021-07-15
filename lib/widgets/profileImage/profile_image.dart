@@ -40,8 +40,10 @@ class ProfileImage extends StatelessWidget {
               backgroundColor: LightStyle.paleta['Primaria'],
               backgroundImage: profileImage != null
                   ? FileImage(profileImage)
-                  : profileImageUrl.isNotEmpty
-                      ? CachedNetworkImageProvider(profileImageUrl)
+                  : profileImageUrl != null
+                      ? profileImageUrl != ''
+                        ? CachedNetworkImageProvider(profileImageUrl)
+                        : null
                       : null,
               child: this.onTap != null
                   ? Container(
@@ -69,11 +71,9 @@ class ProfileImage extends StatelessWidget {
                           Container(
                             margin: const EdgeInsets.only(left: 58, top: 44),
                             child: Badge(
-                              showBadge: profileImageUrl != null
-                                  ? profileImageUrl != ''
+                              showBadge: profileImageUrl != ''
                                       ? false
-                                      : true
-                                  : true,
+                                      : true,
                               elevation: 2,
                               //padding: const EdgeInsets.all(3),
                             ),

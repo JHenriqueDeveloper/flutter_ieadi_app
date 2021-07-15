@@ -69,6 +69,10 @@ class UserModel {
   bool isMemberCard; //já possui cartão de membro
   bool isVerified; //conta verificada
   bool isActive;
+  bool isVerificacaoSolicitada;
+
+  List tags;
+
   DateTime createdAt;
 
   UserModel({
@@ -139,6 +143,8 @@ class UserModel {
     this.isVerified,
     this.isActive,
     this.createdAt,
+    this.tags,
+    this.isVerificacaoSolicitada,
   });
 
   get getId => id;
@@ -233,11 +239,13 @@ class UserModel {
         'isMemberCard': isMemberCard,
         'isVerified': isVerified,
         'isActive': isActive,
-        'createdAt' : Timestamp.fromDate(createdAt)
+        'createdAt': Timestamp.fromDate(createdAt),
+        'tags': tags,
+        'isVerificacaoSolicitada': isVerificacaoSolicitada,
       };
 
   static UserModel empty = UserModel(
-    id: '',
+    id: null,
     username: '',
     matricula: '',
     email: '',
@@ -249,20 +257,20 @@ class UserModel {
     nomePai: '',
     nomeMae: '',
     dataNascimento: '',
-    estadoCivil: '',
-    genero: '',
-    tipoSanguineo: '',
+    estadoCivil: null,
+    genero: null,
+    tipoSanguineo: null,
     //Dados eleitorais
     tituloEleitor: '',
     zonaEleitor: '',
     secaoEleitor: '',
     //Necessidades especiais
     isPortadorNecessidade: false,
-    tipoNecessidade: '',
+    tipoNecessidade: null,
     descricaoNecessidade: '',
     //Endereco
     cep: '',
-    uf: '',
+    uf: null,
     cidade: '',
     bairro: '',
     logradouro: '',
@@ -272,9 +280,9 @@ class UserModel {
     numeroFixo: '',
     numeroCelular: '',
     //Perfil Cristão
-    congregacao: '',
-    tipoMembro: '',
-    situacaoMembro: '',
+    congregacao: null,
+    tipoMembro: null,
+    situacaoMembro: null,
     procedenciaMembro: '',
     origemMembro: '',
     dataMudanca: '',
@@ -301,8 +309,10 @@ class UserModel {
     isAdmin: false,
     isMemberCard: false,
     isVerified: false,
-    isActive: false,
+    isActive: true,
     createdAt: DateTime.now(),
+    tags: [],
+    isVerificacaoSolicitada: false,
   );
 
   factory UserModel.fromDocument(DocumentSnapshot doc) {
@@ -310,7 +320,7 @@ class UserModel {
     final data = doc.data();
     return UserModel(
       id: doc.id,
-      username: data['username']  as String,
+      username: data['username'] as String,
       matricula: data['matricula'] as String,
       email: data['email'] as String,
       profileImageUrl: data['profileImageUrl'] as String,
@@ -375,21 +385,38 @@ class UserModel {
       isVerified: data['isVerified'] as bool,
       isActive: data['isActive'] as bool,
       createdAt: (data['createdAt'] as Timestamp)?.toDate(),
+      tags: data['tags'] as List,
+      isVerificacaoSolicitada: data['isVerificacaoSolicitada'] as bool,
     );
   }
 
-  static Future<UserModel> getUser(String userId) async {
-    final doc = await FirebaseFirestore.instance.doc('users/$userId').get();
-    return doc.exists ? UserModel.fromDocument(doc) : UserModel.empty;
+  static Future<UserModel> getUser(String id) async {
+    if (id != null) {
+      final doc = await FirebaseFirestore.instance.doc('users/$id').get();
+      return doc.exists ? UserModel.fromDocument(doc) : UserModel.empty;
+    }
+    return UserModel.empty;
+  }
+
+  static Future<List<UserModel>> getUserBatismo(String dataBatismo) async {
+    if (dataBatismo != null) {
+      final batizados = await FirebaseFirestore.instance
+          .collection('users')
+          .where('dataBatismoAguas', isEqualTo: dataBatismo)
+          .get();
+      final listBatizados =
+          batizados.docs.map((doc) => UserModel.fromDocument(doc)).toList();
+
+      return listBatizados;
+    }
+    return [];
   }
 
   Future<void> saveUser() async => await firestoreRef.set(toDocument());
 
   Future<void> updateUser(UserModel user) async {
-    return await FirebaseFirestore
-    .instance
-    .doc('users/${user.id}')
-    .update(user.toDocument());
+    return await FirebaseFirestore.instance
+        .doc('users/${user.id}')
+        .update(user.toDocument());
   }
-
 }

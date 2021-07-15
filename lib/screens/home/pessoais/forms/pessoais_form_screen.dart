@@ -2,6 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/validator.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
@@ -9,20 +10,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class PessoaisFormScreen extends StatelessWidget {
-  final String form;
+  final PageController pageController = PageController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  
+  final int page = 2;
 
-  PessoaisFormScreen(this.form);
+  void _handlerForm(BuildContext context) =>
+      context.read<CustomRouter>().setPage(page);
 
   _snackBar({
     BuildContext context,
     String msg,
     bool isSuccess = true,
   }) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(msg),
         backgroundColor: isSuccess
             ? LightStyle.paleta['Sucesso']
@@ -60,7 +61,7 @@ class PessoaisFormScreen extends StatelessWidget {
                         isSuccess: false,
                       ),
                       onSuccess: (uid) {
-                        Navigator.of(context).pop();
+                        _handlerForm(context);
                         _snackBar(context: context, msg: 'Dados atualizados');
                       },
                     );
@@ -102,7 +103,7 @@ class PessoaisFormScreen extends StatelessWidget {
                       isSuccess: false,
                     ),
                     onSuccess: (uid) {
-                      Navigator.of(context).pop();
+                      _handlerForm(context);
                       _snackBar(context: context, msg: 'Dados atualizados');
                     },
                   );
@@ -136,8 +137,6 @@ class PessoaisFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _handlerForm() => Navigator.pop(context);
-
     List<Widget> _forms({
       String form,
       auth,
@@ -261,7 +260,8 @@ class PessoaisFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (naturalidade) => Validator.rgValidator(naturalidade),
             onSaved: (naturalidade) => auth.user.naturalidade = naturalidade,
-            initialValue: auth.user.naturalidade != null ? auth.user.naturalidade : null,
+            initialValue:
+                auth.user.naturalidade != null ? auth.user.naturalidade : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -297,10 +297,10 @@ class PessoaisFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (nascimento) => Validator.rgValidator(nascimento),
             onSaved: (nascimento) => auth.user.dataNascimento = nascimento,
-            initialValue: auth.user.dataNascimento != null ? auth.user.dataNascimento : null,
+            initialValue: auth.user.dataNascimento != null
+                ? auth.user.dataNascimento
+                : null,
           ),
-
-
           SizedBox(height: 16),
           _save(
             context: context,
@@ -478,7 +478,9 @@ class PessoaisFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (titulo) => Validator.tituloValidator(titulo),
             onSaved: (titulo) => auth.user.tituloEleitor = titulo,
-            initialValue: auth.user.tituloEleitor != null ? auth.user.tituloEleitor : null,
+            initialValue: auth.user.tituloEleitor != null
+                ? auth.user.tituloEleitor
+                : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -503,7 +505,8 @@ class PessoaisFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (zona) => Validator.zonaValidator(zona),
             onSaved: (zona) => auth.user.zonaEleitor = zona,
-            initialValue: auth.user.zonaEleitor != null ? auth.user.zonaEleitor : null,
+            initialValue:
+                auth.user.zonaEleitor != null ? auth.user.zonaEleitor : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -528,7 +531,8 @@ class PessoaisFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (secao) => Validator.zonaValidator(secao),
             onSaved: (secao) => auth.user.secaoEleitor = secao,
-            initialValue: auth.user.secaoEleitor != null ? auth.user.secaoEleitor : null,
+            initialValue:
+                auth.user.secaoEleitor != null ? auth.user.secaoEleitor : null,
           ),
           SizedBox(height: 16),
           _save(
@@ -546,7 +550,7 @@ class PessoaisFormScreen extends StatelessWidget {
             isActive: auth.user.isPortadorNecessidade ? true : false,
           ),
           SizedBox(height: 16),
-           buttonOption(
+          buttonOption(
             context: context,
             text: 'Não',
             auth: auth,
@@ -596,10 +600,10 @@ class PessoaisFormScreen extends StatelessWidget {
             onOption: () => auth.user.tipoNecessidade = 'Outra',
             isActive: auth.user.tipoNecessidade == 'Outra' ? true : false,
           ),
-          
         ],
         'Descricao Necessidade': [
-          _title(context, 'Descreva brevemente quais são as suas limitações para \nque possamos \nmelhor servi-lo.'),
+          _title(context,
+              'Descreva brevemente quais são as suas limitações para \nque possamos \nmelhor servi-lo.'),
           TextFormField(
             keyboardType: TextInputType.text,
             autocorrect: false,
@@ -615,14 +619,15 @@ class PessoaisFormScreen extends StatelessWidget {
             enabled: !auth.isLoading,
             validator: (descri) => Validator.descricaoValidator(descri),
             onSaved: (descri) => auth.user.descricaoNecessidade = descri,
-            initialValue: auth.user.descricaoNecessidade != null ? auth.user.descricaoNecessidade : null,
+            initialValue: auth.user.descricaoNecessidade != null
+                ? auth.user.descricaoNecessidade
+                : null,
           ),
           SizedBox(height: 16),
           _save(
             context: context,
             auth: auth,
           ),
-          
         ],
       };
       return forms[form];
@@ -648,7 +653,7 @@ class PessoaisFormScreen extends StatelessWidget {
             child: FloatingActionButton(
               mini: true,
               child: Icon(FeatherIcons.chevronLeft),
-              onPressed: () => _handlerForm(),
+              onPressed: () => _handlerForm(context),
             ),
           ),
         ),
@@ -665,7 +670,7 @@ class PessoaisFormScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: _forms(
-                    form: this.form,
+                    form: context.read<CustomRouter>().getForm,
                     auth: auth,
                   ),
                 );

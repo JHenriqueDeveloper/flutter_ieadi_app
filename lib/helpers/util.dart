@@ -5,6 +5,37 @@ import 'package:nanoid/nanoid.dart';
 String firstName(String fullName) =>
     fullName?.substring(0, fullName.indexOf(' ')) ?? '';
 
+String formataNome(String fullName) {
+  fullName.trim();
+  List<String> nomes = fullName.split(' ');
+  String nome = '';
+
+  List<String> aux = [];
+  for (String nome in nomes) {
+    if (nome.length > 3) {
+      aux.add(nome);
+    }
+  }
+  nomes = [];
+  if (aux.length >= 3) {
+    for (var i = 0; i < aux.length; i++) {
+      if (i != 0 && i != aux.length - 1) {
+        nomes.add(aux[i].substring(0, 1));
+      } else {
+        nomes.add(aux[i]);
+      }
+    }
+  } else {
+    nomes = aux;
+  }
+
+  for (var i = 0; i < nomes.length; i++) {
+    nome = '$nome ${nomes[i]}';
+  }
+
+  return nome;
+}
+
 formataData({
   @required DateTime data,
   String mask = 'dd MMM, yyyy',

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/membros/forms/membros_form_screen.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -12,19 +12,17 @@ import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
 class MembrosScreen extends StatelessWidget {
-  void _handlerForm({
-    BuildContext ctx,
-    UserModel membro,
-  }) =>
-      Navigator.push(
-        ctx,
-        MaterialPageRoute(builder: (_) => MembroForm(membro: membro)),
-      );
+ final PageController pageController = PageController();
+  final int page = 26;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<MembroRepository>(
       builder: (_, state, __) {
+        void _handlerForm({String form, UserModel membro}) {
+          state.membro = membro;
+          return context.read<CustomRouter>().setPage(page, form: form, back: 0);
+        }
 
         List<Widget> _listmembros() {
           List<Widget> list = [];
@@ -33,7 +31,7 @@ class MembrosScreen extends StatelessWidget {
               ListTile(
                 key: Key(e.id),
                 onTap: () {
-                  _handlerForm(ctx: context, membro: e);
+                  _handlerForm(form: e.username, membro: e);
                 },
                 title: Text(
                   e.username,
@@ -86,6 +84,12 @@ class MembrosScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.bodyText1,
                           )
                         : SizedBox(),
+                    e?.isVerified == false 
+                      ? Text(
+                        'Não verificado', 
+                        style: Theme.of(context).textTheme.overline,
+                      ) 
+                      : SizedBox(),
                     e?.isActive == false
                         ? Text(
                             'situação: Inativa',
