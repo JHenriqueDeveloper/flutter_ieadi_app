@@ -4,3 +4,4 @@ export 'areas/areas_model.dart';
 export 'setor/setor_model.dart';
 export 'ministerio/ministerio_model.dart';
 export 'solicitacoes/solicitacoes_model.dart';
+export 'base_model.dart';

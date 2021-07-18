@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:meta/meta.dart';
 
 class UserModel {
   //Conta
@@ -244,6 +245,10 @@ class UserModel {
         'isVerificacaoSolicitada': isVerificacaoSolicitada,
       };
 
+  String _collection = 'users';
+
+  String get getCollection => _collection;
+
   static UserModel empty = UserModel(
     id: null,
     username: '',
@@ -390,6 +395,8 @@ class UserModel {
     );
   }
 
+  //TODO: REFATORAR TODO O CÓDIGO DO MODEL
+
   static Future<UserModel> getUser(String id) async {
     if (id != null) {
       final doc = await FirebaseFirestore.instance.doc('users/$id').get();
@@ -399,7 +406,7 @@ class UserModel {
   }
 
   static Future<List<UserModel>> getUserBatismo(String dataBatismo) async {
-    if (dataBatismo != null) {
+    if (dataBatismo != '') {
       final batizados = await FirebaseFirestore.instance
           .collection('users')
           .where('dataBatismoAguas', isEqualTo: dataBatismo)
@@ -418,5 +425,31 @@ class UserModel {
     return await FirebaseFirestore.instance
         .doc('users/${user.id}')
         .update(user.toDocument());
+  }
+
+  Future<List<UserModel>> search({
+    @required String campo,
+    @required String value,
+  }) async {
+    final result = await FirebaseFirestore.instance
+        .collection(_collection)
+        .where(campo, isEqualTo: value)
+        .get();
+
+    final list = result.docs.map((doc) => UserModel.fromDocument(doc)).toList();
+    return list;
+  }
+
+  //@override
+  Future<List<UserModel>> searchTags({
+    @required String value,
+  }) async {
+    final result = await FirebaseFirestore.instance
+        .collection(_collection)
+        .where('tags', arrayContains: value.toLowerCase())
+        .get();
+
+    final list = result.docs.map((doc) => UserModel.fromDocument(doc)).toList();
+    return list;
   }
 }

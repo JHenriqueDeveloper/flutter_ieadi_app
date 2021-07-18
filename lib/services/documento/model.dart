@@ -1,0 +1,66 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_ieadi_app/services/services.dart';
+
+class DocumentoModel extends BaseModel {
+  String id;
+  bool isActive;
+  DateTime createdAt;
+  String membro;
+  String tipo;
+  List tags;
+
+  DocumentoModel({
+    this.id,
+    this.isActive,
+    this.createdAt,
+    this.membro,
+    this.tipo,
+    this.tags,
+  });
+
+  @override
+  String get getCollection => 'documentos';
+
+  @override
+  List get getTags => [
+    this.id,
+    this.isActive,
+    this.createdAt,
+    this.membro,
+    this.tipo,
+  ];
+
+  @override
+  get getEmpty => empty;
+
+  static DocumentoModel empty = DocumentoModel(
+    id: null,
+    isActive: true,
+    membro: null,
+    tipo: null,
+    createdAt: DateTime.now(),
+    tags: [],
+  );
+
+  @override
+  Map<String, dynamic> toDocument() => {
+        'isActive': isActive,
+        'membro': membro,
+        'tipo': tipo,
+        'createdAt': Timestamp.fromDate(createdAt),
+        'tags': tags,
+      };
+
+  factory DocumentoModel.fromDocument(DocumentSnapshot doc) {
+    if (doc == null) return null;
+    final data = doc.data();
+    return DocumentoModel(
+      id: doc.id,
+      membro: data['dirigente'] as String,
+      tipo: data['idArea'] as String,
+      isActive: data['isActive'] as bool,
+      createdAt: (data['createdAt'] as Timestamp)?.toDate(),
+      tags: data['tags'] as List,
+    );
+  }
+}

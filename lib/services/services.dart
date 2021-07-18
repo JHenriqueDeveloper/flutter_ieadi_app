@@ -1,0 +1,17 @@
+export 'base/model.dart';
+export 'base/service.dart';
+export 'areas/model.dart';
+export 'areas/services.dart';
+export 'congreg/model.dart';
+export 'congreg/service.dart';
+export 'documento/model.dart';
+export 'documento/service.dart';
+export 'ministerio/model.dart';
+export 'ministerio/service.dart';
+export 'setor/model.dart';
+export 'setor/service.dart';
+export 'solicitacoes/model.dart';
+export 'solicitacoes/service.dart';
+export 'user/model.dart';
+export 'user/service.dart';
+export 'membro/service.dart';
