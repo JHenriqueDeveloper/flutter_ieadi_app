@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 
 import '../../../widgets/widgets.dart';
 
+export 'form/verificacoes_form.dart';
+
 class VerificacoesScreen extends StatelessWidget {
   final PageController pageController = PageController();
   final int page = 30;

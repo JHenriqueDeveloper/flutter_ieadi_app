@@ -9,6 +9,9 @@ import 'package:sizer/sizer.dart';
 
 import '../../../widgets/widgets.dart';
 
+export 'ministerio_options_screen.dart';
+export 'forms/ministerio_form_screen.dart';
+
 class MinisterioScreen extends StatelessWidget{
   final PageController pageController = PageController();
   final int pageForm = 27;

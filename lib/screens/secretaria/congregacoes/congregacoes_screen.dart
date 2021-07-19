@@ -11,6 +11,8 @@ import '../../../repositories/repositories.dart';
 import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
+export 'forms/congreg_form_screen.dart';
+
 class CongregacoesScreen extends StatelessWidget {
   final PageController pageController = PageController();
   final int page = 25;

@@ -1,21 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
-import 'package:flutter_ieadi_app/screens/home/contatos/forms/contatos_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/home/cristao/forms/cristao_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/home/curriculo/forms/curriculo_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/home/endereco/forms/endereco_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/areas/forms/areas_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/congregacoes/forms/congreg_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/documentos/forms/documentos_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/membros/forms/membros_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/ministerio/forms/ministerio_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/ministerio/ministerio_options_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/setores/forms/setor_form_screen.dart';
-import 'package:flutter_ieadi_app/screens/secretaria/verificacoes/form/verificacoes_form.dart';
-import 'package:provider/provider.dart';
-
-import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/screens/screens.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_ieadi_app/config/config.dart';
 
 class BaseScreen extends StatelessWidget {
   final PageController pageController = PageController();
@@ -46,6 +33,10 @@ class BaseScreen extends StatelessWidget {
           ),
           ChangeNotifierProvider(
             create: (_) => SolicitacoesRepository(),
+            lazy: false,
+          ),
+          ChangeNotifierProvider(
+            create: (_) => DocumentoRepository(),
             lazy: false,
           ),
         ],
@@ -94,6 +85,16 @@ class BaseScreen extends StatelessWidget {
               //Serviços
               VerificacoesForm(), //30
               DocumentosForm(), //31
+
+              //documentos
+              CartaMudanca(), //32
+              CartaRecomendacao(), //33
+              CartaoMembro(), //34
+              CertificadoApresentacao(), //35
+              CertificadoBatismo(), //36
+              CredencialMinisterio(), //37
+              DeclaracaoMembro(), //38
+
             ],
           ),
         ));

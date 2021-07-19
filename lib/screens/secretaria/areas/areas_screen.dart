@@ -10,6 +10,8 @@ import '../../../repositories/repositories.dart';
 import '../../../style/style.dart';
 import '../../../widgets/widgets.dart';
 
+export 'forms/areas_form_screen.dart';
+
 class AreasScreen extends StatelessWidget {
   final PageController pageController = PageController();
   final int page = 24;

@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
+export 'forms/endereco_form_screen.dart';
+
 class EnderecoScreen extends StatelessWidget {
   final int page = 22; //vai para enderecoFormScreen
 

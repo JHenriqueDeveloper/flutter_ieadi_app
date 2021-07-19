@@ -7,3 +7,4 @@ export 'setor/setor_repository.dart';
 export 'membro/membro_repository.dart';
 export 'ministerio/ministerio_repository.dart';
 export 'solicitacoes/solicitacoes_repository.dart';
+export 'documentos/documentos_repository.dart';

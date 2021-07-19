@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
+export 'forms/cristao_form_screen.dart';
+
 class CristaoScreen extends StatelessWidget {
   final PageController pageController = PageController();
   final int page = 20;
