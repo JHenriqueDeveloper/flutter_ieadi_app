@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ieadi_app/services/services.dart';
+import 'package:flutter_ieadi_app/models/models.dart';
 import 'package:meta/meta.dart';
 
 class DocumentoRepository extends ChangeNotifier {

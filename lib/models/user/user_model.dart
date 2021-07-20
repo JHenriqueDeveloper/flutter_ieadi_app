@@ -173,6 +173,10 @@ class UserModel {
   set setIsMemberCard(bool isMemberCard) => this.isMemberCard = isMemberCard;
   set setIsVerified(bool isVerified) => this.isVerified = isVerified;
 
+  bool _isSelected = false;
+  bool get getIsSelected => _isSelected;
+  set setIsSelected(bool isSelected) => this._isSelected = isSelected;
+
   DocumentReference get firestoreRef =>
       FirebaseFirestore.instance.doc('users/${this.id}');
 
@@ -246,7 +250,6 @@ class UserModel {
       };
 
   String _collection = 'users';
-
   String get getCollection => _collection;
 
   static UserModel empty = UserModel(
