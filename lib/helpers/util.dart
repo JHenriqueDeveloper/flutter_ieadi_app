@@ -38,7 +38,7 @@ String formataNome(String fullName) {
 
 formataData({
   @required DateTime data,
-  String mask = 'dd MMM, yyyy',
+  String mask = 'dd de MMM, yyyy',
 }) {
   return DateFormat(mask, 'pt_BR').format(data);
 }

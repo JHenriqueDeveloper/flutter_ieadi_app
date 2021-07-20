@@ -9,7 +9,10 @@ class BaseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return Consumer<AuthRepository>(
+      builder: (_, auth, __) {
+      return auth.user != null 
+      ? MultiProvider(
         providers: [
           ChangeNotifierProvider(
             create: (_) => CongregRepository(),
@@ -77,11 +80,11 @@ class BaseScreen extends StatelessWidget {
 
               //formularios da secretaria
               AreaForm(), //24
-              CongregForm(),//25
-              MembroForm(),//26
-              MinisterioForm(),//27
-              MinisterioOptionsScreen(),//28
-              SetorForm(),//29
+              CongregForm(), //25
+              MembroForm(), //26
+              MinisterioForm(), //27
+              MinisterioOptionsScreen(), //28
+              SetorForm(), //29
               //Serviços
               VerificacoesForm(), //30
 
@@ -96,9 +99,14 @@ class BaseScreen extends StatelessWidget {
 
               //outras
               //PdfScreen(), //38
-
             ],
           ),
-        ));
+        ),
+      )
+      : Center(
+        child: CircularProgressIndicator(),
+      );
+    },
+    );
   }
 }

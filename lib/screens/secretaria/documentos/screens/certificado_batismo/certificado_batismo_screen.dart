@@ -32,6 +32,7 @@ class _CertificadoBatismoState extends State<CertificadoBatismo> {
   List<UserModel> selecionados = [];
 
   String searchString = '';
+  String certificado = '';
 
   @override
   void initState() {
@@ -77,17 +78,23 @@ class _CertificadoBatismoState extends State<CertificadoBatismo> {
     final pdf.Document pw = pdf.Document(
       deflate: zlib.encode,
     );
-
-/*
-    var bg = PdfImage.file(
-      pw.document,
-      bytes: (await rootBundle.load('batismo.jpg')).buffer.asUint8List(),
-    );
-*/
     List<pdf.Widget> pdfDocs = [];
     int count = 0;
 
     for (UserModel e in selecionados) {
+      //salvando documentos
+
+      await context.read<DocumentoRepository>().create(
+            doc: DocumentoModel(
+                membro: membro.id, tipo: 'Certificado de Batismo'),
+            onFail: (e) {}, //documentosNaoEmitidos.add(membro),
+            onSuccess: (uid) {
+              setState(() {
+                certificado = uid;
+              });
+            },
+          );
+
       String pronome = e.genero != null
           ? e.genero == 'Masculino'
               ? 'o'
@@ -147,7 +154,24 @@ class _CertificadoBatismoState extends State<CertificadoBatismo> {
                   child: pdf.Row(
                     mainAxisAlignment: pdf.MainAxisAlignment.end,
                     children: [
-                      pdf.Text('Icoaraci, Belém/PA 24 de Setembro de 2018.'),
+                      pdf.Text(
+                          'Icoaraci, Belém/PA ${formataData(data: DateTime.now())}.'),
+                    ],
+                  ),
+                ),
+                pdf.Container(
+                  child: pdf.Row(
+                    mainAxisAlignment: pdf.MainAxisAlignment.end,
+                    children: [
+                      pdf.Text(
+                        'Chave de autenticação $certificado',
+                        style: pdf.TextStyle(
+                          //font: myFont, //ttf,
+                          color: PdfColor.fromHex('#9B9186'),
+                          fontSize: 8,
+                          height: 1.5,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -177,8 +201,6 @@ class _CertificadoBatismoState extends State<CertificadoBatismo> {
     final File file = File(path);
     file.writeAsBytesSync(await pw.save());
 
-    //viewPdf(context, path);
-
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => PdfScreen(path),
@@ -187,30 +209,10 @@ class _CertificadoBatismoState extends State<CertificadoBatismo> {
   }
 
   emitirDocumento(BuildContext context) {
-    List<UserModel> documentosEmitidos = [];
+    //List<UserModel> documentosEmitidos = [];
     List<UserModel> documentosNaoEmitidos = [];
 
     for (UserModel membro in selecionados) {
-      //salvando documentos
-      context.read<DocumentoRepository>().create(
-            doc: DocumentoModel(
-                membro: membro.id, tipo: 'Certificado de Batismo'),
-            onFail: (e) => documentosNaoEmitidos.add(membro),
-            /*_snackBar(
-              context: context,
-              msg: 'Não foi emitir o documento: $e',
-              isSuccess: false,
-            ),*/
-            onSuccess: (uid) => documentosEmitidos.add(membro),
-            /*{
-              //_handlerForm(context);
-              _snackBar(
-                context: context,
-                msg: 'Documentos emitidos com sucesso!',
-              );
-            },*/
-          );
-
       membro.setIsSelected = false;
     }
 
@@ -226,8 +228,6 @@ class _CertificadoBatismoState extends State<CertificadoBatismo> {
         msg: 'Todos os documentos foram emitidos com sucesso!',
       );
     }
-
-    //PdfGen(context: context).createCertificado();
     createCertificado(context);
 
     searchController.clear();

@@ -151,7 +151,7 @@ class AuthRepository extends ChangeNotifier {
   }) async {
     setLoading = true;
     try {
-      List<String> tags = [user.username, user.email];
+      List<String> tags = [user.username, user.email, '*'];
 
       user.tags = tags;
 
@@ -233,19 +233,25 @@ class AuthRepository extends ChangeNotifier {
     try {
       this.user = user;
       user.createdAt = user?.createdAt ?? DateTime.now();
+      CongregModel congreg = new CongregModel();
+      AreasModel area = new AreasModel();
+      SetorModel setor = new SetorModel();
 
-      List<String> tagsList = [
-        user.username,
-        user.email,
-        user.cpf,
-        user.matricula,
-        user.genero,
-        user.congregacao,
-        user.tipoMembro,
-        user.procedenciaMembro,
-      ];
+      if (user.congregacao != null) {
+        congreg = await CongregModel.getCongreg(user.congregacao);
+        if (congreg.idArea != null) {
+          area = await AreasModel.getArea(congreg.idArea);
+          if (area.setor != null) {
+            setor = await SetorModel.getSetor(area.setor);
+          }
+        }
+      }
+      user.tags = user.getTags;
+      user.tags.add(congreg.id != null ? congreg.nome.toLowerCase() ?? '' : '');
+      user.tags.add(area.id != null ? area.nome.toLowerCase() ?? '' : '');
+      user.tags.add(setor.id != null ? setor.nome.toLowerCase() ?? '' : '');
 
-      user.tags = tagsList;
+      user.tags = user.getTags; //tagsList;
 
       await _firebaseFirestore
           .collection('users')

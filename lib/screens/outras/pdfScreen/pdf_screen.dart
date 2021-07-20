@@ -41,7 +41,7 @@ class _PdfScreenState extends State<PdfScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Certificados Gerados'),
+        title: Text('Documentos Gerados'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),

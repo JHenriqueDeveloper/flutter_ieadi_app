@@ -255,7 +255,7 @@ class UserModel {
   static UserModel empty = UserModel(
     id: null,
     username: '',
-    matricula: '',
+    matricula: null,
     email: '',
     profileImageUrl: '',
     //Dados civis
@@ -398,6 +398,67 @@ class UserModel {
     );
   }
 
+  //@override
+  List get getTags => [
+    this.id,
+    this.isActive ? 'ativo' : 'inativo',
+    this.username != null ? this.username.toLowerCase() : '',
+    this.matricula != null ? this.matricula.toLowerCase() : '',
+    this.email != null ? this.email.toLowerCase() : '',
+    this.cpf,
+    this.rg,
+    this.dataNascimento,
+    this.estadoCivil != null ? this.estadoCivil.toLowerCase() : '',
+    this.genero != null ? this.genero.toLowerCase() : '',
+    this.tipoSanguineo != null ? this.tipoSanguineo.toLowerCase() : '',
+    //Dados eleitorais
+    this.tituloEleitor != null ? this.tituloEleitor.toLowerCase() : '',
+    this.zonaEleitor != null ? this.zonaEleitor.toLowerCase() : '',
+    this.secaoEleitor != null ? this.secaoEleitor.toLowerCase() : '',
+    //Necessidades especiais
+    this.isPortadorNecessidade ? 'portador de necessidade' : '',
+    this.tipoNecessidade != null ? this.tipoNecessidade.toLowerCase() : '',
+    //Endereco
+    this.cep,
+    this.uf != null ? this.uf.toLowerCase() : '',
+    this.cidade != null ? this.cidade.toLowerCase() : '',
+    this.bairro != null ? this.bairro.toLowerCase() : '',
+    this.logradouro != null ? this.logradouro.toLowerCase() : '',
+    this.complemento != null ? this.complemento.toLowerCase() : '',
+    this.numero != null ? this.numero.toLowerCase() : '',
+    //Contatos
+    this.numeroFixo,
+    this.numeroCelular,
+    //Perfil Cristão
+    this.congregacao,
+    this.tipoMembro != null ? this.tipoMembro.toLowerCase() : '',
+    this.situacaoMembro != null ? this.situacaoMembro.toLowerCase() : '',
+    this.procedenciaMembro != null ? this.procedenciaMembro.toLowerCase() : '',
+    this.origemMembro != null ? this.origemMembro.toLowerCase() : '',
+    this.dataMudanca,
+    this.dataConversao,
+    this.localConversao != null ? this.localConversao.toLowerCase() : '',
+    this.dataBatismoAguas,
+    this.localBatismoAguas != null ? this.localBatismoAguas.toLowerCase() : '',
+    this.dataBatismoEspiritoSanto,
+    this.localBatismoEspiritoSanto != null ? this.localBatismoEspiritoSanto.toLowerCase() : '',
+    this.isDizimista ? 'dizimista' : 'não dizimista',
+    //curriculo
+    this.isProcurandoOportunidades ? 'procurando emprego' : '',
+    this.profissao != null ? this.profissao.toLowerCase() : '',
+    this.pretensaoSalarial != null ? this.pretensaoSalarial.toLowerCase() : '',
+    //Registro de membros
+    this.dataRegistro,
+    this.numeroRegistro != null ? this.numeroRegistro.toLowerCase() : '',
+    this.livroRegistro != null ? this.livroRegistro.toLowerCase() : '',
+    this.paginaRegistro != null ? this.paginaRegistro.toLowerCase() : '',
+    //configurações de conta
+    this.isAdmin ? 'administrador' : 'usuario',
+    this.isMemberCard ? 'possui cartão de membro': '',
+    this.isVerified ? 'verificado' : 'não verificado',
+    '*',
+  ];
+
   //TODO: REFATORAR TODO O CÓDIGO DO MODEL
 
   static Future<UserModel> getUser(String id) async {
@@ -444,15 +505,19 @@ class UserModel {
   }
 
   //@override
-  Future<List<UserModel>> searchTags({
+  static Future<List<UserModel>> searchTags({
     @required String value,
   }) async {
-    final result = await FirebaseFirestore.instance
-        .collection(_collection)
-        .where('tags', arrayContains: value.toLowerCase())
-        .get();
+    if (value != '') {
+      final result = await FirebaseFirestore.instance
+          .collection('users')
+          .where('tags', arrayContains: value.toLowerCase())
+          .get();
 
-    final list = result.docs.map((doc) => UserModel.fromDocument(doc)).toList();
-    return list;
+      final list =
+          result.docs.map((doc) => UserModel.fromDocument(doc)).toList();
+      return list;
+    }
+    return [];
   }
 }

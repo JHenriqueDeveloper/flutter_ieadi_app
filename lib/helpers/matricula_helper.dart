@@ -2,17 +2,17 @@ import 'package:meta/meta.dart';
 import 'package:nanoid/nanoid.dart';
 
 class MatriculaHelper {
+  //qwertyuiopasdfghjklzxcvbnm
   static const String _alfabeto =
-      '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+      '0123456789QWERTYUIOPASDFGHJKLZXCVBNM';
   static const int _stringLength = 4;
 
-  final String userCpf;
+  //final String userCpf;
   final String userId;
 
-  String matricula;
+  String _matricula;
 
   MatriculaHelper({
-    @required this.userCpf,
     @required this.userId,
   }) {
     String digito = customAlphabet(
@@ -25,12 +25,14 @@ class MatriculaHelper {
       _stringLength,
     );
 
-    String cpf = customAlphabet(userCpf, _stringLength);
+    String cpf = customAlphabet(userId, _stringLength).toUpperCase();
 
-    String id = customAlphabet(userId, _stringLength);
+    String id = customAlphabet(userId, _stringLength).toUpperCase();
 
-    matricula = gerarMatricula('$prefixo $cpf $id $digito');
+    _matricula = _gerarMatricula('$prefixo $cpf $id $digito');
   }
 
-  String gerarMatricula(String mat) => mat;
+  get getMatricula => _matricula;
+
+  String _gerarMatricula(String mat) => mat;
 }

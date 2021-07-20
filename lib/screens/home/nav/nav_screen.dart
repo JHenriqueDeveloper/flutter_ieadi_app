@@ -273,7 +273,7 @@ class _NavScreenState extends State<NavScreen> {
                       ),
                       Text(
                         user != null
-                            ? user?.tipoMembro != ''
+                            ? user?.tipoMembro != null
                                 ? user.tipoMembro
                                 : 'Visitante'
                             : '',

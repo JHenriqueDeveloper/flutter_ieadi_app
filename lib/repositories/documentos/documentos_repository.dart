@@ -75,7 +75,7 @@ class DocumentoRepository extends ChangeNotifier {
           .collection(_collection)
           .add(doc.toDocument());
 
-      onSuccess(result);
+      onSuccess(result.id);
 
       this.model = doc.getEmpty;
 

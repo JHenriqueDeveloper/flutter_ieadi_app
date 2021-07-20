@@ -45,6 +45,13 @@ class MembroRepository extends ChangeNotifier {
     return listBatizados;
   }
 
+  Future<List<UserModel>> searchTags(String value) async {
+    setLoading = true;
+    List<UserModel> listagem = await UserModel.searchTags(value: value);
+    setLoading = false;
+    return listagem;
+  }
+
   Future<void> loadMembros() async {
     setLoading = true;
     try {
@@ -94,20 +101,26 @@ class MembroRepository extends ChangeNotifier {
     Function onSuccess,
   }) async {
     setLoading = true;
+    try {
+      CongregModel congreg = new CongregModel().getCongregEmpty;
+      AreasModel area = new AreasModel();
+      SetorModel setor = new SetorModel();
 
-    List<String> tagsList = [
-      membro.username,
-      membro.email,
-      membro.cpf,
-      membro.matricula,
-      membro.genero,
-      membro.congregacao,
-      membro.tipoMembro,
-      membro.procedenciaMembro,
-      membro.dataBatismoAguas,
-    ];
+    if (membro.congregacao != null) {
+      congreg = await CongregModel.getCongreg(membro.congregacao);
+      if (congreg.idArea != null) {
+        area = await AreasModel.getArea(congreg.idArea);
+        if (area.setor != null) {
+          setor = await SetorModel.getSetor(area.setor);
+        }
+      }
+    }
+    membro.tags = membro.getTags;
+    membro.tags.add(congreg.id != null ? congreg.nome.toLowerCase() ?? '' : '');
+    membro.tags.add(area.id != null ? area.nome.toLowerCase() ?? '' : '');
+    membro.tags.add(setor.id != null ? setor.nome.toLowerCase() ?? '' : '');
 
-    membro.tags = tagsList;
+    membro.tags = membro.getTags; //tagsList;
 
     if (image != null) {
       membro.profileImageUrl = await addImage(
@@ -119,14 +132,17 @@ class MembroRepository extends ChangeNotifier {
     await _firebaseFirestore
         .collection('/users')
         .doc(membro.id)
-        .update(membro.toDocument())
-        .then((value) => onSuccess(value))
-        .catchError((onError) => onFail(onError));
+        .update(membro.toDocument());
 
     this.membro = membro.getUserEmpty;
 
-    loadMembros();
+    onSuccess(membro.id);
 
+    loadMembros();
+    
+    } catch (e) {
+      onFail(e);
+    }
     setLoading = false;
   }
 
