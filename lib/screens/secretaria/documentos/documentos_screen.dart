@@ -5,14 +5,7 @@ import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:provider/provider.dart';
 
 import '../../../widgets/widgets.dart';
-
-export 'screens/carta_mudanca/carta_mudanca_screen.dart';
-export 'screens/carta_recomendacao/carta_recomendaca_screen.dart';
-export 'screens/cartao_membro/cartao_membro_screen.dart';
-export 'screens/certificado_apresentacao/certificado_apresentacao_screen.dart';
-export 'screens/certificado_batismo/certificado_batismo_screen.dart';
-export 'screens/credencial_ministerio/credencial_ministerio_screen.dart';
-export 'screens/declaracao_membro/declaracao_membro_screen.dart';
+export 'form/documentos_forms_screen.dart';
 
 class DocumentosScreen extends StatelessWidget {
   final PageController pageController = PageController();
@@ -40,25 +33,25 @@ class DocumentosScreen extends StatelessWidget {
                     title: 'Cartão de Membro',
                     icon: FeatherIcons.creditCard,
                     badge: false,
-                    onTap: () => _handlerForm(33, 'Cartão de Membro'),
+                    onTap: () => _handlerForm(31, 'Cartão de Membro'),
                   ),
                   ListItemMenu(
                     title: 'Credencial Ministério',
                     icon: FeatherIcons.briefcase,
                     badge: false,
-                    onTap: () => _handlerForm(36, 'Credencial Ministério'),
+                    onTap: () => _handlerForm(31, 'Credencial Ministério'),
                   ),
                   ListItemMenu(
                     title: 'Certificado de Batismo',
                     icon: FeatherIcons.award,
                     badge: false,
-                    onTap: () => _handlerForm(35, 'Certificado de Batismo'),
+                    onTap: () => _handlerForm(31, 'Certificado de Batismo'),
                   ),
                   ListItemMenu(
                     title: 'Certificado de Apresentação',
                     icon: FeatherIcons.gift,
                     badge: false,
-                    onTap: () => _handlerForm(34, 'Certificado de Apresentação'),
+                    onTap: () => _handlerForm(31, 'Certificado de Apresentação'),
                   ),
                   ListItemMenu(
                     title: 'Carta de Mudança',
@@ -70,13 +63,13 @@ class DocumentosScreen extends StatelessWidget {
                     title: 'Carta de Recomendação',
                     icon: FeatherIcons.mail,
                     badge: false,
-                    onTap: () => _handlerForm(32, 'Carta de Recomendação'),
+                    onTap: () => _handlerForm(31, 'Carta de Recomendação'),
                   ),
                   ListItemMenu(
                     title: 'Declaração de Membro',
                     icon: FeatherIcons.userCheck,
                     badge: false,
-                    onTap: () => _handlerForm(37, 'Declaração de Membro'),
+                    onTap: () => _handlerForm(31, 'Declaração de Membro'),
                   ),
                 ],
               ),

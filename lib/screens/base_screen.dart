@@ -89,16 +89,7 @@ class BaseScreen extends StatelessWidget {
               VerificacoesForm(), //30
 
               //documentos
-              CartaMudanca(), //31
-              CartaRecomendacao(), //32
-              CartaoMembro(), //33
-              CertificadoApresentacao(), //34
-              CertificadoBatismo(), //35
-              CredencialMinisterio(), //36
-              DeclaracaoMembro(), //37
-
-              //outras
-              //PdfScreen(), //38
+              DocumentosForm(), //31
             ],
           ),
         ),
