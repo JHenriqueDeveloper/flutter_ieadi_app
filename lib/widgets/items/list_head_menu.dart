@@ -4,11 +4,13 @@ class ListHeadMenu extends StatelessWidget {
   final Color background;
   final TextStyle fontStyle;
   final String text;
+  final Widget child;
 
   ListHeadMenu({
     this.background,
     this.fontStyle,
     this.text,
+    this.child,
   });
 
   Widget build(BuildContext context) {
@@ -22,19 +24,19 @@ class ListHeadMenu extends StatelessWidget {
       ),
       decoration: BoxDecoration(
           color: this.background != null
-          ? this.background
-          : Theme.of(context).primaryColor,
+              ? this.background
+              : Theme.of(context).primaryColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(40),
             topRight: Radius.circular(40),
           )),
-      child: Text(
-        this.text != null 
-        ? this.text
-        : '',
-        style: this.fontStyle != null 
-        ? this.fontStyle
-        : Theme.of(context).textTheme.subtitle2,
+      child: this.child != null 
+      ? this.child
+      : Text(
+        this.text != null ? this.text : '',
+        style: this.fontStyle != null
+            ? this.fontStyle
+            : Theme.of(context).textTheme.subtitle2,
       ),
     );
   }

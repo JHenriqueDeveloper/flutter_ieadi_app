@@ -48,40 +48,45 @@ class DashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 128.sp,
+                  height: 132.sp,
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     color: Theme.of(context).backgroundColor,
                     borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(24.sp),
-                      bottomRight: Radius.circular(24.sp),
+                      bottomLeft: Radius.circular(12.sp),
+                      bottomRight: Radius.circular(12.sp),
                     ),
                   ),
                   padding: EdgeInsets.symmetric(
                     vertical: 24.sp,
-                    horizontal: 24.sp,
+                    horizontal: 12.sp,
                   ),
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    runAlignment: WrapAlignment.spaceBetween,
+                  child: ListView(
+                    //alignment: WrapAlignment.spaceBetween,
+                    //runAlignment: WrapAlignment.spaceBetween,
+                    scrollDirection: Axis.horizontal,
                     children: [
                       ButtonDashboard(
                         text: 'Solicitações',
+                        icon: FeatherIcons.server,
                         onPressed: () =>
                             context.read<CustomRouter>().setPage(17),
                       ),
                       ButtonDashboard(
-                        text: 'Certificados',
+                        text: 'Batismo',
+                        icon: FeatherIcons.calendar,
                         onPressed: () =>
                             context.read<CustomRouter>().setPage(10),
                       ),
                       ButtonDashboard(
                         text: 'Verificações',
+                        icon: FeatherIcons.award,
                         onPressed: () =>
                             context.read<CustomRouter>().setPage(18),
                       ),
                       ButtonDashboard(
                         text: 'Documentos',
+                        icon: FeatherIcons.creditCard,
                         onPressed: () =>
                             context.read<CustomRouter>().setPage(12),
                       ),

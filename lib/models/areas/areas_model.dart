@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:meta/meta.dart';
 
 class AreasModel {
   String id;
@@ -9,6 +10,7 @@ class AreasModel {
   //configurações
   bool isActive;
   DateTime createdAt;
+  List tags;
 
   AreasModel({
     this.id,
@@ -18,6 +20,7 @@ class AreasModel {
     this.supervisor,
     this.isActive,
     this.createdAt,
+    this.tags,
   });
 
   DocumentReference get firestoreRef =>
@@ -46,6 +49,7 @@ class AreasModel {
         'supervisor': supervisor,
         'isActive': isActive,
         'createdAt': Timestamp.fromDate(createdAt),
+        'tags': tags,
       };
 
   get getEmpty => empty;
@@ -58,6 +62,7 @@ class AreasModel {
     supervisor: null,
     isActive: true,
     createdAt: DateTime.now(),
+    tags: [],
   );
 
   factory AreasModel.fromDocument(DocumentSnapshot doc) {
@@ -70,9 +75,19 @@ class AreasModel {
       sede: data['sede'] as String,
       isActive: data['isActive'] as bool,
       createdAt: (data['createdAt'] as Timestamp)?.toDate(),
+      tags: data['tags'] as List,
     );
-    
   }
+
+  List get getTags => [
+    this.id,
+    this.isActive ? 'ativo' : 'inativo',
+    this.nome != null ? this.nome.toLowerCase() : '',
+    this.setor,
+    this.sede,
+    this.supervisor,
+    '*',
+  ];
 
   static Future<AreasModel> getArea(String areaId) async {
     final doc = await FirebaseFirestore.instance.doc('areas/$areaId').get();
@@ -85,5 +100,21 @@ class AreasModel {
     return await FirebaseFirestore.instance
         .doc('areas/${area.id}')
         .update(area.toDocument());
+  }
+
+  static Future<List<AreasModel>> searchTags({
+    @required String value,
+  }) async {
+    if (value != '') {
+      final result = await FirebaseFirestore.instance
+          .collection('areas')
+          .where('tags', arrayContains: value.toLowerCase())
+          .get();
+
+      final list =
+          result.docs.map((doc) => AreasModel.fromDocument(doc)).toList();
+      return list;
+    }
+    return [];
   }
 }

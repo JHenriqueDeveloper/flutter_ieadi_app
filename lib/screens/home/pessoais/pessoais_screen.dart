@@ -16,13 +16,11 @@ class _PessoaisScreenState extends State<PessoaisScreen> {
   final PageController pageController = PageController();
   final int page = 23;
 
-  @override 
+  @override
   Widget build(BuildContext context) {
+    void _handlerForm(String form) =>
+        context.read<CustomRouter>().setPage(page, form: form);
 
-    void _handlerForm(String form) => context
-    .read<CustomRouter>()
-    .setPage(page, form: form);
-    
     return Consumer<AuthRepository>(
       builder: (_, auth, __) {
         var user = auth.user;
@@ -35,8 +33,9 @@ class _PessoaisScreenState extends State<PessoaisScreen> {
           ),
           children: [
             ListHeadMenu(
-                text:
-                    'Seus dados cívis são importantes, para confirmar sua identidade e registrar sua afiliação neste Ministério. \nNunca serão utilizados para outros fins.'),
+              text:
+                  'Seus dados cívis são importantes, para confirmar sua identidade e registrar sua afiliação neste Ministério. \nNunca serão utilizados para outros fins.',
+            ),
             ListItemMenu(
               title: 'Nome',
               text: user.username ?? '',
@@ -70,8 +69,9 @@ class _PessoaisScreenState extends State<PessoaisScreen> {
             ),
             ListItemMenu(
               title: 'Data \nde Nascimento',
-              text: user.dataNascimento != '' 
-              ? user.dataNascimento : 'Não informado',
+              text: user.dataNascimento != ''
+                  ? user.dataNascimento
+                  : 'Não informado',
               badge: user.dataNascimento == '' ? true : false,
               onTap: () => _handlerForm('Nascimento'),
             ),

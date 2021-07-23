@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:meta/meta.dart';
 
 class SetorModel {
   String id;
@@ -8,6 +9,7 @@ class SetorModel {
   //configurações
   bool isActive;
   DateTime createdAt;
+  List tags;
 
   SetorModel({
     this.id,
@@ -16,6 +18,7 @@ class SetorModel {
     this.supervisor,
     this.isActive,
     this.createdAt,
+    this.tags,
   });
 
   DocumentReference get firestoreRef =>
@@ -41,6 +44,7 @@ class SetorModel {
         'supervisor': supervisor,
         'isActive': isActive,
         'createdAt': Timestamp.fromDate(createdAt),
+        'tags': tags,
       };
 
   get getEmpty => empty;
@@ -52,6 +56,7 @@ class SetorModel {
     supervisor: null,
     isActive: true,
     createdAt: DateTime.now(),
+    tags: [],
   );
 
   factory SetorModel.fromDocument(DocumentSnapshot doc) {
@@ -63,9 +68,19 @@ class SetorModel {
       sede: data['sede'] as String,
       isActive: data['isActive'] as bool,
       createdAt: (data['createdAt'] as Timestamp)?.toDate(),
+      tags: data['tags'] as List,
     );
-    
   }
+
+  List get getTags => [
+    this.id,
+    this.isActive ? 'ativo' : 'inativo',
+    this.nome != null ? this.nome.toLowerCase() : '',
+    this.sede,
+    this.supervisor,
+    '*',
+  ];
+
 
   static Future<SetorModel> getSetor(String setorId) async {
     final doc = await FirebaseFirestore.instance.doc('setores/$setorId').get();
@@ -78,5 +93,21 @@ class SetorModel {
     return await FirebaseFirestore.instance
         .doc('setores/${setor.id}')
         .update(setor.toDocument());
+  }
+
+  static Future<List<SetorModel>> searchTags({
+    @required String value,
+  }) async {
+    if (value != '') {
+      final result = await FirebaseFirestore.instance
+          .collection('setores')
+          .where('tags', arrayContains: value.toLowerCase())
+          .get();
+
+      final list =
+          result.docs.map((doc) => SetorModel.fromDocument(doc)).toList();
+      return list;
+    }
+    return [];
   }
 }

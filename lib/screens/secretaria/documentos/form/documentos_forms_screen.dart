@@ -39,6 +39,7 @@ class _DocumentosFormState extends State<DocumentosForm> {
   String searchString = '';
 
   bool isLoading;
+  bool isSelectedAll;
 
   Icon searchIcon = new Icon(
     FeatherIcons.search,
@@ -74,6 +75,7 @@ class _DocumentosFormState extends State<DocumentosForm> {
   void initState() {
     super.initState();
     isLoading = false;
+    isSelectedAll = false;
     titleSearch = Text(
       context.read<CustomRouter>().getScreen,
       style: TextStyle(
@@ -92,20 +94,11 @@ class _DocumentosFormState extends State<DocumentosForm> {
 
   @override
   Widget build(BuildContext context) {
-    /*
-    titleSearch = Text(
-      context.read<CustomRouter>().getScreen,
-      style: Theme.of(context).textTheme.subtitle1,
-    );
-    */
     return DefaultScreen(
       backToPage: page,
       titleSearch: titleSearch,
       fab: fabButton(context),
-      actions: [
-        searchButton(context),
-      ],
-      //children: [listagem(context)],
+      actions: [searchButton(context)],
       listView: listagem(context),
     );
   }
@@ -113,16 +106,16 @@ class _DocumentosFormState extends State<DocumentosForm> {
   Widget fabButton(BuildContext context) {
     return ElevatedButton(
       onPressed: selecionados.length > 0
-        ? !isLoading
-         ? () {
-              setState(() => isLoading = true);
-              gerarPdf(
-                context,
-                tipo: context.read<CustomRouter>().getScreen,
-              );
-            }
-          : (){}
-        : null,
+          ? !isLoading
+              ? () {
+                  setState(() => isLoading = true);
+                  gerarPdf(
+                    context,
+                    tipo: context.read<CustomRouter>().getScreen,
+                  );
+                }
+              : () {}
+          : null,
       child: !isLoading
           ? Icon(FeatherIcons.printer)
           : SizedBox(
@@ -142,6 +135,31 @@ class _DocumentosFormState extends State<DocumentosForm> {
   search() async {
     List<UserModel> lista = await MembroRepository().searchTags(searchString);
     setState(() => listaMembros = lista);
+  }
+
+  Widget selectAllButton(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        unselectedWidgetColor: Colors.white,
+      ),
+      child: Checkbox(
+        value: isSelectedAll,
+        onChanged: (value) {
+          setState(() {
+            isSelectedAll = value; //!isSelectedAll;
+          });
+          /*
+        setState(() {
+          selecionados.contains(membro)
+              ? selecionados.remove(membro)
+              : selecionados.add(membro);
+        });
+        */
+        },
+        checkColor: Theme.of(context).canvasColor,
+        activeColor: Theme.of(context).primaryColor,
+      ),
+    );
   }
 
   Widget searchButton(BuildContext context) {
@@ -193,6 +211,8 @@ class _DocumentosFormState extends State<DocumentosForm> {
               style: Theme.of(context).textTheme.subtitle1,
             );
             this.searchController.text = '';
+            this.listaMembros = [];
+            this.isSelectedAll = false;
           }
         });
       },
@@ -205,6 +225,7 @@ class _DocumentosFormState extends State<DocumentosForm> {
       itemCount: this.listaMembros.length,
       itemBuilder: (context, index) {
         UserModel membro = this.listaMembros[index];
+
         return ListTile(
           key: Key(membro.id),
           onTap: () {},
@@ -287,7 +308,7 @@ class _DocumentosFormState extends State<DocumentosForm> {
           trailing: Checkbox(
             value: membro.getIsSelected,
             onChanged: (value) {
-              membro.setIsSelected = !membro.getIsSelected;
+              membro.setIsSelected = value; //!membro.getIsSelected;
               setState(() {
                 selecionados.contains(membro)
                     ? selecionados.remove(membro)

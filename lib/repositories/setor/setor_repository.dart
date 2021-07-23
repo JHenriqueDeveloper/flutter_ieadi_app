@@ -30,6 +30,13 @@ class SetorRepository extends ChangeNotifier {
     return null;
   }
 
+  Future<List<SetorModel>> searchTags(String value) async {
+    setLoading = true;
+    List<SetorModel> listagem = await SetorModel.searchTags(value: value);
+    setLoading = false;
+    return listagem;
+  }
+
   Future<void> loadSetor() async {
     setLoading = true;
     try {
@@ -68,6 +75,24 @@ class SetorRepository extends ChangeNotifier {
         setor.setCreatedAt = DateTime.now();
       }
 
+      UserModel supervisor = new UserModel();
+      CongregModel sede = new CongregModel();
+
+      if (setor.sede != null) {
+        sede = await CongregModel.getCongreg(setor.sede);
+      }
+
+      if (setor.supervisor != null) {
+        supervisor = await UserModel.getUser(setor.supervisor);
+      }
+
+      setor.tags = setor.getTags;
+      setor.tags.add( 
+        supervisor.id != null ? supervisor.username.toLowerCase() ?? '' : '');
+      setor.tags.add(sede.id != null ? sede.nome.toLowerCase() ?? '' : '');
+
+      setor.tags = setor.getTags; //tagsList;
+
       await _firebaseFirestore
           .collection('/setores')
           .doc(setor.id)
@@ -93,6 +118,24 @@ class SetorRepository extends ChangeNotifier {
     try {
       setor.setCreatedAt = DateTime.now();
       setor.isActive = true;
+
+      UserModel supervisor = new UserModel();
+      CongregModel sede = new CongregModel();
+
+      if (setor.sede != null) {
+        sede = await CongregModel.getCongreg(setor.sede);
+      }
+
+      if (setor.supervisor != null) {
+        supervisor = await UserModel.getUser(setor.supervisor);
+      }
+
+      setor.tags = setor.getTags;
+      setor.tags.add( 
+        supervisor.id != null ? supervisor.username.toLowerCase() ?? '' : '');
+      setor.tags.add(sede.id != null ? sede.nome.toLowerCase() ?? '' : '');
+
+      setor.tags = setor.getTags; //tagsList;
 
       var result = await _firebaseFirestore
           .collection('/setores')

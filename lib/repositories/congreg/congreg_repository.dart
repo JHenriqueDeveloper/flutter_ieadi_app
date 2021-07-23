@@ -35,6 +35,13 @@ class CongregRepository extends ChangeNotifier {
     return null;
   }
 
+  Future<List<CongregModel>> searchTags(String value) async {
+    setLoading = true;
+    List<CongregModel> listagem = await CongregModel.searchTags(value: value);
+    setLoading = false;
+    return listagem;
+  }
+
   Future<void> loadCongregs() async {
     setLoading = true;
     try {
@@ -86,8 +93,8 @@ class CongregRepository extends ChangeNotifier {
     Function onSuccess,
   }) async {
     setLoading = true;
-     try {
-       if (image != null) {
+    try {
+      if (image != null) {
         congreg.profileImageUrl = await addImage(
           image: image,
           congreg: congreg,
@@ -96,6 +103,28 @@ class CongregRepository extends ChangeNotifier {
       if (congreg.createdAt == null) {
         congreg.setCreatedAt = DateTime.now();
       }
+
+      AreasModel area = new AreasModel();
+      SetorModel setor = new SetorModel();
+      UserModel dirigente = new UserModel();
+
+      if (congreg.idArea != null) {
+        area = await AreasModel.getArea(congreg.idArea);
+        if (area.setor != null) {
+          setor = await SetorModel.getSetor(area.setor);
+        }
+      }
+
+      if (congreg.dirigente != null) {
+        dirigente = await UserModel.getUser(congreg.dirigente);
+      }
+
+      congreg.tags = congreg.getTags;
+      congreg.tags.add(dirigente.id != null ? dirigente.username.toLowerCase() ?? '' : '');
+      congreg.tags.add(area.id != null ? area.nome.toLowerCase() ?? '' : '');
+      congreg.tags.add(setor.id != null ? setor.nome.toLowerCase() ?? '' : '');
+
+      congreg.tags = congreg.getTags; //tagsList;
 
       await _firebaseFirestore
           .collection('/congregs')
@@ -107,7 +136,6 @@ class CongregRepository extends ChangeNotifier {
       this.congreg = congreg.getCongregEmpty;
 
       loadCongregs();
-      
     } catch (e) {
       onFail(e);
     }
@@ -121,24 +149,46 @@ class CongregRepository extends ChangeNotifier {
     Function onSuccess,
   }) async {
     setLoading = true;
-    try{
+    try {
       if (image != null) {
         congreg.profileImageUrl = await addImage(image: image);
       }
 
-    congreg.setCreatedAt = DateTime.now();
-    congreg.isActive = true;
+      congreg.setCreatedAt = DateTime.now();
+      congreg.isActive = true;
 
-    var result = await _firebaseFirestore
-    .collection('/congregs').add(congreg.toDocument());
+      AreasModel area = new AreasModel();
+      SetorModel setor = new SetorModel();
+      UserModel dirigente = new UserModel();
 
-    onSuccess(result);
+      if (congreg.idArea != null) {
+        area = await AreasModel.getArea(congreg.idArea);
+        if (area.setor != null) {
+          setor = await SetorModel.getSetor(area.setor);
+        }
+      }
 
-    this.congreg = congreg.getCongregEmpty;
+      if (congreg.dirigente != null) {
+        dirigente = await UserModel.getUser(congreg.dirigente);
+      }
 
-    loadCongregs();
+      congreg.tags = congreg.getTags;
+      congreg.tags.add(dirigente.id != null ? dirigente.username.toLowerCase() ?? '' : '');
+      congreg.tags.add(area.id != null ? area.nome.toLowerCase() ?? '' : '');
+      congreg.tags.add(setor.id != null ? setor.nome.toLowerCase() ?? '' : '');
 
-    }catch(e){
+      congreg.tags = congreg.getTags; //tagsList;
+
+      var result = await _firebaseFirestore
+          .collection('/congregs')
+          .add(congreg.toDocument());
+
+      onSuccess(result);
+
+      this.congreg = congreg.getCongregEmpty;
+
+      loadCongregs();
+    } catch (e) {
       onFail(e);
     }
     setLoading = false;

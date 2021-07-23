@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:meta/meta.dart';
 
 class CongregModel {
   String id;
@@ -170,6 +171,23 @@ class CongregModel {
     );
   }
 
+  List get getTags => [
+    this.id,
+    this.isActive ? 'ativo' : 'inativo',
+    this.nome != null ? this.nome.toLowerCase() : '',
+    this.idArea,
+    this.unidadeConsumidora,
+    this.cep,
+    this.dirigente,
+    this.bairro != null ? this.bairro.toLowerCase() : '',
+    this.cidade != null ? this.cidade.toLowerCase() : '',
+    this.uf != null ? this.uf.toLowerCase() : '',
+    this.fixo,
+    this.email,
+    this.celular,
+    '*',
+  ];
+
   static Future<CongregModel> getCongreg(String congregId) async {
     if (congregId != null) {
       final doc =
@@ -185,5 +203,21 @@ class CongregModel {
     return await FirebaseFirestore.instance
         .doc('congregs/${congreg.id}')
         .update(congreg.toDocument());
+  }
+
+  static Future<List<CongregModel>> searchTags({
+    @required String value,
+  }) async {
+    if (value != '') {
+      final result = await FirebaseFirestore.instance
+          .collection('congregs')
+          .where('tags', arrayContains: value.toLowerCase())
+          .get();
+
+      final list =
+          result.docs.map((doc) => CongregModel.fromDocument(doc)).toList();
+      return list;
+    }
+    return [];
   }
 }
