@@ -11,7 +11,6 @@ import 'package:flutter_ieadi_app/repositories/repositories.dart';
 class ServicosScreen extends StatelessWidget {
   final PageController pageController = PageController();
 
-  //TODO: IMPLEMENTAR ROTA
 
   //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   //final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -81,8 +80,6 @@ class ServicosScreen extends StatelessWidget {
 
     void _handlerScreen(String form) {
       context.read<CustomRouter>().setPage(0);
-
-      //TODO: CRIAR O FORM
     }
 
     //context.read<CustomRouter>().setPage(0),
@@ -99,7 +96,18 @@ class ServicosScreen extends StatelessWidget {
           children: [
             ListHeadMenu(
               text:
-                  'Alguns serviços podem levar demorar dias para serem analizados',
+                  'Alguns serviços podem levar alguns dias para serem analizados',
+            ),
+            ListItemMenu(
+              badge: false,
+              title: 'Quero ser batizado',
+              icon: FeatherIcons.calendar,
+              onTap: () => _showDialog(
+                title: 'Quero ser batizado',
+                body:
+                    'Sua solicitação vai ser analizada, se você estiver apto, seu batismo será agendado para o próximo evento de batismo.',
+                button: 'Confirmar',
+              ),
             ),
             ListItemMenu(
               badge: false,

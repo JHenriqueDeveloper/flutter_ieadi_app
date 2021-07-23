@@ -7,7 +7,6 @@ import 'package:flutter_ieadi_app/repositories/repositories.dart';
 
 class ContaScreen extends StatelessWidget {
  final PageController pageController = PageController();
- //TODO: DESENVOLVER A ROTA
   final int page = 23;
 
   @override 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
 
@@ -39,6 +40,7 @@ class DefaultScreen extends StatelessWidget {
           toolbarHeight: 90,
           elevation: 0,
           brightness: Brightness.dark,
+          //systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: Theme.of(context).backgroundColor,
           centerTitle: true,
           title: this.title != null

@@ -83,7 +83,6 @@ class MinisterioOptionsScreen extends StatelessWidget {
                 itens.add(item(e, () {
                   print(e.id);
                   //replytile.removeWhere((item) => item.id == '001')
-                  //TODO: DESENVOLVER O REMOVE ITEM
                   list.removeWhere((item) => item.id == e.id);
                   _listagem(list);
                 }));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +8,7 @@ import '../../style/style.dart';
 
 class DefaultForm extends StatelessWidget {
   final List<Widget> form;
+  final List<Widget> actions;
   final GlobalKey<FormState> formKey;
   final GlobalKey<ScaffoldState> scaffoldKey;
   final String title;
@@ -15,6 +17,7 @@ class DefaultForm extends StatelessWidget {
 
   DefaultForm({
     this.form,
+    this.actions,
     this.formKey,
     this.scaffoldKey,
     this.title,
@@ -37,6 +40,7 @@ class DefaultForm extends StatelessWidget {
           toolbarHeight: 90,
           elevation: 0,
           brightness: Brightness.dark,
+          //systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: Theme.of(context).canvasColor,
           leadingWidth: 64,
           title: Text(
@@ -56,6 +60,7 @@ class DefaultForm extends StatelessWidget {
               onPressed: () => _handlerForm(),
             ),
           ),
+          actions: this.actions,
         ),
         body: Form(
           key: this.formKey,

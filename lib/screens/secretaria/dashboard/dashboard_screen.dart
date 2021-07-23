@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/screens/secretaria/dashboard/widgets/dashboard_widgets.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ class DashboardScreen extends StatelessWidget {
           automaticallyImplyLeading: false,
           elevation: 0,
           brightness: Brightness.dark,
+          //systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: Theme.of(context).backgroundColor,
           toolbarHeight: 60.sp,
           centerTitle: false,
@@ -28,13 +30,6 @@ class DashboardScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.headline5,
           ),
           actions: [
-            /*
-            IconButton(
-              icon: Icon(FeatherIcons.messageSquare),
-              onPressed: () => _handlerScreen(HomeScreen()),
-            ),
-            */
-
             ProfileImageDashboard(
               onTap: () => context.read<CustomRouter>().setPage(0),
             ),
@@ -66,6 +61,13 @@ class DashboardScreen extends StatelessWidget {
                     //runAlignment: WrapAlignment.spaceBetween,
                     scrollDirection: Axis.horizontal,
                     children: [
+                      
+                      ButtonDashboard(
+                        text: 'Chat',
+                        icon: FeatherIcons.messageSquare,
+                        onPressed: () =>
+                            context.read<CustomRouter>().setPage(17),
+                      ),
                       ButtonDashboard(
                         text: 'Solicitações',
                         icon: FeatherIcons.server,

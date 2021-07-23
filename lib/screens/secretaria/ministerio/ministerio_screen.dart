@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
@@ -39,6 +40,7 @@ class MinisterioScreen extends StatelessWidget{
               automaticallyImplyLeading: false,
               elevation: 0,
               brightness: Brightness.dark,
+              //systemOverlayStyle: SystemUiOverlayStyle.dark,
               backgroundColor: Theme.of(context).backgroundColor,
               toolbarHeight: 60.sp,
               centerTitle: false,

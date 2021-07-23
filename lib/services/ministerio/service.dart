@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+//import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ieadi_app/services/services.dart';
 import 'package:meta/meta.dart';
 
 class MinisterioService extends ChangeNotifier{ //extends BaseService {
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  //FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
   bool _isLoading = false;
   String _collection = MinisterioModel().getCollection;
   MinisterioModel model;

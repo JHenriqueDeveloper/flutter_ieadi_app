@@ -203,7 +203,6 @@ class _NavScreenState extends State<NavScreen> {
                   ),
                   onPressed: () => _handlerShowUserCard(isMemberCard),
                 ),
-                //TODO: DESENVOLVER O BUTTON AVISOS
                 IconButton(
                   icon: Icon(
                     FeatherIcons.bell,
@@ -222,7 +221,10 @@ class _NavScreenState extends State<NavScreen> {
                             .read<CustomRouter>()
                             .setPage(8), //_handlerScreen(DashboardScreen()),
                       )
-                    : Container(),
+                    : IconButton(
+                        icon: Icon(FeatherIcons.messageSquare),
+                        onPressed: () => {},
+                      ),
               ],
             ),
             body: DraggableScrollableSheet(
@@ -327,7 +329,6 @@ class _NavScreenState extends State<NavScreen> {
                         page: 6,
                       ),
                       /*
-                      TODO: Fazer atualização de conta
                       ListItemMenu(
                         title: 'Conta',
                         icon: FeatherIcons.key,

@@ -605,6 +605,7 @@ class CristaoFormScreen extends StatelessWidget {
           toolbarHeight: 90,
           elevation: 0,
           brightness: Brightness.dark,
+          //systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: Theme.of(context).canvasColor,
           leadingWidth: 64,
           leading: Container(

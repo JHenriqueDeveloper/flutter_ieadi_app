@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/helpers/image_helper.dart';
 import 'package:flutter_ieadi_app/models/models.dart';
@@ -218,6 +219,13 @@ class MembroFormState extends State<MembroForm> {
           page: context.read<CustomRouter>().getBackPage > 0
               ? context.read<CustomRouter>().getBackPage
               : page,
+          actions: [
+            IconButton(
+              icon: Icon(FeatherIcons.printer), 
+              color: LightStyle.paleta['Background'],
+              onPressed: (){},
+            )
+          ],
           form: [
             UploadImage(
               onTap: () => _selectImage(context),
@@ -994,7 +1002,103 @@ class MembroFormState extends State<MembroForm> {
               onSaved: (value) => membro?.bio = value,
               initialValue: membro?.bio ?? null,
             ),
-            SizedBox(height: 32),
+            SizedBox(height: 48),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Currículo',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            TextFormField(
+            keyboardType: TextInputType.text,
+            autocorrect: false,
+            maxLength: 50,
+            maxLines: 1,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.bodyText1,
+            decoration: InputDecoration(
+              labelText: 'Profissão',
+              labelStyle: Theme.of(context).textTheme.bodyText1,
+              fillColor: LightStyle.paleta['PrimariaCinza'],
+            ),
+            enabled: !state.isLoading,
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => membro?.profissao = value,
+            initialValue:
+                membro?.profissao != null ? membro?.profissao : null,
+          ),
+          SizedBox(height: 16),
+          TextFormField(
+            keyboardType: TextInputType.number,
+            autocorrect: false,
+            maxLength: 50,
+            maxLines: 1,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.bodyText1,
+            decoration: InputDecoration(
+              labelText: 'Pretensão Salárial',
+              labelStyle: Theme.of(context).textTheme.bodyText1,
+              fillColor: LightStyle.paleta['PrimariaCinza'],
+            ),
+            enabled: !state.isLoading,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              RealInputFormatter(),
+            ],
+            validator: (value) => Validator.rgValidator(value),
+            onSaved: (value) => membro?.pretensaoSalarial = value,
+            initialValue: membro?.pretensaoSalarial != null
+                ? membro?.pretensaoSalarial
+                : null,
+          ),
+          SizedBox(height: 16),
+          TextFormField(
+            keyboardType: TextInputType.text,
+            autocorrect: false,
+            maxLength: 1000,
+            maxLines: 15,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.bodyText1,
+            decoration: InputDecoration(
+              labelText: 'Objetivos profissionais',
+              labelStyle: Theme.of(context).textTheme.bodyText1,
+              fillColor: LightStyle.paleta['PrimariaCinza'],
+            ),
+            enabled: !state.isLoading,
+            validator: (descri) => Validator.descricaoValidator(descri),
+            onSaved: (descri) => membro?.objetivos = descri,
+            initialValue:
+                membro?.objetivos != null ? membro?.objetivos : null,
+          ),
+          SizedBox(height: 16),
+          TextFormField(
+            keyboardType: TextInputType.text,
+            autocorrect: false,
+            maxLength: 2000,
+            maxLines: 15,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.bodyText1,
+            decoration: InputDecoration(
+              labelText:
+                  'Perfil profissional.',
+              labelStyle: Theme.of(context).textTheme.bodyText1,
+              fillColor: LightStyle.paleta['PrimariaCinza'],
+            ),
+            enabled: !state.isLoading,
+            validator: (descri) => Validator.descricaoValidator(descri),
+            onSaved: (descri) => membro?.bioProfissional = descri,
+            initialValue:membro?.bioProfissional != null
+                ? membro?.bioProfissional
+                : null,
+          ),
+          SizedBox(height: 16),
+
             _buttonSave(),
           ],
         );

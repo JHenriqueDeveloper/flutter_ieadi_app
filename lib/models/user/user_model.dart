@@ -459,8 +459,6 @@ class UserModel {
     '*',
   ];
 
-  //TODO: REFATORAR TODO O CÓDIGO DO MODEL
-
   static Future<UserModel> getUser(String id) async {
     if (id != null) {
       final doc = await FirebaseFirestore.instance.doc('users/$id').get();

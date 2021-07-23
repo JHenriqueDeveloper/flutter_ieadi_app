@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
 
@@ -39,6 +40,7 @@ class LightStyle {
         errorColor: paleta['Erro'],
         appBarTheme: AppBarTheme(
           brightness: Brightness.dark,
+          //systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: paleta['Background'],
           elevation: 0,
           iconTheme: IconThemeData(
