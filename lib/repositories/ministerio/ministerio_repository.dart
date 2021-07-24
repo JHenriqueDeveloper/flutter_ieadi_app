@@ -10,6 +10,7 @@ class MinisterioRepository extends ChangeNotifier {
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
+  String _id = 'NO9rQnm2ovatGnt2tJNg';
   MinisterioModel ministerio;
   CongregModel sede;
   String imageUrl;
@@ -48,7 +49,7 @@ class MinisterioRepository extends ChangeNotifier {
     setLoading = true;
     try {
       final doc = await FirebaseFirestore.instance
-          .doc('ministerio/NO9rQnm2ovatGnt2tJNg')
+          .doc('ministerio/$_id')
           .get();
 
       this.ministerio = doc.exists
@@ -175,6 +176,80 @@ class MinisterioRepository extends ChangeNotifier {
     return '';
   }
 
+  Future<void> updateLista(
+    String item,
+    String option, {
+    Function onFail,
+    Function onSuccess,
+  }) async {
+    setLoading = true;
+    try {
+      switch (option) {
+        case 'tesoureiros':
+          this.ministerio.tesoureiros.removeWhere((element) => element == item);
+          break;
+        case 'secretarios':
+          this.ministerio.secretarios.removeWhere((element) => element == item);
+          break;
+        case 'fiscal':
+          this.ministerio.fiscal.removeWhere((element) => element == item);
+          break;
+        case 'etica':
+          this.ministerio.etica.removeWhere((element) => element == item);
+          break;
+        case 'departamentos':
+          this
+              .ministerio
+              .departamentos
+              .removeWhere((element) => element == item);
+          break;
+        case 'pastores':
+          this.ministerio.pastores.removeWhere((element) => element == item);
+          break;
+        case 'consagrados':
+          this
+              .ministerio
+              .evanConsagrados
+              .removeWhere((element) => element == item);
+          break;
+        case 'autorizados':
+          this
+              .ministerio
+              .evanAutorizados
+              .removeWhere((element) => element == item);
+          break;
+        case 'locais':
+          this.ministerio.evanLocais.removeWhere((element) => element == item);
+          break;
+        case 'presbiteros':
+          this.ministerio.presbiteros.removeWhere((element) => element == item);
+          break;
+        case 'diaconos':
+          this.ministerio.diaconos.removeWhere((element) => element == item);
+          break;
+        case 'auxiliares':
+          this.ministerio.auxiliares.removeWhere((element) => element == item);
+          break;
+        case 'obreiros':
+          this.ministerio.obreiros.removeWhere((element) => element == item);
+          break;
+      }
+
+      await _firebaseFirestore
+          .collection('/ministerio')
+          .doc(_id)
+          .update(ministerio.toDocument());
+          
+
+      load();
+
+      onSuccess();
+    } catch (e) {
+      onFail(e);
+    }
+    setLoading = false;
+  }
+
   Future<void> updateMinisterio({
     @required MinisterioModel ministerio,
     File image,
@@ -190,7 +265,7 @@ class MinisterioRepository extends ChangeNotifier {
       );
     }
 
-    if (ministerio.createdAt == null) {
+    if (ministerio?.createdAt == null) {
       ministerio.createdAt = DateTime.now();
     }
 
@@ -198,7 +273,7 @@ class MinisterioRepository extends ChangeNotifier {
 
     await _firebaseFirestore
         .collection('/ministerio')
-        .doc('NO9rQnm2ovatGnt2tJNg')
+        .doc(_id)
         .update(ministerio.toDocument())
         .then((value) => onSuccess(value))
         .catchError((onError) => onFail(onError));

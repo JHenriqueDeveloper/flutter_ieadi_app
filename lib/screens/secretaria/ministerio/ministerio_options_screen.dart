@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/config/config.dart';
+import 'package:flutter_ieadi_app/models/models.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
 import 'package:flutter_ieadi_app/style/style.dart';
 import 'package:flutter_ieadi_app/widgets/widgets.dart';
@@ -67,23 +68,30 @@ class MinisterioOptionsScreen extends StatelessWidget {
                         color: Theme.of(context).canvasColor,
                       ),
               ),
-              trailing: Icon(
-                FeatherIcons.x,
-                color: Colors.grey[400],
-              ),
+              trailing: !state.isLoading 
+              ? Icon(
+                  FeatherIcons.x,
+                  color: Colors.grey[400],
+                )
+              : SizedBox(),
             );
           }
 
-          List<Widget> _listagem(List list) {
+          List<Widget> _listagem(List list, {String option}) {
             List<Widget> itens = [];
-
             if (list.length > 0) {
               list = list.reversed.toList();
               for (var e in list) {
                 itens.add(item(e, () {
-                  print(e.id);
-                  //replytile.removeWhere((item) => item.id == '001')
-                  list.removeWhere((item) => item.id == e.id);
+                  if (!state.isLoading) {
+                    state.updateLista(
+                      e.id,
+                      option,
+                      onSuccess: () {},
+                      onFail: () {},
+                    );
+                  }
+
                   _listagem(list);
                 }));
               }
@@ -92,20 +100,50 @@ class MinisterioOptionsScreen extends StatelessWidget {
           }
 
           Map<String, List<Widget>> option = {
-            'Conselho Fiscal': _listagem(state.listFiscal ?? []),
-            'Conselho de Ética': _listagem(state.listEtica ?? []),
-            'Departamentos': _listagem(state.ministerio?.departamentos ?? []),
-            'Pastores': _listagem(state.listPastores ?? []),
-            'Evangelistas Consagrados':
-                _listagem(state.listEvanConsagrados ?? []),
-            'Evangelistas Autorizados':
-                _listagem(state.listEvanAutorizados ?? []),
-            'Evangelistas Locais':
-                _listagem(state.listEvanLocais ?? []),
-            'Presbíteros': _listagem(state.listPresbiteros ?? []),
-            'Diáconos': _listagem(state.listDiaconos ?? []),
-            'Auxiliares': _listagem(state.listAuxiliares ?? []),
-            'Obreiros': _listagem(state.listObreiros ?? []),
+            'Conselho Fiscal': _listagem(
+              state.listFiscal ?? [],
+              option: 'fiscal',
+            ),
+            'Conselho de Ética': _listagem(
+              state.listEtica ?? [],
+              option: 'etica',
+            ),
+            'Departamentos': _listagem(
+              state.ministerio?.departamentos ?? [],
+              option: 'departamentos',
+            ),
+            'Pastores': _listagem(
+              state.listPastores ?? [],
+              option: 'pastores',
+            ),
+            'Evangelistas Consagrados': _listagem(
+              state.listEvanConsagrados ?? [],
+              option: 'consagrados',
+            ),
+            'Evangelistas Autorizados': _listagem(
+              state.listEvanAutorizados ?? [],
+              option: 'autorizados',
+            ),
+            'Evangelistas Locais': _listagem(
+              state.listEvanLocais ?? [],
+              option: 'locais',
+            ),
+            'Presbíteros': _listagem(
+              state.listPresbiteros ?? [],
+              option: 'presbiteros',
+            ),
+            'Diáconos': _listagem(
+              state.listDiaconos ?? [],
+              option: 'diaconos',
+            ),
+            'Auxiliares': _listagem(
+              state.listAuxiliares ?? [],
+              option: 'auxiliares',
+            ),
+            'Obreiros': _listagem(
+              state.listObreiros ?? [],
+              option: 'obreiros',
+            ),
           };
 
           return DefaultScreen(
