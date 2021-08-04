@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:splashscreen/splashscreen.dart' as Splash;
+//import 'package:splashscreen/splashscreen.dart' as Splash;
 import 'package:provider/provider.dart';
+
+import 'package:flutter_ieadi_app/helpers/splash_screen.dart' as Splash;
 
 import 'package:flutter_ieadi_app/screens/screens.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';

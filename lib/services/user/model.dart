@@ -353,9 +353,9 @@ class UserModel { //extends BaseModel {
         'isVerificacaoSolicitada': isVerificacaoSolicitada,
       };
 
-  factory UserModel.fromDocument(DocumentSnapshot doc) {
+  factory UserModel.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     if (doc == null) return null;
-    final data = doc.data();
+    final Map<String, dynamic> data = doc.data();
     return UserModel(
       id: doc.id,
       username: data['username'] as String,

@@ -38,7 +38,7 @@ class AuthScreen extends StatelessWidget {
             horizontal: 16.sp, //32,
             vertical: 32.sp, //64,
           ),
-          child: Container(
+          child: SingleChildScrollView(
             //color: Colors.grey,
             child: this.child,
           ),

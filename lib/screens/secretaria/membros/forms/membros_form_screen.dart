@@ -17,6 +17,14 @@ import '../../../../repositories/repositories.dart';
 import '../../../../style/style.dart';
 import '../../../../widgets/widgets.dart';
 
+
+import 'package:flutter_ieadi_app/helpers/util.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pdf;
+import 'package:flutter_ieadi_app/repositories/repositories.dart';
+import 'package:flutter_ieadi_app/style/style.dart';
+import 'package:flutter_ieadi_app/widgets/widgets.dart';
+
 class MembroForm extends StatefulWidget {
   MembroForm();
   MembroFormState createState() => MembroFormState();
@@ -70,6 +78,26 @@ class MembroFormState extends State<MembroForm> {
             ? LightStyle.paleta['Sucesso']
             : Theme.of(context).errorColor,
       ));
+
+  
+  Future<pdf.Widget> fichaDeMembroPdf(UserModel e) async {
+    return pdf.Container(
+      height: PdfPageFormat.a4.dimension.y - 3,
+      width: PdfPageFormat.a4.dimension.x - 3,
+      child: pdf.Container(
+        child: pdf.Column(
+          children: [
+            pdf.Row(
+              children: [
+                
+              ]
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {

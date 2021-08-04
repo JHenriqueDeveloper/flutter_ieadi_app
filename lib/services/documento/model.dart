@@ -51,9 +51,9 @@ class DocumentoModel extends BaseModel {
         'tags': tags,
       };
 
-  factory DocumentoModel.fromDocument(DocumentSnapshot doc) {
+  factory DocumentoModel.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     if (doc == null) return null;
-    final data = doc.data();
+    final Map<String, dynamic> data = doc.data();
     return DocumentoModel(
       id: doc.id,
       membro: data['dirigente'] as String,

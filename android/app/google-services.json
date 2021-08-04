@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:78303425606:android:9e9e354126e061df564647",
+        "mobilesdk_app_id": "1:78303425606:android:f0993fa7d482c66f564647",
         "android_client_info": {
-          "package_name": "com.example.flutteIeadiApp"
+          "package_name": "com.dippingcode.adIcoaraci"
         }
       },
       "oauth_client": [

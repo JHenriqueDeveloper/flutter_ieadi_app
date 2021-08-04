@@ -77,9 +77,9 @@ class SolicitacoesModel extends BaseModel {
         'tags': tags,
       };
 
-  factory SolicitacoesModel.fromDocument(DocumentSnapshot doc) {
+  factory SolicitacoesModel.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     if (doc == null) return null;
-    final data = doc.data();
+    final Map<String, dynamic> data = doc.data();
     return SolicitacoesModel(
       id: doc.id,
       solicitante: data['solicitante'] as String,

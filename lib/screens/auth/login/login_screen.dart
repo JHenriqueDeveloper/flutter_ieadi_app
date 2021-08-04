@@ -110,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
 
-              Spacer(),
+              //Spacer(),
               //Falta implementar a tela
               /*
               SizedBox(

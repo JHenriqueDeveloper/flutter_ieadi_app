@@ -48,9 +48,7 @@ class MinisterioRepository extends ChangeNotifier {
   void load() async {
     setLoading = true;
     try {
-      final doc = await FirebaseFirestore.instance
-          .doc('ministerio/$_id')
-          .get();
+      final doc = await FirebaseFirestore.instance.doc('ministerio/$_id').get();
 
       this.ministerio = doc.exists
           ? MinisterioModel.fromDocument(doc)
@@ -187,51 +185,64 @@ class MinisterioRepository extends ChangeNotifier {
       switch (option) {
         case 'tesoureiros':
           this.ministerio.tesoureiros.removeWhere((element) => element == item);
+          this.listTesoureiros.removeWhere((element) => element.id == item);
           break;
         case 'secretarios':
           this.ministerio.secretarios.removeWhere((element) => element == item);
+          this.listSecretarios.removeWhere((element) => element.id == item);
           break;
         case 'fiscal':
           this.ministerio.fiscal.removeWhere((element) => element == item);
+          this.listFiscal.removeWhere((element) => element.id == item);
           break;
         case 'etica':
           this.ministerio.etica.removeWhere((element) => element == item);
+          this.listEtica.removeWhere((element) => element.id == item);
           break;
         case 'departamentos':
           this
               .ministerio
               .departamentos
               .removeWhere((element) => element == item);
+          //
           break;
         case 'pastores':
           this.ministerio.pastores.removeWhere((element) => element == item);
+          this.listPastores.removeWhere((element) => element.id == item);
           break;
         case 'consagrados':
           this
               .ministerio
               .evanConsagrados
               .removeWhere((element) => element == item);
+          this.listEvanConsagrados.removeWhere((element) => element.id == item);
           break;
         case 'autorizados':
           this
               .ministerio
               .evanAutorizados
               .removeWhere((element) => element == item);
+          this.listEvanAutorizados.removeWhere((element) => element.id == item);
           break;
         case 'locais':
           this.ministerio.evanLocais.removeWhere((element) => element == item);
+          this.listEvanLocais.removeWhere((element) => element.id == item);
           break;
         case 'presbiteros':
           this.ministerio.presbiteros.removeWhere((element) => element == item);
+          this.listPresbiteros.removeWhere((element) => element.id == item);
           break;
         case 'diaconos':
           this.ministerio.diaconos.removeWhere((element) => element == item);
+          this.listDiaconos.removeWhere((element) => element.id == item);
           break;
         case 'auxiliares':
           this.ministerio.auxiliares.removeWhere((element) => element == item);
+          this.listAuxiliares.removeWhere((element) => element.id == item);
           break;
         case 'obreiros':
           this.ministerio.obreiros.removeWhere((element) => element == item);
+          this.listObreiros.removeWhere((element) => element.id == item);
           break;
       }
 
@@ -239,9 +250,8 @@ class MinisterioRepository extends ChangeNotifier {
           .collection('/ministerio')
           .doc(_id)
           .update(ministerio.toDocument());
-          
 
-      load();
+      //load();
 
       onSuccess();
     } catch (e) {

@@ -144,9 +144,9 @@ class CongregModel {
     createdAt: DateTime.now(),
   );
 
-  factory CongregModel.fromDocument(DocumentSnapshot doc) {
+  factory CongregModel.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     if (doc == null) return null;
-    final data = doc.data();
+    final Map<String, dynamic> data = doc.data();
     return CongregModel(
       id: doc.id,
       dirigente: data['dirigente'] as String,

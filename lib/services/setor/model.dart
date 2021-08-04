@@ -55,9 +55,9 @@ class SetorModel extends BaseModel {
         'tags': tags,
       };
 
-  factory SetorModel.fromDocument(DocumentSnapshot doc) {
+  factory SetorModel.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     if (doc == null) return null;
-    final data = doc.data();
+    final Map<String, dynamic> data = doc.data();
     return SetorModel(
       id: doc.id,
       nome: data['nome'] as String,
