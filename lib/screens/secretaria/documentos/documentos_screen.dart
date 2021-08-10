@@ -36,10 +36,10 @@ class DocumentosScreen extends StatelessWidget {
                     onTap: () => _handlerForm(31, 'Cartão de Membro'),
                   ),
                   ListItemMenu(
-                    title: 'Credencial Ministério',
+                    title: 'Credencial do Ministério',
                     icon: FeatherIcons.briefcase,
                     badge: false,
-                    onTap: () => _handlerForm(31, 'Credencial Ministério'),
+                    onTap: () => _handlerForm(31, 'Credencial do Ministério'),
                   ),
                   ListItemMenu(
                     title: 'Certificado de Batismo',

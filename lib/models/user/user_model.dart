@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class UserModel {
@@ -76,6 +77,9 @@ class UserModel {
 
   DateTime createdAt;
 
+  var avatar; //apenas para carregar a imagem
+  String idDoc; //apenas para manter o id do documento
+
   UserModel({
     this.id,
     this.username,
@@ -146,6 +150,8 @@ class UserModel {
     this.createdAt,
     this.tags,
     this.isVerificacaoSolicitada,
+    this.avatar,
+    this.idDoc,
   });
 
   get getId => id;
@@ -400,64 +406,72 @@ class UserModel {
 
   //@override
   List get getTags => [
-    this.id,
-    this.isActive ? 'ativo' : 'inativo',
-    this.username != null ? this.username.toLowerCase() : '',
-    this.matricula != null ? this.matricula.toLowerCase() : '',
-    this.email != null ? this.email.toLowerCase() : '',
-    this.cpf,
-    this.rg,
-    this.dataNascimento,
-    this.estadoCivil != null ? this.estadoCivil.toLowerCase() : '',
-    this.genero != null ? this.genero.toLowerCase() : '',
-    this.tipoSanguineo != null ? this.tipoSanguineo.toLowerCase() : '',
-    //Dados eleitorais
-    this.tituloEleitor != null ? this.tituloEleitor.toLowerCase() : '',
-    this.zonaEleitor != null ? this.zonaEleitor.toLowerCase() : '',
-    this.secaoEleitor != null ? this.secaoEleitor.toLowerCase() : '',
-    //Necessidades especiais
-    this.isPortadorNecessidade ? 'portador de necessidade' : '',
-    this.tipoNecessidade != null ? this.tipoNecessidade.toLowerCase() : '',
-    //Endereco
-    this.cep,
-    this.uf != null ? this.uf.toLowerCase() : '',
-    this.cidade != null ? this.cidade.toLowerCase() : '',
-    this.bairro != null ? this.bairro.toLowerCase() : '',
-    this.logradouro != null ? this.logradouro.toLowerCase() : '',
-    this.complemento != null ? this.complemento.toLowerCase() : '',
-    this.numero != null ? this.numero.toLowerCase() : '',
-    //Contatos
-    this.numeroFixo,
-    this.numeroCelular,
-    //Perfil Cristão
-    this.congregacao,
-    this.tipoMembro != null ? this.tipoMembro.toLowerCase() : '',
-    this.situacaoMembro != null ? this.situacaoMembro.toLowerCase() : '',
-    this.procedenciaMembro != null ? this.procedenciaMembro.toLowerCase() : '',
-    this.origemMembro != null ? this.origemMembro.toLowerCase() : '',
-    this.dataMudanca,
-    this.dataConversao,
-    this.localConversao != null ? this.localConversao.toLowerCase() : '',
-    this.dataBatismoAguas,
-    this.localBatismoAguas != null ? this.localBatismoAguas.toLowerCase() : '',
-    this.dataBatismoEspiritoSanto,
-    this.localBatismoEspiritoSanto != null ? this.localBatismoEspiritoSanto.toLowerCase() : '',
-    this.isDizimista ? 'dizimista' : 'não dizimista',
-    //curriculo
-    this.isProcurandoOportunidades ? 'procurando emprego' : '',
-    this.profissao != null ? this.profissao.toLowerCase() : '',
-    this.pretensaoSalarial != null ? this.pretensaoSalarial.toLowerCase() : '',
-    //Registro de membros
-    this.dataRegistro,
-    this.numeroRegistro != null ? this.numeroRegistro.toLowerCase() : '',
-    this.livroRegistro != null ? this.livroRegistro.toLowerCase() : '',
-    this.paginaRegistro != null ? this.paginaRegistro.toLowerCase() : '',
-    //configurações de conta
-    this.isAdmin ? 'administrador' : 'usuario',
-    this.isMemberCard ? 'possui cartão de membro': '',
-    this.isVerified ? 'verificado' : 'não verificado',
-    '*',
-  ];
+        this.id,
+        this.isActive ? 'ativo' : 'inativo',
+        this.username != null ? this.username.toLowerCase() : '',
+        this.matricula != null ? this.matricula.toLowerCase() : '',
+        this.email != null ? this.email.toLowerCase() : '',
+        this.cpf,
+        this.rg,
+        this.dataNascimento,
+        this.estadoCivil != null ? this.estadoCivil.toLowerCase() : '',
+        this.genero != null ? this.genero.toLowerCase() : '',
+        this.tipoSanguineo != null ? this.tipoSanguineo.toLowerCase() : '',
+        //Dados eleitorais
+        this.tituloEleitor != null ? this.tituloEleitor.toLowerCase() : '',
+        this.zonaEleitor != null ? this.zonaEleitor.toLowerCase() : '',
+        this.secaoEleitor != null ? this.secaoEleitor.toLowerCase() : '',
+        //Necessidades especiais
+        this.isPortadorNecessidade ? 'portador de necessidade' : '',
+        this.tipoNecessidade != null ? this.tipoNecessidade.toLowerCase() : '',
+        //Endereco
+        this.cep,
+        this.uf != null ? this.uf.toLowerCase() : '',
+        this.cidade != null ? this.cidade.toLowerCase() : '',
+        this.bairro != null ? this.bairro.toLowerCase() : '',
+        this.logradouro != null ? this.logradouro.toLowerCase() : '',
+        this.complemento != null ? this.complemento.toLowerCase() : '',
+        this.numero != null ? this.numero.toLowerCase() : '',
+        //Contatos
+        this.numeroFixo,
+        this.numeroCelular,
+        //Perfil Cristão
+        this.congregacao,
+        this.tipoMembro != null ? this.tipoMembro.toLowerCase() : '',
+        this.situacaoMembro != null ? this.situacaoMembro.toLowerCase() : '',
+        this.procedenciaMembro != null
+            ? this.procedenciaMembro.toLowerCase()
+            : '',
+        this.origemMembro != null ? this.origemMembro.toLowerCase() : '',
+        this.dataMudanca,
+        this.dataConversao,
+        this.localConversao != null ? this.localConversao.toLowerCase() : '',
+        this.dataBatismoAguas,
+        this.localBatismoAguas != null
+            ? this.localBatismoAguas.toLowerCase()
+            : '',
+        this.dataBatismoEspiritoSanto,
+        this.localBatismoEspiritoSanto != null
+            ? this.localBatismoEspiritoSanto.toLowerCase()
+            : '',
+        this.isDizimista ? 'dizimista' : 'não dizimista',
+        //curriculo
+        this.isProcurandoOportunidades ? 'procurando emprego' : '',
+        this.profissao != null ? this.profissao.toLowerCase() : '',
+        this.pretensaoSalarial != null
+            ? this.pretensaoSalarial.toLowerCase()
+            : '',
+        //Registro de membros
+        this.dataRegistro,
+        this.numeroRegistro != null ? this.numeroRegistro.toLowerCase() : '',
+        this.livroRegistro != null ? this.livroRegistro.toLowerCase() : '',
+        this.paginaRegistro != null ? this.paginaRegistro.toLowerCase() : '',
+        //configurações de conta
+        this.isAdmin ? 'administrador' : 'usuario',
+        this.isMemberCard ? 'possui cartão de membro' : '',
+        this.isVerified ? 'verificado' : 'não verificado',
+        '*',
+      ];
 
   static Future<UserModel> getUser(String id) async {
     if (id != null) {

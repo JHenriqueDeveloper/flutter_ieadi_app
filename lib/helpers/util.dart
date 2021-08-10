@@ -5,7 +5,7 @@ import 'package:nanoid/nanoid.dart';
 String firstName(String fullName) =>
     fullName?.substring(0, fullName.indexOf(' ')) ?? '';
 
-String formataNome(String fullName) {
+String formataNome(String fullName, {bool insertDot = false}) {
   fullName.trim();
   List<String> nomes = fullName.split(' ');
   String nome = '';
@@ -30,7 +30,11 @@ String formataNome(String fullName) {
   }
 
   for (var i = 0; i < nomes.length; i++) {
-    nome = '$nome ${nomes[i]}';
+    if(insertDot && i > 0 && i < nomes.length-1){
+      nome = '$nome ${nomes[i]}.';
+    }else{
+      nome = '$nome ${nomes[i]}';
+    }
   }
 
   return nome;

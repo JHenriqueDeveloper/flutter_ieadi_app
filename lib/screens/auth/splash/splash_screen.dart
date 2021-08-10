@@ -18,9 +18,11 @@ class SplashScreen extends StatelessWidget {
             : IntroScreen(), //autenticar
         loaderColor: Theme.of(context).primaryColor,
         backgroundColor: Theme.of(context).backgroundColor,
+        image: Image.asset('assets/logo_novo.png', width: 80),
         title: Text(
-          'IEADI',
-          style: Theme.of(context).textTheme.headline1,
+          'AD ICOARACI',
+          style: Theme.of(context).textTheme.headline2,
+          textAlign: TextAlign.center,
         ),
       ),
     );

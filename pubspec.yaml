@@ -36,6 +36,7 @@ dependencies:
   advance_pdf_viewer: ^2.0.0
   share_extend: ^2.0.0
   flutter_launcher_icons: ^0.9.1
+  printing: ^5.4.3
   
 advance_pdf_viewer: any
 
@@ -59,8 +60,20 @@ flutter:
     - user.jpeg
     - logo01.png
     - logo02.png
+    - cartao_m.png
+    - cartao_m_verso.png
+    - logo_novo.png
+    - certificado.png
+    - assinatura.png
     - batismo.jpg
+    - OpenSans-Light.ttf
     - OpenSans-Regular.ttf
     - OpenSans-Bold.ttf
     - OpenSans-Italic.ttf
     - OpenSans-BoldItalic.ttf
+    - Aleo-Bold.ttf
+    - Aleo-BoldItalic.ttf
+    - Aleo-Italic.ttf
+    - Aleo-Light.ttf
+    - Aleo-LightItalic.ttf
+    - Aleo-Regular.ttf
