@@ -7,7 +7,15 @@ class DocumentoModel {
   DateTime createdAt;
   String membro;
   String tipo;
+
   List tags;
+
+  //propriedades de carta
+  String adic;
+  String destinatario;
+  String justificativa;
+  String assinatura; //quem assina Presidente, Vice-Presidente, Secretário Geral
+  bool outroMinisterio;
 
   DocumentoModel({
     this.id,
@@ -16,6 +24,11 @@ class DocumentoModel {
     this.membro,
     this.tipo,
     this.tags,
+    this.adic,
+    this.destinatario,
+    this.justificativa,
+    this.assinatura,
+    this.outroMinisterio,
   });
 
   String _collection = 'documentos';
@@ -29,6 +42,11 @@ class DocumentoModel {
     this.createdAt,
     this.membro,
     this.tipo,
+    this.adic,
+    this.destinatario,
+    this.justificativa,
+    this.assinatura,
+    this.outroMinisterio,
   ];
 
   //@override
@@ -41,6 +59,11 @@ class DocumentoModel {
     tipo: null,
     createdAt: DateTime.now(),
     tags: [],
+    adic: null,
+    destinatario: null,
+    justificativa: null,
+    assinatura: null,
+    outroMinisterio: false,
   );
 
   //@override
@@ -50,6 +73,11 @@ class DocumentoModel {
         'tipo': tipo,
         'createdAt': Timestamp.fromDate(createdAt),
         'tags': tags,
+        'adic': adic,
+        'destinatario': destinatario,
+        'justificativa': justificativa,
+        'assinatura': assinatura,
+        'outroMinisterio': outroMinisterio,
       };
 
   factory DocumentoModel.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -62,6 +90,11 @@ class DocumentoModel {
       isActive: data['isActive'] as bool,
       createdAt: (data['createdAt'] as Timestamp)?.toDate(),
       tags: data['tags'] as List,
+      adic: data['adic'] as String,
+      destinatario: data['destinatario'] as String,
+      justificativa: data['justificativa'] as String,
+      assinatura: data['assinatura'] as String,
+      outroMinisterio: data['outroMinisterio'] as bool,
     );
   }
 }

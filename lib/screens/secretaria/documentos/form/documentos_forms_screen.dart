@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_ieadi_app/helpers/matricula_helper.dart';
 import 'package:flutter_ieadi_app/helpers/util.dart';
+import 'package:flutter_ieadi_app/helpers/validator.dart';
 import 'package:flutter_ieadi_app/models/models.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:flutter/services.dart';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 import 'package:flutter_ieadi_app/config/config.dart';
 import 'package:flutter_ieadi_app/repositories/repositories.dart';
@@ -36,18 +39,24 @@ class _DocumentosFormState extends State<DocumentosForm> {
   List<UserModel> listaMembros = [];
   List<UserModel> selecionados = [];
 
-  String idDocumento = '';
-
   String searchString = '';
+
+  String tipo = '';
 
   bool isLoading;
   bool isSelectedAll;
+  bool onlyOneSelected;
 
   Icon searchIcon = new Icon(
     FeatherIcons.search,
     color: Colors.white,
     size: 24,
   );
+
+  DocumentoModel documento = new DocumentoModel();
+  String idDocumento = '';
+
+  bool isDismiss = true;
 
   Widget titleSearch = Text(
     '',
@@ -78,6 +87,13 @@ class _DocumentosFormState extends State<DocumentosForm> {
     super.initState();
     isLoading = false;
     isSelectedAll = false;
+    onlyOneSelected = false;
+    tipo = context.read<CustomRouter>().getScreen;
+    if (tipo == 'Carta de Mudança' ||
+        tipo == 'Carta de Recomendação' ||
+        tipo == 'Declaração de Membro') {
+      onlyOneSelected = true;
+    }
     titleSearch = Text(
       context.read<CustomRouter>().getScreen,
       style: TextStyle(
@@ -86,6 +102,11 @@ class _DocumentosFormState extends State<DocumentosForm> {
         fontWeight: FontWeight.w600,
       ),
     );
+
+    documento.adic = '';
+    documento.destinatario = 'Assembléia de Deus em..';
+    documento.assinatura = 'Presidente';
+    documento.outroMinisterio = false;
   }
 
   @override
@@ -112,10 +133,179 @@ class _DocumentosFormState extends State<DocumentosForm> {
               ? () {
                   setState(() => isLoading = true);
 
-                  gerarPdf(
-                    context,
-                    tipo: context.read<CustomRouter>().getScreen,
-                  );
+                  if (tipo == 'Carta de Mudança' ||
+                      tipo == 'Carta de Recomendação' || tipo == 'Declaração de Membro') {
+                    if (tipo == 'Carta de Mudança') {
+                      setState(() {
+                        documento.justificativa =
+                            'Em tempo informamos que o referido neste documento encontra-se em processo de mudança domiciliar, o que justifica o presente documento.';
+                      });
+                    }
+
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.INFO,
+                      headerAnimationLoop: false,
+                      btnOkText: 'Emitir $tipo',
+                      btnOkColor: Theme.of(context).primaryColor,
+                      btnOkOnPress: () {
+                        setState(() => isDismiss = false);
+                        gerarPdf(
+                          context,
+                          tipo: context.read<CustomRouter>().getScreen,
+                        );
+                      },
+                      body: Builder(
+                        builder: (context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      child: Text(
+                                        'Informações da Carta',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Container(
+                                      height: 65,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.text,
+                                        autocorrect: false,
+                                        maxLength: 20,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.left,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1,
+                                        decoration: InputDecoration(
+                                          labelText: 'Número do ADIC/CM',
+                                          labelStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                          fillColor: LightStyle
+                                              .paleta['PrimariaCinza'],
+                                        ),
+                                        validator: (value) =>
+                                            Validator.rgValidator(value),
+                                        onChanged: (value) =>
+                                            documento.adic = value,
+                                        initialValue: null,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Container(
+                                      height: 65,
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.text,
+                                        autocorrect: false,
+                                        maxLength: 50,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.left,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1,
+                                        decoration: InputDecoration(
+                                          labelText: 'Destinatário',
+                                          labelStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1,
+                                          fillColor: LightStyle
+                                              .paleta['PrimariaCinza'],
+                                        ),
+                                        validator: (value) =>
+                                            Validator.rgValidator(value),
+                                        onChanged: (value) =>
+                                            documento.destinatario = value,
+                                        initialValue: documento.destinatario,
+                                      ),
+                                    ),
+                                    //SizedBox(height: 8),
+                                    tipo == 'Carta de Mudança'
+                                        ? ListTile(
+                                            title: Text(
+                                              'Outro Ministério?',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1,
+                                            ),
+                                            trailing: Switch(
+                                              activeColor: Theme.of(context)
+                                                  .primaryColor,
+                                              onChanged: (e) => setState(() {
+                                                documento.outroMinisterio =
+                                                    !documento.outroMinisterio;
+                                              }),
+                                              value: documento.outroMinisterio,
+                                            ),
+                                          )
+                                        : SizedBox(),
+                                    tipo == 'Carta de Mudança'
+                                        ? SizedBox(height: 8)
+                                        : SizedBox(),
+                                    tipo == 'Carta de Mudança'
+                                        ? TextFormField(
+                                            keyboardType: TextInputType.text,
+                                            autocorrect: false,
+                                            maxLength: 500,
+                                            maxLines: 6,
+                                            textAlign: TextAlign.left,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                            decoration: InputDecoration(
+                                              labelText:
+                                                  'Informe a justificativa.',
+                                              labelStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1,
+                                              fillColor: LightStyle
+                                                  .paleta['PrimariaCinza'],
+                                            ),
+                                            onChanged: (value) =>
+                                                documento.justificativa = value,
+                                            initialValue:
+                                                documento.justificativa,
+                                          )
+                                        : SizedBox(),
+                                    //SizedBox(height: 4),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    )..show();
+
+                    if (isDismiss) {
+                      //selecionados[0].setIsSelected = false;
+                      setState(() {
+                        isLoading = false;
+                        documento.adic = '';
+                        documento.destinatario = 'Assembléia de Deus em..';
+                        documento.justificativa =
+                            'Em tempo informamos que o referido neste documento encontra-se em processo de mudança domiciliar, o que justifica o presente documento.';
+                        documento.assinatura = 'Presidente';
+                        documento.outroMinisterio = false;
+                        isDismiss = true;
+                        //selecionados = [];
+                      });
+                    }
+                  } else {
+                    gerarPdf(
+                      context,
+                      tipo: context.read<CustomRouter>().getScreen,
+                    );
+                  }
                 }
               : () {}
           : null,
@@ -312,21 +502,19 @@ class _DocumentosFormState extends State<DocumentosForm> {
           ),
           trailing: Checkbox(
             value: membro.getIsSelected,
-            onChanged: (value) {
-              membro.setIsSelected = value; //!membro.getIsSelected;
-              //membro.avatar = networkImage(membro.profileImageUrl);
+            onChanged: selecionados.length > 0 &&
+                    !membro.getIsSelected &&
+                    onlyOneSelected
+                ? null
+                : (value) {
+                    membro.setIsSelected = value;
 
-              //var avatar = await networkImage(membro.profileImageUrl);
-              //changeAvatar(membro.profileImageUrl);
-
-              //membro.avatar = avatar;
-
-              setState(() {
-                selecionados.contains(membro)
-                    ? selecionados.remove(membro)
-                    : selecionados.add(membro);
-              });
-            },
+                    setState(() {
+                      selecionados.contains(membro)
+                          ? selecionados.remove(membro)
+                          : selecionados.add(membro);
+                    });
+                  },
             activeColor: Theme.of(context).primaryColor,
           ),
         );
@@ -1113,12 +1301,6 @@ class _DocumentosFormState extends State<DocumentosForm> {
         });
   }
 
-  cartaApresentacaoPdf() {}
-
-  cartaMudancaPdf() {}
-
-  cartaRecomendacaoPdf() {}
-
   Future<pdf.MultiPage> certificadoBatismoPdf(
     BuildContext ctx,
     String tipo,
@@ -1256,97 +1438,436 @@ class _DocumentosFormState extends State<DocumentosForm> {
         });
   }
 
-/*
-  Future<pdf.Widget> certificadoBatismoPdf(
-    UserModel e, {
-    int count,
-    String certificado,
-  }) async {
-    String pronome = e.genero != null
-        ? e.genero == 'Masculino'
-            ? 'o'
-            : 'a'
-        : 'o(a)';
-    String mae = '${e.nomeMae ?? ''}';
-    String pai = '${e.nomePai ?? ''}';
+  Future<pdf.MultiPage> cartaMudancaPdf(
+    BuildContext ctx,
+    String tipo,
+  ) async {
+    var bg = pdf.MemoryImage(
+        (await rootBundle.load('assets/timbre.png')).buffer.asUint8List());
 
-    String linha1 =
-        'Ás fls. ${e?.paginaRegistro ?? '00'} do livro n° ${e?.livroRegistro ?? '000'} de Membros desta igreja foi registrad$pronome,';
-    String linha2 = '${e.username},';
-    String linha3 =
-        '${e?.dataNascimento != null ? "nascid$pronome no dia ${e?.dataNascimento ?? '00'}," : ''}';
-    String linha4 = '${e?.genero != null ? "do sexo ${e?.genero ?? ''}," : ""}';
-    String linha5 = 'filh$pronome de ${mae != '' ? mae : ''}';
-    String linha6 = '${mae != '' ? pai != '' ? 'e' : '' : ''}';
-    String linha7 = '${pai != '' ? pai : ''}';
-    String linha8 = 'que de acordo com os ensinamentos bíblicos,';
-    String linha9 =
-        'foi batizad$pronome no dia ${e.dataBatismoAguas}, tendo dado prova de sua conduta cristã.';
-    return pdf.Container(
-      height: PdfPageFormat.a4.dimension.y * 0.5 - 1,
-      margin: count % 2 == 0 ? pdf.EdgeInsets.only(bottom: 2) : null,
-      decoration: pdf.BoxDecoration(
-        image: pdf.DecorationImage(
-          image: pdf.MemoryImage((await rootBundle.load('assets/batismo.jpg'))
-              .buffer
-              .asUint8List()),
-          fit: pdf.BoxFit.cover,
-        ),
-      ),
-      child: pdf.Container(
-        padding: pdf.EdgeInsets.only(
-          top: 160,
-          left: 80,
-          right: 80,
-        ),
-        child: pdf.Column(
-          children: [
-            pdf.Container(
-              margin: pdf.EdgeInsets.only(bottom: 20),
-              child: pdf.Text(
-                '       $linha1 $linha2 $linha3 $linha4 $linha5 $linha6 $linha7 $linha8 $linha9',
-                textAlign: pdf.TextAlign.justify,
-                style: pdf.TextStyle(
-                  //font: myFont, //ttf,
-                  fontSize: 14,
-                  height: 1.5,
-                ),
-              ),
-            ),
-            pdf.Container(
-              child: pdf.Row(
-                mainAxisAlignment: pdf.MainAxisAlignment.end,
-                children: [
-                  pdf.Text(
-                      'Icoaraci, Belém/PA ${formataData(data: DateTime.now())}.'),
-                ],
-              ),
-            ),
-            pdf.Container(
-              child: pdf.Row(
-                mainAxisAlignment: pdf.MainAxisAlignment.end,
-                children: [
-                  pdf.Text(
-                    'Chave de autenticação $certificado',
-                    style: pdf.TextStyle(
-                      //font: myFont, //ttf,
-                      color: PdfColor.fromHex('#9B9186'),
-                      fontSize: 8,
-                      height: 1.5,
+    var font1 =
+        pdf.Font.ttf(await rootBundle.load("assets/OpenSans-Light.ttf"));
+    var fontBold =
+        pdf.Font.ttf(await rootBundle.load("assets/OpenSans-Bold.ttf"));
+    var font2 = pdf.Font.ttf(await rootBundle.load("assets/Aleo-Bold.ttf"));
+    var aleoBold = pdf.Font.ttf(await rootBundle.load("assets/Aleo-Bold.ttf"));
+
+    return pdf.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: pdf.EdgeInsets.zero,
+        build: (pdf.Context context) {
+          return [
+            pdf.ListView.builder(
+                itemCount: this.selecionados.length,
+                padding: pdf.EdgeInsets.zero,
+                spacing: 1,
+                itemBuilder: (context, index) {
+                  UserModel e = this.selecionados[index];
+
+                  String adic = this.documento.adic;
+
+                  String destinatario = this.documento.destinatario;
+                  String justificativa = this.documento.justificativa;
+
+                  String header =
+                      'Chave de autenticação: ${e.idDoc}\n\nIcoaraci, Belém/PA ${formataData(data: DateTime.now())}\n\nADIC/CM N° $adic/${DateTime.now().year}\n\nÀ $destinatario.';
+
+                  String titulo = 'CARTA DE MUDANÇA';
+                  String conteudo =
+                      '                  A Igreja Evangélica Assembléia de Deus em Icoaraci, Belém/PA , Apresenta com carta de mudança ${formataNome(e.username, insertDot: true)}, membro desta Igreja, que até a presente data não há nada que desabone a sua conduta cristã.\n\n                $justificativa\n\n\nSem mais para o momento.';
+
+                  setState(() {
+                    documento.adic = '';
+                    documento.destinatario = 'Assembléia de Deus em..';
+                    documento.justificativa =
+                        'Em tempo informamos que o referido neste documento encontra-se em processo de mudança domiciliar, o que justifica o presente documento.';
+                    documento.assinatura = 'Presidente';
+                    documento.outroMinisterio = false;
+                    isDismiss = true;
+                  });
+
+                  return pdf.Container(
+                    height: PdfPageFormat.a4.dimension.y,
+                    width: PdfPageFormat.a4.dimension.x,
+                    decoration: pdf.BoxDecoration(
+                      image: pdf.DecorationImage(
+                        image: bg,
+                        fit: pdf.BoxFit.cover,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                    child: pdf.Container(
+                        padding: pdf.EdgeInsets.symmetric(
+                          vertical: 140,
+                          horizontal: 60,
+                        ),
+                        child: pdf.Column(
+                            mainAxisAlignment: pdf.MainAxisAlignment.start,
+                            crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                            children: [
+                              pdf.Text(
+                                header,
+                                style: pdf.TextStyle(
+                                  font: fontBold,
+                                  fontSize: 9.6,
+                                  letterSpacing: 0,
+                                  color: PdfColor.fromHex('#364d65'),
+                                  height: 1.5,
+                                ),
+                              ),
+                              pdf.SizedBox(height: 64),
+                              pdf.Column(
+                                  crossAxisAlignment:
+                                      pdf.CrossAxisAlignment.center,
+                                  children: [
+                                    pdf.Text(
+                                      titulo.toUpperCase(),
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: font2,
+                                        fontSize: 18,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 64),
+                                    pdf.Text(
+                                      conteudo,
+                                      style: pdf.TextStyle(
+                                        font: font1,
+                                        fontSize: 12,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 64),
+                                    pdf.Container(
+                                      width: 200,
+                                      margin:
+                                          const pdf.EdgeInsets.only(bottom: 8),
+                                      decoration: pdf.BoxDecoration(
+                                        border: pdf.Border.all(
+                                          color: PdfColor.fromHex('#364d65'),
+                                        ),
+                                      ),
+                                    ),
+                                    pdf.Text(
+                                      'CARLOS ARY ALVEZ GOMES',
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: aleoBold,
+                                        fontSize: 9.6,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 4),
+                                    pdf.Text(
+                                      'Pastor Presidente',
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: fontBold,
+                                        fontSize: 9.2,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ]),
+                            ])),
+                  );
+                })
+          ];
+        });
   }
 
-  */
+  Future<pdf.MultiPage> cartaRecomendacaoPdf(
+    BuildContext ctx,
+    String tipo,
+  ) async {
+    var bg = pdf.MemoryImage(
+        (await rootBundle.load('assets/timbre.png')).buffer.asUint8List());
 
-  declaracaoMembroPdf() {}
+    var font1 =
+        pdf.Font.ttf(await rootBundle.load("assets/OpenSans-Light.ttf"));
+    var fontBold =
+        pdf.Font.ttf(await rootBundle.load("assets/OpenSans-Bold.ttf"));
+    var font2 = pdf.Font.ttf(await rootBundle.load("assets/Aleo-Bold.ttf"));
+    var aleoBold = pdf.Font.ttf(await rootBundle.load("assets/Aleo-Bold.ttf"));
+
+    return pdf.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: pdf.EdgeInsets.zero,
+        build: (pdf.Context context) {
+          return [
+            pdf.ListView.builder(
+                itemCount: this.selecionados.length,
+                padding: pdf.EdgeInsets.zero,
+                spacing: 1,
+                itemBuilder: (context, index) {
+                  UserModel e = this.selecionados[index];
+
+                  String pronome = e.genero != null
+                      ? e.genero == 'Masculino'
+                          ? 'o'
+                          : 'a'
+                      : 'o(a)';
+
+                  String adic = this.documento.adic;
+                  String destinatario = this.documento.destinatario;
+
+                  String header =
+                      'Chave de autenticação: ${e.idDoc}\n\nIcoaraci, Belém/PA ${formataData(data: DateTime.now())}\n\nADIC/CM N° $adic/${DateTime.now().year}\n\nÀ $destinatario.';
+
+                  String titulo = 'CARTA DE RECOMENDAÇÃO';
+                  String conteudo =
+                      '                  A Igreja Evangélica Assembléia de Deus em Icoaraci, Belém/PA , Apresenta com carta de recomendação ${formataNome(e.username, insertDot: true)}, membro desta Igreja, que até a presente data não há nada que desabone a sua conduta cristã e encontra-se em plena comunhão.\n\n                  Nós $pronome recomendamos para que $pronome recebais no Senhor, como usam fazer os santos.\n\n\n                  Atenciosamente.';
+
+                  setState(() {
+                    documento.adic = '';
+                    documento.destinatario = 'Assembléia de Deus em..';
+                    documento.assinatura = 'Presidente';
+                    isDismiss = true;
+                  });
+
+                  return pdf.Container(
+                    height: PdfPageFormat.a4.dimension.y,
+                    width: PdfPageFormat.a4.dimension.x,
+                    decoration: pdf.BoxDecoration(
+                      image: pdf.DecorationImage(
+                        image: bg,
+                        fit: pdf.BoxFit.cover,
+                      ),
+                    ),
+                    child: pdf.Container(
+                        padding: pdf.EdgeInsets.symmetric(
+                          vertical: 140,
+                          horizontal: 60,
+                        ),
+                        child: pdf.Column(
+                            mainAxisAlignment: pdf.MainAxisAlignment.start,
+                            crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                            children: [
+                              pdf.Text(
+                                header,
+                                style: pdf.TextStyle(
+                                  font: fontBold,
+                                  fontSize: 9.6,
+                                  letterSpacing: 0,
+                                  color: PdfColor.fromHex('#364d65'),
+                                  height: 1.5,
+                                ),
+                              ),
+                              pdf.SizedBox(height: 64),
+                              pdf.Column(
+                                  crossAxisAlignment:
+                                      pdf.CrossAxisAlignment.center,
+                                  children: [
+                                    pdf.Text(
+                                      titulo.toUpperCase(),
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: font2,
+                                        fontSize: 18,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 64),
+                                    pdf.Text(
+                                      conteudo,
+                                      style: pdf.TextStyle(
+                                        font: font1,
+                                        fontSize: 12,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 64),
+                                    pdf.Container(
+                                      width: 200,
+                                      margin:
+                                          const pdf.EdgeInsets.only(bottom: 8),
+                                      decoration: pdf.BoxDecoration(
+                                        border: pdf.Border.all(
+                                          color: PdfColor.fromHex('#364d65'),
+                                        ),
+                                      ),
+                                    ),
+                                    pdf.Text(
+                                      'CARLOS ARY ALVEZ GOMES',
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: aleoBold,
+                                        fontSize: 9.6,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 4),
+                                    pdf.Text(
+                                      'Pastor Presidente',
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: fontBold,
+                                        fontSize: 9.2,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ]),
+                            ])),
+                  );
+                })
+          ];
+        });
+  }
+
+  Future<pdf.MultiPage> declaracaoMembroPdf(
+    BuildContext ctx,
+    String tipo,
+  ) async {
+    var bg = pdf.MemoryImage(
+        (await rootBundle.load('assets/timbre.png')).buffer.asUint8List());
+
+    var font1 =
+        pdf.Font.ttf(await rootBundle.load("assets/OpenSans-Light.ttf"));
+    var fontBold =
+        pdf.Font.ttf(await rootBundle.load("assets/OpenSans-Bold.ttf"));
+    var font2 = pdf.Font.ttf(await rootBundle.load("assets/Aleo-Bold.ttf"));
+    var aleoBold = pdf.Font.ttf(await rootBundle.load("assets/Aleo-Bold.ttf"));
+
+    return pdf.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: pdf.EdgeInsets.zero,
+        build: (pdf.Context context) {
+          return [
+            pdf.ListView.builder(
+                itemCount: this.selecionados.length,
+                padding: pdf.EdgeInsets.zero,
+                spacing: 1,
+                itemBuilder: (context, index) {
+                  UserModel e = this.selecionados[index];
+
+                  String adic = this.documento.adic;
+                  String destinatario = this.documento.destinatario;
+
+                  String header =
+                      'Chave de autenticação: ${e.idDoc}\n\nIcoaraci, Belém/PA ${formataData(data: DateTime.now())}\n\nADIC/CM N° $adic/${DateTime.now().year}\n\nÀ $destinatario.';
+
+                  String titulo = 'DECLARAÇÃO DE MEMBRO';
+                  String conteudo =
+                      '                  A Igreja Evangélica Assembléia de Deus em Icoaraci, Belém/PA , declara para os devidos fins, que ${formataNome(e.username, insertDot: true)}, portador do CPF ${e?.cpf ?? 'NÃO INFORMADO'} é membro desta Igreja.\n\n\n                  Atenciosamente.';
+
+                  setState(() {
+                    documento.adic = '';
+                    documento.destinatario = 'Assembléia de Deus em..';
+                    documento.assinatura = 'Presidente';
+                    isDismiss = true;
+                  });
+
+                  return pdf.Container(
+                    height: PdfPageFormat.a4.dimension.y,
+                    width: PdfPageFormat.a4.dimension.x,
+                    decoration: pdf.BoxDecoration(
+                      image: pdf.DecorationImage(
+                        image: bg,
+                        fit: pdf.BoxFit.cover,
+                      ),
+                    ),
+                    child: pdf.Container(
+                        padding: pdf.EdgeInsets.symmetric(
+                          vertical: 140,
+                          horizontal: 60,
+                        ),
+                        child: pdf.Column(
+                            mainAxisAlignment: pdf.MainAxisAlignment.start,
+                            crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                            children: [
+                              pdf.Text(
+                                header,
+                                style: pdf.TextStyle(
+                                  font: fontBold,
+                                  fontSize: 9.6,
+                                  letterSpacing: 0,
+                                  color: PdfColor.fromHex('#364d65'),
+                                  height: 1.5,
+                                ),
+                              ),
+                              pdf.SizedBox(height: 64),
+                              pdf.Column(
+                                  crossAxisAlignment:
+                                      pdf.CrossAxisAlignment.center,
+                                  children: [
+                                    pdf.Text(
+                                      titulo.toUpperCase(),
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: font2,
+                                        fontSize: 18,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 64),
+                                    pdf.Text(
+                                      conteudo,
+                                      style: pdf.TextStyle(
+                                        font: font1,
+                                        fontSize: 12,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 64),
+                                    pdf.Container(
+                                      width: 200,
+                                      margin:
+                                          const pdf.EdgeInsets.only(bottom: 8),
+                                      decoration: pdf.BoxDecoration(
+                                        border: pdf.Border.all(
+                                          color: PdfColor.fromHex('#364d65'),
+                                        ),
+                                      ),
+                                    ),
+                                    pdf.Text(
+                                      'CARLOS ARY ALVEZ GOMES',
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: aleoBold,
+                                        fontSize: 9.6,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    pdf.SizedBox(height: 4),
+                                    pdf.Text(
+                                      'Pastor Presidente',
+                                      textAlign: pdf.TextAlign.center,
+                                      style: pdf.TextStyle(
+                                        font: fontBold,
+                                        fontSize: 9.2,
+                                        letterSpacing: 0,
+                                        color: PdfColor.fromHex('#364d65'),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ]),
+                            ])),
+                  );
+                })
+          ];
+        });
+  }
 
   Future<void> gerarPdf(
     BuildContext context, {
@@ -1359,8 +1880,11 @@ class _DocumentosFormState extends State<DocumentosForm> {
 
     Future<String> idDoc(UserModel membro) async {
       String id = '';
+      documento.membro = membro.id;
+      documento.tipo = tipo;
+
       await context.read<DocumentoRepository>().create(
-          doc: DocumentoModel(membro: membro.id, tipo: tipo),
+          doc: documento,
           onFail: (e) {},
           onSuccess: (uid) {
             setState(() => idDocumento = uid);
@@ -1393,18 +1917,41 @@ class _DocumentosFormState extends State<DocumentosForm> {
       case 'Certificado de Batismo':
         pw.addPage(await certificadoBatismoPdf(context, tipo));
         break;
-      case 'Certificado de Apresentação':
+      case 'Certificado de \nApresentação':
         break;
       case 'Carta de Mudança':
+        setState(() => isLoading = true);
+        UserModel e = listagemAvatar[0];
+
+        e.situacaoMembro = documento.outroMinisterio
+            ? 'Mudou de Ministério'
+            : 'Mudou de Campo';
+        e.isActive = false;
+
+        e.dataMudanca = DateTime.now().toString();
+
+        await context
+            .read<MembroRepository>()
+            .updateMembro(membro: e, onFail: (e) {}, onSuccess: (uid) {});
+
+        pw.addPage(await cartaMudancaPdf(context, tipo));
+
+        setState(() => isLoading = true);
         break;
       case 'Carta de Recomendação':
+        pw.addPage(await cartaRecomendacaoPdf(context, tipo));
         break;
       case 'Declaração de Membro':
+        pw.addPage(await declaracaoMembroPdf(context, tipo));
         break;
       default:
         print('null');
         break;
     }
+
+    setState(() {
+      selecionados = [];
+    });
 
 /*
     for (UserModel membro in selecionados) {

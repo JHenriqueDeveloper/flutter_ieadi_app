@@ -13,7 +13,7 @@ class IntroScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Text(
-            'IEADI',
+            'AD Icoaraci',
             style: Theme.of(context).textTheme.headline2,
           ),
           Padding(

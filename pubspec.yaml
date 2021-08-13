@@ -37,6 +37,7 @@ dependencies:
   share_extend: ^2.0.0
   flutter_launcher_icons: ^0.9.1
   printing: ^5.4.3
+  awesome_dialog: ^2.1.0
   
 advance_pdf_viewer: any
 
@@ -64,7 +65,12 @@ flutter:
     - cartao_m_verso.png
     - logo_novo.png
     - certificado.png
+    - mudanca.png
+    - timbre.png
     - assinatura.png
+    - ary.png
+    - emerson.png
+    - anderson.png
     - batismo.jpg
     - OpenSans-Light.ttf
     - OpenSans-Regular.ttf

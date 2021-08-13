@@ -51,7 +51,7 @@ class DocumentosScreen extends StatelessWidget {
                     title: 'Certificado de Apresentação',
                     icon: FeatherIcons.gift,
                     badge: false,
-                    onTap: () => _handlerForm(31, 'Certificado de Apresentação'),
+                    onTap: () => _handlerForm(31, 'Certificado de \nApresentação'),
                   ),
                   ListItemMenu(
                     title: 'Carta de Mudança',

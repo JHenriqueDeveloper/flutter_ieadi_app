@@ -30,9 +30,9 @@ String formataNome(String fullName, {bool insertDot = false}) {
   }
 
   for (var i = 0; i < nomes.length; i++) {
-    if(insertDot && i > 0 && i < nomes.length-1){
+    if (insertDot && i > 0 && i < nomes.length - 1) {
       nome = '$nome ${nomes[i]}.';
-    }else{
+    } else {
       nome = '$nome ${nomes[i]}';
     }
   }
@@ -86,6 +86,12 @@ const List<String> uf_list = [
 const List<String> generos_list = [
   'Masculino',
   'Feminino',
+];
+
+const List<String> assinaturas_list = [
+  'Presidente',
+  'Vice-Presidente',
+  'Secretário Geral',
 ];
 
 const List<String> civil_list = [
